@@ -18,7 +18,7 @@ A database management system project using Django for backend connectivity and R
    ```sh
    pip install -r requirements.txt
    ```
-### Ignoring the Virtual Environment in Git
+#### Ignoring the Virtual Environment in Git (If making an Virtual Environment)
 To prevent unnecessary files from being committed, add `env/` to `.gitignore`:
 ```sh
 echo "env/" >> .gitignore
