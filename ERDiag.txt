@@ -1,0 +1,85 @@
+---
+config:
+  layout: elk
+---
+classDiagram
+direction LR
+    class IndoorVenue {
+	    - floor_number: int
+	    - building_id: int
+	    - building_name: string
+    }
+    class Venue {
+	    - venue_name: string 
+	    - venue_id: int
+	    - venue_type: string
+	    - booking_status: int
+	    - seating_capacity: int
+	    - manager_contact: int
+    }
+    class StudentBody {
+	    - student_body_id: int
+	    - name: string
+	    - email: string
+	    - faculty_advisor_id: int
+	    - primary_rep_id: int
+	    - secondary_rep_id: int
+    }
+    class Student {
+	    - student_id: int
+	    - registration_id: int
+	    - name: string
+	    - contact_details: int
+	    - student_body_id: int
+    }
+    class Faculty {
+	    - faculty_id: int
+	    - registration_id: int
+	    - name: string
+	    - email: string
+	    - department: string
+	    - post: string
+    }
+    class BookingRequest {
+	    - booking_id: int
+	    - venue_id: int
+	    - student_body_id: int
+	    - booking_date: date
+	    - start_time: time
+	    - end_time: time
+	    - status: string
+    }
+    class ApprovalProcess {
+	    - approval_id: int
+	    - booking_id: int
+	    - FA_approval: boolean
+	    - SC_approval: boolean
+	    - SWO_approval: boolean
+	    - Sec_approval: boolean
+	    - approver_id: int
+	    - approval_status: string
+    }
+    class BookingHistory {
+	    - booking_id: int
+	    - booking_id: int
+	    - booking_date: date
+	    - action_taken: string
+    }
+
+    IndoorVenue "1" *.. "1" Venue : VenueId for (indoor)
+    Venue "1" *-- "many" BookingRequest : requests for
+    StudentBody "1" *--* "many" Student : includes
+    StudentBody "1" --* "many" BookingRequest : can issue
+    Faculty "many" --* "1" StudentBody : advises
+    BookingRequest "1" *--* "1" ApprovalProcess : goes through
+    BookingRequest .. BookingHistory : logs
+    Faculty "1" -- "1" Faculty : is SWO
+    Faculty "1" -- "1" Faculty : is Security
+    Student "1" -- "1" Student : is SC
+
+	style IndoorVenue :,stroke-width:2px,stroke-dasharray: 2
+
+	style BookingHistory :,stroke-width:2px,stroke-dasharray: 2
+
+	class IndoorVenue:::WeakEntities
+	class BookingHistory:::WeakEntities
