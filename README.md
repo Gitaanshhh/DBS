@@ -44,8 +44,21 @@ Then, open the provided URL in a browser.
 ## Prerequisites
 
 - **Python** (3.x recommended)
-- **Database Management System** (OracleSQL or MySQL)
+1. django - 
+```sh
+pip install django
+```
+2. oracledb - 
+```sh
+pip install oracledb
+```
+- **Database Management System** (OracleSQL)
 - **Node.js & npm** (for React.js frontend)
+
+## Database
+
+- **SQLPlus** [Install Oracle Database 23ai Free Platforms](https://www.oracle.com/database/free/get-started/#free-platforms)
+[Types of Logins](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/getting-started-with-database-administration.html#GUID-EA8CC987-EF18-4434-B962-01312CD3A8AC)
 
 ## Software Stack
 
@@ -60,3 +73,9 @@ Then, open the provided URL in a browser.
 
 - [Django & Database Connectivity Tutorial](https://youtu.be/hzjlOKhnJrs?si=URqF2D9xWqiYn4EC)
 
+pdbadmin, pdbpassword
+git, rootpw
+sqlplus / as sysdba
+
+sqlplus sys@XE as sysdba   
+sqlplus your_user@XE
