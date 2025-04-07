@@ -60,6 +60,28 @@ pip install oracledb
 - **SQLPlus** [Install Oracle Database 23ai Free Platforms](https://www.oracle.com/database/free/get-started/#free-platforms)
 [Types of Logins](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/getting-started-with-database-administration.html#GUID-EA8CC987-EF18-4434-B962-01312CD3A8AC)
 
+1. Make a user after inital boot by running 
+```sh
+sqlplus / as sysdba
+```
+on cmd prompt
+```sh
+CREATE USER my_django_user IDENTIFIED BY my_secure_password;
+ALTER USER my_django_user DEFAULT TABLESPACE SYSTEM;
+ALTER USER my_django_user QUOTA UNLIMITED ON SYSTEM;
+GRANT CONNECT, RESOURCE TO my_django_user;
+```
+2. Locate and open tnsnames.ora and Add an alias for XE that points to XEPDB1
+```sh
+XE =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVICE_NAME = XEPDB1)
+    )
+  )
+```
+
 ## Software Stack
 
 | Component          | Technology Used          |
