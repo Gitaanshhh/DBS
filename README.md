@@ -1,78 +1,108 @@
 # DBS (Database System Project)
 
-A database management system project using Django for backend connectivity and React.js for the frontend.
+A database management system project using **Django** for the backend and **React.js** for the frontend.
+
+---
+
+## Software Stack
+
+| Component         | Technology Used         |
+|:-----------------|:------------------------|
+| Frontend           | React.js                 |
+| Backend            | Django (Python)          |
+| Database           | Oracle SQL               |
+| DB Connectivity    | Django ORM / oracledb    |
+
+---
+
+## Table of Contents
+
+- [Getting Started](#getting-started)
+- [Frontend Workflow](#frontend-workflow)
+- [Database Configuration](#database-configuration)
+- [Development Credentials](#development-credentials)
+- [References](#references)
+
+---
 
 ## Getting Started
 
 ### Setup Virtual Environment (Optional)
-1. Create a virtual environment:
-   ```sh
-   python -m venv env
-   ```
-2. Activate the virtual environment:
-   ```sh
-   env\Scripts\activate  # Windows
-   source env/bin/activate  # macOS/Linux
-   ```
-3. Install dependencies: (Not implemeneted yet)
-   ```sh
-   pip install -r requirements.txt
-   ```
-#### Ignoring the Virtual Environment in Git (If making an Virtual Environment)
-To prevent unnecessary files from being committed, add `env/` to `.gitignore`:
-```sh
+
+```bash
+python -m venv env
+env\Scripts\activate        # Windows
+source env/bin/activate     # macOS/Linux
+pip install -r requirements.txt
+```
+
+Ignore virtual environment in Git:
+```bash
 echo "env/" >> .gitignore
 git rm -r --cached env
 git commit -m "Ignored virtual environment"
 git push origin main
 ```
 
-### Run the Django Server
-Start the development server:
-```sh
+### Run Django Server
+
+```bash
 python manage.py runserver
 ```
-Then, open the provided URL in a browser.
+Open `http://127.0.0.1:8000/` in a browser.
 
-### Frontend Setup
-- Add scripts to the "templates" directory.
-- Each view (part of an Application) may be treated as a page (Not entirely sure yet).
+---
 
-### ER Diagram
-- [Draw.io](https://drive.google.com/file/d/1WJjh5lrJ64GN1YOzslRlE_pABrI_ygNp/view?usp=sharing)
+## Frontend Workflow
 
-## Prerequisites
+- Frontend React code lives in `/frontend/`
+- Install dependencies:
+  ```bash
+  cd frontend
+  npm install
+  ```
 
-- **Python** (3.x recommended)
-1. django - 
-```sh
-pip install django
-```
-2. oracledb - 
-```sh
-pip install oracledb
-```
-- **Database Management System** (OracleSQL)
-- **Node.js & npm** (for React.js frontend)
+- Run development server:
+  ```bash
+  npm run dev
+  ```
 
-## Database
+- Build for production:
+  ```bash
+  npm run build
+  ```
 
-- **SQLPlus** [Install Oracle Database 23ai Free Platforms](https://www.oracle.com/database/free/get-started/#free-platforms)
-[Types of Logins](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/getting-started-with-database-administration.html#GUID-EA8CC987-EF18-4434-B962-01312CD3A8AC)
+**Integrating with Django:**
+- Copy `/frontend/dist/` contents to `Application/static/js/`
+- In your Django template:
+  ```html
+  <div id="root"></div>
+  <script src="{% static 'js/bundle.js' %}"></script>
+  ```
 
-1. Make a user after inital boot by running 
-```sh
+---
+
+## Database Configuration
+
+### Install Oracle SQL  
+[Oracle 23ai Free Download](https://www.oracle.com/database/free/get-started/#free-platforms)
+
+### Create Database User
+
+```sql
 sqlplus / as sysdba
-```
-on cmd prompt
-```sh
+
 CREATE USER my_django_user IDENTIFIED BY my_secure_password;
 ALTER USER my_django_user DEFAULT TABLESPACE SYSTEM;
 ALTER USER my_django_user QUOTA UNLIMITED ON SYSTEM;
 GRANT CONNECT, RESOURCE TO my_django_user;
+ALTER USER my_django_user ACCOUNT UNLOCK;
 ```
-2. Locate and open tnsnames.ora and Add an alias for XE that points to XEPDB1
-```sh
+
+### tnsnames.ora Setup
+
+Add:
+```ora
 XE =
   (DESCRIPTION =
     (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521))
@@ -82,22 +112,58 @@ XE =
   )
 ```
 
-## Software Stack
+### Managing PDB
 
-| Component          | Technology Used          |
-|-------------------|--------------------------|
-| **Frontend**      | React.js                  |
-| **Backend**       | Django (Python)           |
-| **Database**      | OracleSQL / MySQL         |
-| **DB Connectivity** | Django ORM / SQLAlchemy (if applicable) |
+```sql
+ALTER SESSION SET CONTAINER = XEPDB1;
+ALTER PLUGGABLE DATABASE ALL OPEN;
+ALTER PLUGGABLE DATABASE XEPDB1 SAVE STATE;
+```
+
+Check status:
+```sql
+SELECT STATUS FROM V$INSTANCE;
+SELECT OPEN_MODE FROM V$DATABASE;
+```
+
+### Change Password
+
+```sql
+ALTER USER username IDENTIFIED BY newpassword;
+```
+
+### SQLPlus GUI Login Syntax
+
+```
+username[@service_name] [AS SYSDBA]
+```
+
+Examples:
+```bash
+sys@FREE AS SYSDBA
+sys@XE AS SYSDBA
+```
+
+---
+
+## Development Credentials
+
+- **Oracle PDB Admin:** `pdbadmin` / `pdbpassword`
+- **Test User:** `git` / `rootpw`
+- **SQLPlus Commands:**
+  ```bash
+  sqlplus / as sysdba
+  sqlplus sys@XE as sysdba
+  sqlplus your_user@XE
+  ```
+
+---
 
 ## References
 
-- [Django & Database Connectivity Tutorial](https://youtu.be/hzjlOKhnJrs?si=URqF2D9xWqiYn4EC)
+- [Django & Database Tutorial](https://youtu.be/hzjlOKhnJrs?si=URqF2D9xWqiYn4EC)
+- [Oracle 23ai Free](https://www.oracle.com/database/free/get-started/#free-platforms)
+- [Django Docs](https://docs.djangoproject.com/en/5.0/)
+- [React Docs](https://react.dev/)
 
-pdbadmin, pdbpassword
-git, rootpw
-sqlplus / as sysdba
-
-sqlplus sys@XE as sysdba   
-sqlplus your_user@XE
+---

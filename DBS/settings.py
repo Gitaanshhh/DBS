@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'DBS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'localhost/XEPDB1',  # or the service name you use
+        'NAME': 'localhost/XEPDB1',  # or the service name you use - XEPDB1
         'USER': 'git',
         'PASSWORD': 'rootpw',
         'HOST': 'localhost',
