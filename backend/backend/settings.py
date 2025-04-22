@@ -77,8 +77,13 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'FREE',  # Use service_name FREE
+        'USER': 'sys',
+        'PASSWORD': 'sys',
+        'HOST': 'localhost',
+        'PORT': '1521',
+        'OPTIONS': {'mode': 'SYSDBA'},  # Uncomment if you want to use SYSDBA mode (not recommended for production)
     }
 }
 

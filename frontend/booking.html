@@ -410,6 +410,7 @@
       <!-- Example: Button to fetch data from backend -->
       <button id="fetch-backend-btn" style="margin: 1rem 0;">Fetch Backend Message</button>
       <div id="backend-message" style="margin-bottom: 1.5rem; color: #357abd;"></div>
+      <div id="new-table-data" style="margin-bottom: 1.5rem;"></div>
     </main>
     <footer>
       <p>
@@ -460,10 +461,25 @@
 
         // Example: Fetch data from Django backend when button is clicked
         document.getElementById("fetch-backend-btn").addEventListener("click", function () {
-          fetch("http://localhost:8000/api/test/")
+          fetch("http://localhost:8000/api/new-table/")
             .then(response => response.json())
             .then(data => {
-              document.getElementById("backend-message").textContent = data.message || JSON.stringify(data);
+              // Display the raw JSON in backend-message
+              document.getElementById("backend-message").textContent = JSON.stringify(data);
+
+              // Display only the student names if data exists
+              const tableDiv = document.getElementById("new-table-data");
+              tableDiv.innerHTML = "";
+              if (data.data && data.data.length > 0) {
+                let html = "<ul>";
+                data.data.forEach(row => {
+                  html += `<li>${row.name}</li>`;
+                });
+                html += "</ul>";
+                tableDiv.innerHTML = html;
+              } else {
+                tableDiv.textContent = "No student names found.";
+              }
             })
             .catch(error => {
               document.getElementById("backend-message").textContent = "Error fetching data from backend.";
