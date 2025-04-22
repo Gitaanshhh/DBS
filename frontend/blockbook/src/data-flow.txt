@@ -1,0 +1,300 @@
+Core Application Files
+
+src/main.jsx
+    Entry point of the application
+    Renders the App component into the DOM
+    Sets up React StrictMode for development quality checks
+
+src/App.jsx
+    Root component that structures the overall application layout
+    Wraps the entire application in Router for navigation
+    Includes Header and Footer components that appear on all pages
+    Contains the Routes component that handles page navigation
+
+src/routes.jsx
+    Defines all application routes
+    Maps URL paths to specific page components
+    Centralizes routing logic for easier maintenance
+
+
+Common Components
+
+src/components/common/Header/index.jsx
+    Displays the application navigation bar
+    Handles responsive menu toggling
+    Shows user information and notification indicators
+    Highlights active navigation links
+
+src/components/common/Footer/index.jsx
+    Displays copyright information and potentially other links
+    Appears consistently across all pages
+
+
+Page Components
+Each page component represents a distinct view in the application:
+
+src/pages/Home/index.jsx
+    Landing page with venue browsing, search functionality
+    Shows booking requests and past bookings
+    Uses useVenueBooking hook for booking functionality
+
+src/pages/ExploreVenues/index.jsx
+    Advanced venue search with multiple filters
+    Displays detailed venue cards with availability
+    Includes map and gallery modals
+    Uses useModal and useExploreVenues hooks
+
+src/pages/Community/index.jsx
+    Shows booking board and exchange history
+    Allows users to request exchanges and add events to calendar
+    Uses useCommunity hook for community-related functionality
+
+src/pages/MyBookings/index.jsx
+    Manages user's bookings across different states
+    Handles booking cancellation, modification, and rebooking
+    Uses useBookingManagement hook
+
+src/pages/Inbox/index.jsx
+    Messaging interface for exchange discussions and admin communication
+    Handles real-time chat functionality
+    Uses useChat hook for message management
+
+src/pages/Notifications/index.jsx
+    Displays system notifications with filtering options
+    Allows marking as read and deletion
+    Uses useNotifications hook
+
+src/pages/Booking/index.jsx
+    Detailed booking form for a specific venue
+    Handles time slot selection and form submission
+    Validates booking information
+
+
+Custom Hooks (JS Files)
+The custom hooks encapsulate complex logic and state management, making components cleaner and more focused:
+
+src/hooks/useVenueBooking.js
+    Manages venue booking process
+    Handles storing selected venue data in localStorage
+    Provides navigation to booking page
+    Sets up date inputs with current date
+
+src/hooks/useModal.js
+    Controls modal visibility (map, gallery)
+    Manages body overflow when modals are open
+    Handles modal closing via outside clicks
+    Stores selected venue for modal content
+
+src/hooks/useTabSwitching.js
+    Manages tab state for tabbed interfaces
+    Provides tab switching functionality
+    Used in Community and MyBookings pages
+
+src/hooks/useNotifications.js
+    Manages notification state and filtering
+    Handles marking notifications as read/unread
+    Provides notification deletion functionality
+    Controls navigation based on notification type
+
+src/hooks/useChat.js
+    Manages chat state including messages and active conversations
+    Handles message sending and receiving
+    Provides tab switching between exchange and admin chats
+    Simulates responses for demo purposes
+
+src/hooks/useBookingManagement.js
+    Manages booking state across different categories
+    Handles booking cancellation, status checking
+    Provides rebooking functionality
+    Manages tab switching between booking categories
+
+src/hooks/useCommunity.js
+    Manages community-related functionality
+    Handles exchange requests and calendar integration
+    Provides search and filtering for community events
+    Manages tab switching between booking board and exchange history
+    
+src/hooks/useExploreVenues.js
+    Manages venue filtering state
+    Handles filter application and clearing
+    Provides venue booking functionality
+    Manages exchange requests for venues
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+
+Frontend-Backend Integration
+
+
+To connect this React frontend with your Django backend, we'll need to implement several integration points:
+
+# API Service Layer #
+    Create a service layer in your React application to handle API calls:
+
+src/services/api.js
+    Set up Axios or fetch with base configuration
+    Handle authentication headers
+    Implement error handling and response processing
+src/services/venueService.js
+    Functions for fetching venues, filtering, and searching
+    Methods for retrieving venue details and availability
+src/services/bookingService.js
+    Functions for creating, updating, and canceling bookings
+    Methods for fetching user's bookings in different states
+src/services/userService.js
+    Authentication functions (login, logout, register)
+    User profile management
+src/services/notificationService.js
+    Functions for fetching, marking as read, and deleting notifications
+src/services/chatService.js
+    Functions for fetching conversations and messages
+    Methods for sending messages
+
+
+# Authentication and State Management #
+src/context/AuthContext.jsx
+    Manage user authentication state
+    Store JWT tokens or session information
+    Provide login/logout functionality to components
+src/utils/authUtils.js
+    Helper functions for token management
+    Authentication status checking
+
+# Data Fetching Strategy #
+Replace hardcoded data with API calls in the custom hooks:
+
+In useVenueBooking.js:
+    Replace localStorage with API calls to fetch and store venue data
+    Use React Query or SWR for data fetching and caching
+In useExploreVenues.js:
+    Implement API calls for venue filtering
+    Use debouncing for search inputs to reduce API calls
+In useBookingManagement.js:
+    Replace local state with API calls to fetch bookings
+    Implement optimistic updates for better UX
+In useNotifications.js:
+    Fetch notifications from the API
+    Implement real-time updates with WebSockets or polling
+In useChat.js:
+    Implement WebSocket connection for real-time messaging
+    Fetch conversation history from the API
+
+# Django Backend Structure #
+Your Django backend should provide RESTful APIs that match the frontend's data needs:
+
+Authentication API: 
+    Login/logout endpoints
+    Token or session management
+    User registration and profile management
+Venues API:
+    List venues with filtering options
+    Venue details with features and images
+    Availability checking
+Bookings API:
+    Create booking requests
+    Update booking status
+    List user's bookings by status
+    Cancel bookings
+Community API:
+    List community bookings
+    Exchange request functionality
+    Search and filtering
+Notifications API:
+    List user notifications
+    Mark as read/unread
+    Delete notifications
+Chat API:
+    List conversations
+    Fetch messages
+    Send messages
+
+# Real-time Features #
+For features requiring real-time updates:
+
+WebSockets with Django Channels:
+    Implement for chat functionality
+    Use for real-time notifications
+    Update booking status in real-time
+Polling as Fallback:
+    Implement periodic API calls for less critical updates
+    Use for notification checking
+
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+
+Data Flow Example: Booking Process
+
+
+
+Let's trace the complete data flow for booking a venue:
+
+User browses venues on the Home or ExploreVenues page
+Frontend calls venueService.getVenues() with filter parameters
+Django processes the request through a venue list API view
+Database query filters venues based on parameters
+API returns filtered venues to the frontend
+React renders the venue cards
+User clicks "Book Now" on a venue
+useVenueBooking hook stores venue ID (not the full object)
+React Router navigates to the booking page
+Booking page calls venueService.getVenueDetails(venueId)
+Django fetches complete venue details
+React renders the booking form with venue information
+User selects date and time, fills the form
+Frontend validates inputs
+On submit, calls bookingService.createBooking(bookingData)
+Django validates the request
+Database transaction creates the booking record
+API returns success/failure response
+React shows confirmation and redirects to My Bookings
+Admin reviews the booking
+Admin approves/rejects through admin interface
+Django updates booking status
+WebSocket notification sent to user
+Frontend receives notification and updates UI
+Notification appears in the user's notification center
+Error Handling and Loading States
+Implement consistent error handling and loading states:
+
+Loading States:
+    Use React Suspense or local loading states
+    Show skeleton screens or loading spinners
+
+Error Handling:
+    Implement error boundaries for component-level errors
+    Show user-friendly error messages
+    Log detailed errors for debugging
+
+Offline Support:
+    Consider implementing service workers for basic offline functionality
+    Cache critical data for better user experience
+    
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+
+
+Implementation Strategy
+To transition from the current hardcoded data to a fully integrated system:
+
+Phase 1: API Service Layer
+    Implement API services without changing components
+    Create mock API responses that match current hardcoded data
+    Test API integration in isolation
+Phase 2: Hook Refactoring
+    Refactor one hook at a time to use API services
+    Implement proper loading and error states
+    Test each hook thoroughly before moving to the next
+Phase 3: Real-time Features
+    Implement WebSocket connections for chat
+    Add real-time notifications
+    Test real-time updates across different devices
+Phase 4: Authentication Integration
+    Implement login/logout functionality
+    Add protected routes
+    Test user session management
+Phase 5: Performance Optimization
+    Implement data caching strategies
+    Optimize API calls with batching and pagination
+    Add lazy loading for non-critical components

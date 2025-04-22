@@ -1,0 +1,207 @@
+.notificationsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.notificationsActions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.filterDropdown select {
+  padding: 0.8rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: white;
+  min-width: 180px;
+}
+
+.notificationsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.notification {
+  display: flex;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  padding: 1.2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.notification:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.notification.unread {
+  border-left: 4px solid #4a90e2;
+}
+
+.notificationIcon {
+  font-size: 1.5rem;
+  margin-right: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.notification.bookingStatus .notificationIcon {
+  color: #4a90e2;
+}
+
+.notification.adminAlert .notificationIcon {
+  color: #f44336;
+}
+
+.notification.reminder .notificationIcon {
+  color: #ffa000;
+}
+
+.notification.exchangeRequest .notificationIcon {
+  color: #7e57c2;
+}
+
+.notificationContent {
+  flex: 1;
+  cursor: pointer;
+}
+
+.notificationTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.notificationMessage {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.notificationTime {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.notificationActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.actionBtn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.actionBtn:hover {
+  background-color: #f1f1f1;
+  color: #4a90e2;
+}
+
+.actionBtn.deleteBtn:hover {
+  color: #f44336;
+}
+
+.markAllBtn {
+  background-color: #f1f1f1;
+  color: #333;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.markAllBtn:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  color: #777;
+}
+
+.btn {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  text-align: center;
+  display: inline-block;
+}
+
+.btn:hover {
+  background-color: #357ABD;
+  transform: translateY(-2px);
+}
+
+.btnSecondary {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.btnSecondary:hover {
+  background-color: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .notificationsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .notificationsActions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .notification {
+    flex-direction: column;
+  }
+  
+  .notificationIcon {
+    margin-bottom: 1rem;
+    margin-right: 0;
+  }
+  
+  .notificationActions {
+    flex-direction: row;
+    margin-left: 0;
+    margin-top: 1rem;
+  }
+}
