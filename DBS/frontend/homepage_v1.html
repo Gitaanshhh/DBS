@@ -1,0 +1,206 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>
+    BlockBook
+    </title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+    <style>
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+    </style>
+  </head>
+ <body class="bg-gray-100">
+  <!-- Navbar -->
+  <nav class="bg-white shadow-md">
+   <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+    <a class="text-2xl font-bold text-red-500 hover:text-red-600 transition duration-300" href="#">
+     BlockBook
+    </a>
+    <div class="hidden md:flex space-x-4">
+     <a class="text-gray-700 hover:text-gray-900 transition duration-300" href="#">
+      Places to stay
+     </a>
+     <a class="text-gray-700 hover:text-gray-900 transition duration-300" href="#">
+      Experiences
+     </a>
+     <a class="text-gray-700 hover:text-gray-900 transition duration-300" href="#">
+      Online Experiences
+     </a>
+    </div>
+    <div class="flex items-center space-x-4">
+     <a class="text-gray-700 hover:text-gray-900 transition duration-300" href="#">
+      Become a host
+     </a>
+     <a class="text-gray-700 hover:text-gray-900 transition duration-300" href="#">
+      <i class="fas fa-globe">
+      </i>
+     </a>
+     <a class="text-gray-700 hover:text-gray-900 transition duration-300" href="#">
+      <i class="fas fa-user-circle text-2xl">
+      </i>
+     </a>
+    </div>
+   </div>
+  </nav>
+  <!-- Hero Section -->
+  <section class="bg-cover bg-center h-96 relative" style="background-image: url('https://placehold.co/1920x1080?text=Hero+Image+of+a+beautiful+vacation+destination');">
+   <div class="absolute inset-0 bg-black bg-opacity-50">
+   </div>
+   <div class="container mx-auto h-full flex items-center justify-center">
+    <div class="text-center text-white relative z-10">
+     <h1 class="text-4xl font-bold">
+      Not sure where to go? Perfect.
+     </h1>
+     <button class="mt-4 px-6 py-3 bg-white text-gray-800 font-semibold rounded-full shadow-md hover:bg-gray-100 transition duration-300">
+      I'm flexible
+     </button>
+    </div>
+   </div>
+   <!-- Floating Filter Bar -->
+   <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 bg-white shadow-lg rounded-lg p-6 w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2">
+    <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+     <div class="flex items-center space-x-4">
+      <label class="text-gray-700" for="date">
+       Date:
+      </label>
+      <input class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500" id="date" name="date" type="date"/>
+     </div>
+     <div class="flex items-center space-x-4">
+      <label class="text-gray-700" for="venue">
+       Venue:
+      </label>
+      <input class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500" id="venue" name="venue" type="text"/>
+     </div>
+     <div class="flex items-center space-x-4">
+      <label class="text-gray-700" for="capacity">
+       Crowd Capacity:
+      </label>
+      <input class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500" id="capacity" name="capacity" type="number"/>
+     </div>
+     <button class="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition duration-300">
+      Apply Filters
+     </button>
+    </div>
+   </div>
+  </section>
+  <!-- Explore Nearby Section -->
+  <section class="container mx-auto px-4 py-16">
+   <h2 class="text-3xl font-bold mb-8">
+    Explore Nearby
+   </h2>
+   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+     <img alt="Image of a nearby location 1" class="w-full h-48 object-cover" height="300" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-LmQ09WWGIGwOeeA4ArnRw0x5/user-uJPET5fjNenSso8wCETWVNOp/img-iwWEPnwNrAP0bkjdQAIsUWSt.png?st=2025-04-16T10%3A44%3A33Z&amp;se=2025-04-16T12%3A44%3A33Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=cc612491-d948-4d2e-9821-2683df3719f5&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2025-04-16T05%3A20%3A39Z&amp;ske=2025-04-17T05%3A20%3A39Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=ZCmi078X2PlneqXDyCEYRuOd76ZnfBrdaad/cVXj5q0%3D" width="400"/>
+     <div class="p-4">
+      <h3 class="text-lg font-semibold">
+       Location 1
+      </h3>
+      <p class="text-gray-600">
+       2-hour drive
+      </p>
+     </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+     <img alt="Image of a nearby location 2" class="w-full h-48 object-cover" height="300" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-LmQ09WWGIGwOeeA4ArnRw0x5/user-uJPET5fjNenSso8wCETWVNOp/img-7a4P4amlGLAaKDbfftrCE71v.png?st=2025-04-16T10%3A44%3A32Z&amp;se=2025-04-16T12%3A44%3A32Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=cc612491-d948-4d2e-9821-2683df3719f5&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2025-04-16T07%3A11%3A28Z&amp;ske=2025-04-17T07%3A11%3A28Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=zW7vcAY8eYyhENOszH6h21UYgpv4lcUmVe9CyMARRBA%3D" width="400"/>
+     <div class="p-4">
+      <h3 class="text-lg font-semibold">
+       Location 2
+      </h3>
+      <p class="text-gray-600">
+       3-hour drive
+      </p>
+     </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+     <img alt="Image of a nearby location 3" class="w-full h-48 object-cover" height="300" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-LmQ09WWGIGwOeeA4ArnRw0x5/user-uJPET5fjNenSso8wCETWVNOp/img-zsIB9gps6w0detagrK7DEitx.png?st=2025-04-16T10%3A44%3A33Z&amp;se=2025-04-16T12%3A44%3A33Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=cc612491-d948-4d2e-9821-2683df3719f5&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2025-04-15T15%3A50%3A42Z&amp;ske=2025-04-16T15%3A50%3A42Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=%2BSoQbgs39pHUgfpwGaFYpm4ltV1bjB7UG/grgETfnXM%3D" width="400"/>
+     <div class="p-4">
+      <h3 class="text-lg font-semibold">
+       Location 3
+      </h3>
+      <p class="text-gray-600">
+       4-hour drive
+      </p>
+     </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+     <img alt="Image of a nearby location 4" class="w-full h-48 object-cover" height="300" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-LmQ09WWGIGwOeeA4ArnRw0x5/user-uJPET5fjNenSso8wCETWVNOp/img-V4IdZhU3A7p9Y1TTs6B3WEgy.png?st=2025-04-16T10%3A44%3A33Z&amp;se=2025-04-16T12%3A44%3A33Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=cc612491-d948-4d2e-9821-2683df3719f5&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2025-04-16T05%3A01%3A16Z&amp;ske=2025-04-17T05%3A01%3A16Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=pGxnM/2ZuAMgIITEO8nK%2BS5vjsKtwEvcpYllA8fiId8%3D" width="400"/>
+     <div class="p-4">
+      <h3 class="text-lg font-semibold">
+       Location 4
+      </h3>
+      <p class="text-gray-600">
+       5-hour drive
+      </p>
+     </div>
+    </div>
+   </div>
+  </section>
+  <!-- Live Anywhere Section -->
+    <section class="bg-gray-100 py-16">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-8">
+        Live Anywhere
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+        <img alt="Image of a unique stay 1" class="w-full h-48 object-cover" height="300" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-LmQ09WWGIGwOeeA4ArnRw0x5/user-uJPET5fjNenSso8wCETWVNOp/img-B2SyIwdkkZGHpgSQEap7mHFd.png?st=2025-04-16T10%3A44%3A32Z&amp;se=2025-04-16T12%3A44%3A32Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=cc612491-d948-4d2e-9821-2683df3719f5&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2025-04-16T05%3A14%3A08Z&amp;ske=2025-04-17T05%3A14%3A08Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=sGYQoeld1f9VkeZJODgxSfuCB0iypGgAq5UrGN9/rPQ%3D" width="400"/>
+        <div class="p-4">
+        <h3 class="text-lg font-semibold">
+            Unique stays
+        </h3>
+        </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+        <img alt="Image of a unique stay 2" class="w-full h-48 object-cover" height="300" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-LmQ09WWGIGwOeeA4ArnRw0x5/user-uJPET5fjNenSso8wCETWVNOp/img-pCvdyUvnhrCymsRfXn4FDeVp.png?st=2025-04-16T10%3A44%3A36Z&amp;se=2025-04-16T12%3A44%3A36Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=cc612491-d948-4d2e-9821-2683df3719f5&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2025-04-16T05%3A21%3A59Z&amp;ske=2025-04-17T05%3A21%3A59Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=He42XQ1KGhjh0bJ23yoI10IMJj%2BQ8wnL77sLC0ASqpw%3D" width="400"/>
+        <div class="p-4">
+        <h3 class="text-lg font-semibold">
+            Cabins and cottages
+        </h3>
+        </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+        <img alt="Image of a unique stay 3" class="w-full h-48 object-cover" height="300" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-LmQ09WWGIGwOeeA4ArnRw0x5/user-uJPET5fjNenSso8wCETWVNOp/img-IbMPmJiO1OaVFrgXYpibr8cO.png?st=2025-04-16T10%3A44%3A36Z&amp;se=2025-04-16T12%3A44%3A36Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=cc612491-d948-4d2e-9821-2683df3719f5&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2025-04-15T11%3A51%3A34Z&amp;ske=2025-04-16T11%3A51%3A34Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=G%2BzCoxhDNdWhadhwJ2VfcPPHPjnqKCJQKL7ClZ2T8jo%3D" width="400"/>
+        <div class="p-4">
+        <h3 class="text-lg font-semibold">
+            Entire homes
+        </h3>
+        </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+        <img alt="Image of a unique stay 4" class="w-full h-48 object-cover" height="300" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-LmQ09WWGIGwOeeA4ArnRw0x5/user-uJPET5fjNenSso8wCETWVNOp/img-M0zS7hS2ftgF6rxYkMAY0YsE.png?st=2025-04-16T10%3A44%3A34Z&amp;se=2025-04-16T12%3A44%3A34Z&amp;sp=r&amp;sv=202">
+        </div>
+    </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <h2 class="text-2xl font-bold">
+                    BlockBook
+                </h2>
+            </div>
+            <div class="flex space-x-4">
+                <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                    Privacy Policy
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                    Terms of Service
+                </a>
+            </div>
+        </div>
+        <div class="mt-4 text-center">
+            <p class="text-gray-400">
+                &copy; 2025 BlockBook. All rights reserved.
+            </p>
+        </div>
+    </div>
+</footer>
+ </body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BlockBook - Room and Venue Booking</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        line-height: 1.6;
+      }
+      header {
+        background-color: #4a90e2;
+        color: white;
+        padding: 1rem 2rem;
+        text-align: center;
+        font-size: 1.8rem;
+        font-weight: bold;
+        letter-spacing: 2px;
+      }
+      .hero {
+        background: url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80")
+          no-repeat center center/cover;
+        height: 60vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        position: relative;
+      }
+      .search-bar {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 1rem;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 700px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .search-bar input,
+      .search-bar select {
+        flex: 1 1 150px;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+      .search-bar button {
+        background-color: #4a90e2;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+      }
+      .search-bar button:hover {
+        background-color: #357abd;
+      }
+      main {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .listings {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+      .listing {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .listing img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+      .listing-content {
+        padding: 1rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .listing-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .listing-location {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+      }
+      .listing-price {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #4a90e2;
+      }
+      .listing-rating {
+        display: flex;
+        align-items: center;
+        margin-top: 0.5rem;
+      }
+      .listing-rating span {
+        color: #ffa41b;
+        margin-right: 0.3rem;
+      }
+      .listing-rating small {
+        color: #666;
+        font-size: 0.8rem;
+      }
+      .categories {
+        display: flex;
+        overflow-x: auto;
+        gap: 1rem;
+        padding: 1rem 0;
+        margin-bottom: 2rem;
+      }
+      .category {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 80px;
+        text-align: center;
+        cursor: pointer;
+      }
+      .category img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        margin-bottom: 0.5rem;
+      }
+      .category span {
+        font-size: 0.8rem;
+        color: #666;
+      }
+      footer {
+        text-align: center;
+        padding: 1rem;
+        background-color: #f1f1f1;
+        margin-top: 2rem;
+        font-size: 0.9rem;
+        color: #777;
+      }
+      @media (max-width: 600px) {
+        .search-bar {
+          flex-direction: column;
+        }
+        .search-bar input,
+        .search-bar select,
+        .search-bar button {
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>BlockBook</header>
+    <section class="hero">
+      <form
+        class="search-bar"
+        onsubmit="event.preventDefault(); alert('Search functionality to be implemented');"
+      >
+        <input
+          type="text"
+          placeholder="Location"
+          aria-label="Location"
+          required
+        />
+        <input type="date" aria-label="Check-in date" required />
+        <input type="date" aria-label="Check-out date" required />
+        <select aria-label="Guests" required>
+          <option value="" disabled selected>Guests</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5+">5+</option>
+        </select>
+        <button type="submit">Search</button>
+      </form>
+    </section>
+    <main>
+      <div class="categories">
+        <div class="category">
+          <img
+            src="https://a0.muscache.com/pictures/8e507f16-4943-4be9-b707-59bd38d56309.jpg"
+            alt="Beach"
+          />
+          <span>Beach</span>
+        </div>
+        <div class="category">
+          <img
+            src="https://a0.muscache.com/pictures/3b1eb541-46d9-4bef-abc4-c37d77e3c21b.jpg"
+            alt="Mountains"
+          />
+          <span>Mountains</span>
+        </div>
+        <div class="category">
+          <img
+            src="https://a0.muscache.com/pictures/c5a4f6fc-c92c-4ae8-87dd-57f1ff1b89a6.jpg"
+            alt="City"
+          />
+          <span>City</span>
+        </div>
+        <div class="category">
+          <img
+            src="https://a0.muscache.com/pictures/732edad8-3ae0-49a8-a451-29a8010dcc0c.jpg"
+            alt="Cabins"
+          />
+          <span>Cabins</span>
+        </div>
+        <div class="category">
+          <img
+            src="https://a0.muscache.com/pictures/677a041d-7264-4c45-bb72-52bff21eb6e8.jpg"
+            alt="Luxury"
+          />
+          <span>Luxury</span>
+        </div>
+        <div class="category">
+          <img
+            src="https://a0.muscache.com/pictures/eb7ba4c0-ea38-4cbb-9db6-bdcc8baad585.jpg"
+            alt="Unique"
+          />
+          <span>Unique</span>
+        </div>
+      </div>
+
+      <h2>Featured Listings</h2>
+      <div class="listings">
+        <article class="listing">
+          <img
+            src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            alt="Cozy Apartment"
+          />
+          <div class="listing-content">
+            <h3 class="listing-title">Cozy Apartment in Downtown</h3>
+            <p class="listing-location">New York, NY</p>
+            <p class="listing-price">$120 / night</p>
+            <div class="listing-rating">
+              <span>★★★★★</span>
+              <small>(48 reviews)</small>
+            </div>
+          </div>
+        </article>
+        <article class="listing">
+          <img
+            src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            alt="Beach House"
+          />
+          <div class="listing-content">
+            <h3 class="listing-title">Beachfront Villa with Pool</h3>
+            <p class="listing-location">Miami, FL</p>
+            <p class="listing-price">$350 / night</p>
+            <div class="listing-rating">
+              <span>★★★★☆</span>
+              <small>(32 reviews)</small>
+            </div>
+          </div>
+        </article>
+        <article class="listing">
+          <img
+            src="https://images.unsplash.com/photo-1501876725168-00c445821c9e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            alt="Mountain Cabin"
+          />
+          <div class="listing-content">
+            <h3 class="listing-title">Rustic Mountain Cabin</h3>
+            <p class="listing-location">Aspen, CO</p>
+            <p class="listing-price">$200 / night</p>
+            <div class="listing-rating">
+              <span>★★★★★</span>
+              <small>(76 reviews)</small>
+            </div>
+          </div>
+        </article>
+        <article class="listing">
+          <img
+            src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            alt="Modern Loft"
+          />
+          <div class="listing-content">
+            <h3 class="listing-title">Modern Loft with City View</h3>
+            <p class="listing-location">Chicago, IL</p>
+            <p class="listing-price">$180 / night</p>
+            <div class="listing-rating">
+              <span>★★★★☆</span>
+              <small>(54 reviews)</small>
+            </div>
+          </div>
+        </article>
+        <article class="listing">
+          <img
+            src="https://images.unsplash.com/photo-1484154218962-a197022b5858?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            alt="Luxury Penthouse"
+          />
+          <div class="listing-content">
+            <h3 class="listing-title">Luxury Penthouse Suite</h3>
+            <p class="listing-location">Los Angeles, CA</p>
+            <p class="listing-price">$450 / night</p>
+            <div class="listing-rating">
+              <span>★★★★★</span>
+              <small>(92 reviews)</small>
+            </div>
+          </div>
+        </article>
+        <article class="listing">
+          <img
+            src="https://images.unsplash.com/photo-1542718610-a1d656d1884c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            alt="Countryside Cottage"
+          />
+          <div class="listing-content">
+            <h3 class="listing-title">Charming Countryside Cottage</h3>
+            <p class="listing-location">Portland, OR</p>
+            <p class="listing-price">$140 / night</p>
+            <div class="listing-rating">
+              <span>★★★★☆</span>
+              <small>(38 reviews)</small>
+            </div>
+          </div>
+        </article>
+      </div>
+    </main>
+    <footer>
+      <p>&copy; 2025 BlockBook. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
