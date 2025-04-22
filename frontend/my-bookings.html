@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - BlockBook</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/my-bookings.css">
+</head>
+<body>
+    <header>
+        <a href="mainPage.html" class="logo">BlockBook</a>
+        <div class="nav-links" id="navLinks">
+            <a href="mainPage.html">Home</a>
+            <a href="explore-venues.html">Explore Venues</a>
+            <a href="community.html">Community</a>
+            <a href="my-bookings.html">My Bookings</a>
+            <a href="inbox.html">Inbox</a>
+            <a href="notifications.html" class="notification-indicator">Notifications</a>
+        </div>
+        <div class="user-menu">
+            <div class="user-icon">JD</div>
+        </div>
+        <button class="hamburger" id="hamburgerBtn">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+    </header>
+    
+    <main>
+        <h1 class="section-title">My Bookings</h1>
+        
+        <div class="booking-tabs">
+            <button class="tab-btn active" data-tab="upcoming">Upcoming Bookings</button>
+            <button class="tab-btn" data-tab="pending">Pending Requests</button>
+            <button class="tab-btn" data-tab="rejected">Rejected/Cancelled</button>
+            <button class="tab-btn" data-tab="history">History</button>
+        </div>
+        
+        <div class="tab-content active" id="upcoming">
+            <div class="booking-list">
+                <div class="booking-item">
+                    <div class="booking-date">
+                        <div class="date-box">
+                            <div class="month">Apr</div>
+                            <div class="day">25</div>
+                            <div class="year">2025</div>
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <h3 class="venue-name">Computer Lab B204</h3>
+                        <p class="venue-location"><i class="fas fa-map-marker-alt"></i> Academic Block 2, Second Floor</p>
+                        <p class="booking-time"><i class="far fa-clock"></i> 8:00 AM - 12:00 PM</p>
+                        <p class="booking-purpose"><i class="fas fa-clipboard-list"></i> Programming Workshop for Freshmen</p>
+                        <div class="booking-status approved">Approved</div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn btn-secondary">Cancel Booking</button>
+                        <button class="btn">Modify Booking</button>
+                    </div>
+                </div>
+                
+                <div class="booking-item">
+                    <div class="booking-date">
+                        <div class="date-box">
+                            <div class="month">May</div>
+                            <div class="day">5</div>
+                            <div class="year">2025</div>
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <h3 class="venue-name">Main Auditorium</h3>
+                        <p class="venue-location"><i class="fas fa-map-marker-alt"></i> Central Campus</p>
+                        <p class="booking-time"><i class="far fa-clock"></i> 4:00 PM - 8:00 PM</p>
+                        <p class="booking-purpose"><i class="fas fa-clipboard-list"></i> Annual Tech Symposium</p>
+                        <div class="booking-status approved">Approved</div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn btn-secondary">Cancel Booking</button>
+                        <button class="btn">Modify Booking</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="pending">
+            <div class="booking-list">
+                <div class="booking-item">
+                    <div class="booking-date">
+                        <div class="date-box">
+                            <div class="month">Apr</div>
+                            <div class="day">20</div>
+                            <div class="year">2025</div>
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <h3 class="venue-name">Seminar Hall 1</h3>
+                        <p class="venue-location"><i class="fas fa-map-marker-alt"></i> Central Building, First Floor</p>
+                        <p class="booking-time"><i class="far fa-clock"></i> 12:00 PM - 4:00 PM</p>
+                        <p class="booking-purpose"><i class="fas fa-clipboard-list"></i> Guest Lecture on Artificial Intelligence</p>
+                        <div class="booking-status pending">Pending</div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn btn-secondary">Cancel Request</button>
+                        <button class="btn">Check Status</button>
+                    </div>
+                </div>
+                
+                <div class="booking-item">
+                    <div class="booking-date">
+                        <div class="date-box">
+                            <div class="month">May</div>
+                            <div class="day">15</div>
+                            <div class="year">2025</div>
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <h3 class="venue-name">Conference Room C103</h3>
+                        <p class="venue-location"><i class="fas fa-map-marker-alt"></i> Administrative Block, First Floor</p>
+                        <p class="booking-time"><i class="far fa-clock"></i> 12:00 PM - 4:00 PM</p>
+                        <p class="booking-purpose"><i class="fas fa-clipboard-list"></i> Department Meeting</p>
+                        <div class="booking-status pending">Pending</div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn btn-secondary">Cancel Request</button>
+                        <button class="btn">Check Status</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="rejected">
+            <div class="booking-list">
+                <div class="booking-item">
+                    <div class="booking-date">
+                        <div class="date-box">
+                            <div class="month">Apr</div>
+                            <div class="day">18</div>
+                            <div class="year">2025</div>
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <h3 class="venue-name">Main Auditorium</h3>
+                        <p class="venue-location"><i class="fas fa-map-marker-alt"></i> Central Campus</p>
+                        <p class="booking-time"><i class="far fa-clock"></i> 8:00 AM - 12:00 PM</p>
+                        <p class="booking-purpose"><i class="fas fa-clipboard-list"></i> Club Orientation</p>
+                        <div class="booking-status rejected">Rejected</div>
+                        <div class="rejection-reason">
+                            <p><i class="fas fa-info-circle"></i> Venue already booked for a university event</p>
+                        </div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn">Book Alternative</button>
+                    </div>
+                </div>
+                
+                <div class="booking-item">
+                    <div class="booking-date">
+                        <div class="date-box">
+                            <div class="month">Apr</div>
+                            <div class="day">10</div>
+                            <div class="year">2025</div>
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <h3 class="venue-name">Lecture Hall A101</h3>
+                        <p class="venue-location"><i class="fas fa-map-marker-alt"></i> Academic Block 1, Ground Floor</p>
+                        <p class="booking-time"><i class="far fa-clock"></i> 4:00 PM - 8:00 PM</p>
+                        <p class="booking-purpose"><i class="fas fa-clipboard-list"></i> Movie Screening</p>
+                        <div class="booking-status cancelled">Cancelled by You</div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn">Book Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="history">
+            <div class="booking-list">
+                <div class="booking-item">
+                    <div class="booking-date">
+                        <div class="date-box">
+                            <div class="month">Mar</div>
+                            <div class="day">15</div>
+                            <div class="year">2025</div>
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <h3 class="venue-name">Lecture Hall A101</h3>
+                        <p class="venue-location"><i class="fas fa-map-marker-alt"></i> Academic Block 1, Ground Floor</p>
+                        <p class="booking-time"><i class="far fa-clock"></i> 8:00 AM - 12:00 PM</p>
+                        <p class="booking-purpose"><i class="fas fa-clipboard-list"></i> Workshop on Public Speaking</p>
+                        <div class="booking-status completed">Completed</div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn">Book Again</button>
+                    </div>
+                </div>
+                
+                <div class="booking-item">
+                    <div class="booking-date">
+                        <div class="date-box">
+                            <div class="month">Mar</div>
+                            <div class="day">10</div>
+                            <div class="year">2025</div>
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <h3 class="venue-name">Student Plaza</h3>
+                        <p class="venue-location"><i class="fas fa-map-marker-alt"></i> Central Campus</p>
+                        <p class="booking-time"><i class="far fa-clock"></i> 4:00 PM - 8:00 PM</p>
+                        <p class="booking-purpose"><i class="fas fa-clipboard-list"></i> Club Fair</p>
+                        <div class="booking-status completed">Completed</div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn">Book Again</button>
+                    </div>
+                </div>
+                
+                <div class="booking-item">
+                    <div class="booking-date">
+                        <div class="date-box">
+                            <div class="month">Feb</div>
+                            <div class="day">28</div>
+                            <div class="year">2025</div>
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <h3 class="venue-name">Conference Room C103</h3>
+                        <p class="venue-location"><i class="fas fa-map-marker-alt"></i> Administrative Block, First Floor</p>
+                        <p class="booking-time"><i class="far fa-clock"></i> 12:00 PM - 4:00 PM</p>
+                        <p class="booking-purpose"><i class="fas fa-clipboard-list"></i> Project Planning Meeting</p>
+                        <div class="booking-status completed">Completed</div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn">Book Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 BlockBook - College Room and Venue Booking System. All rights reserved.</p>
+    </footer>
+    
+    <script src="js/main.js"></script>
+    <script src="js/my-bookings.js"></script>
+</body>
+</html>

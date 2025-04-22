@@ -395,7 +395,7 @@
               <button
                 type="button"
                 class="cancel-btn"
-                onclick="window.location.href='index.html'"
+                onclick="window.location.href='mainPage.html'"
               >
                 Cancel
               </button>
@@ -408,9 +408,14 @@
       </div>
 
       <!-- Example: Button to fetch data from backend -->
-      <button id="fetch-backend-btn" style="margin: 1rem 0;">Fetch Backend Message</button>
-      <div id="backend-message" style="margin-bottom: 1.5rem; color: #357abd;"></div>
-      <div id="new-table-data" style="margin-bottom: 1.5rem;"></div>
+      <button id="fetch-backend-btn" style="margin: 1rem 0">
+        Fetch Backend Message
+      </button>
+      <div
+        id="backend-message"
+        style="margin-bottom: 1.5rem; color: #357abd"
+      ></div>
+      <div id="new-table-data" style="margin-bottom: 1.5rem"></div>
     </main>
     <footer>
       <p>
@@ -458,21 +463,25 @@
             this.classList.add("selected");
           });
         });
+      });
 
-        // Example: Fetch data from Django backend when button is clicked
-        document.getElementById("fetch-backend-btn").addEventListener("click", function () {
+      // Example: Fetch data from Django backend when button is clicked
+      document
+        .getElementById("fetch-backend-btn")
+        .addEventListener("click", function () {
           fetch("http://localhost:8000/api/new-table/")
-            .then(response => response.json())
-            .then(data => {
+            .then((response) => response.json())
+            .then((data) => {
               // Display the raw JSON in backend-message
-              document.getElementById("backend-message").textContent = JSON.stringify(data);
+              document.getElementById("backend-message").textContent =
+                JSON.stringify(data);
 
               // Display only the student names if data exists
               const tableDiv = document.getElementById("new-table-data");
               tableDiv.innerHTML = "";
               if (data.data && data.data.length > 0) {
                 let html = "<ul>";
-                data.data.forEach(row => {
+                data.data.forEach((row) => {
                   html += `<li>${row.name}</li>`;
                 });
                 html += "</ul>";
@@ -481,11 +490,11 @@
                 tableDiv.textContent = "No student names found.";
               }
             })
-            .catch(error => {
-              document.getElementById("backend-message").textContent = "Error fetching data from backend.";
+            .catch((error) => {
+              document.getElementById("backend-message").textContent =
+                "Error fetching data from backend.";
             });
         });
-      });
 
       // Set venue features based on venue title
       function setVenueFeatures(venueTitle) {
@@ -542,7 +551,7 @@
 
         // Show confirmation and redirect
         alert("Your booking request has been submitted successfully!");
-        window.location.href = "index.html";
+        window.location.href = "mainPage.html";
       }
     </script>
   </body>

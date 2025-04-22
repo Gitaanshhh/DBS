@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - BlockBook</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/notifications.css">
+</head>
+<body>
+    <header>
+        <a href="mainPage.html" class="logo">BlockBook</a>
+        <div class="nav-links" id="navLinks">
+            <a href="mainPage.html">Home</a>
+            <a href="explore-venues.html">Explore Venues</a>
+            <a href="community.html">Community</a>
+            <a href="my-bookings.html">My Bookings</a>
+            <a href="inbox.html">Inbox</a>
+            <a href="notifications.html" class="notification-indicator">Notifications</a>
+        </div>
+        <div class="user-menu">
+            <div class="user-icon">JD</div>
+        </div>
+        <button class="hamburger" id="hamburgerBtn">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+    </header>
+    
+    <main>
+        <div class="notifications-header">
+            <h1 class="section-title">Notifications</h1>
+            <div class="notifications-actions">
+                <button class="btn btn-secondary mark-all-btn">Mark All as Read</button>
+                <div class="filter-dropdown">
+                    <select id="notification-filter">
+                        <option value="all">All Notifications</option>
+                        <option value="unread">Unread Only</option>
+                        <option value="booking">Booking Status</option>
+                        <option value="admin">Admin Alerts</option>
+                        <option value="reminder">Reminders</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notifications-container">
+            <div class="notification unread booking-status">
+                <div class="notification-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">Booking Approved</div>
+                    <div class="notification-message">Your booking request for <strong>Computer Lab B204</strong> on <strong>April 25, 2025</strong> has been approved.</div>
+                    <div class="notification-time">10 minutes ago</div>
+                </div>
+                <div class="notification-actions">
+                    <button class="action-btn mark-read-btn"><i class="fas fa-check"></i></button>
+                    <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+            
+            <div class="notification unread admin-alert">
+                <div class="notification unread admin-alert">
+                    <div class="notification-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Important Announcement</div>
+                        <div class="notification-message">All bookings for May 1, 2025 have been cancelled due to scheduled maintenance. Please reschedule your events.</div>
+                        <div class="notification-time">1 hour ago</div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="action-btn mark-read-btn"><i class="fas fa-check"></i></button>
+                        <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                
+                <div class="notification reminder">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Upcoming Booking Reminder</div>
+                        <div class="notification-message">Your booking for <strong>Computer Lab B204</strong> is scheduled for tomorrow at <strong>8:00 AM</strong>.</div>
+                        <div class="notification-time">3 hours ago</div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="action-btn mark-read-btn"><i class="fas fa-check"></i></button>
+                        <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                
+                <div class="notification unread booking-status">
+                    <div class="notification-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Booking Rejected</div>
+                        <div class="notification-message">Your booking request for <strong>Main Auditorium</strong> on <strong>April 18, 2025</strong> has been rejected. Reason: Venue already booked for a university event.</div>
+                        <div class="notification-time">Yesterday</div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="action-btn mark-read-btn"><i class="fas fa-check"></i></button>
+                        <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                
+                <div class="notification exchange-request">
+                    <div class="notification-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Exchange Request</div>
+                        <div class="notification-message"><strong>Tech Society</strong> has requested to exchange their booking of <strong>Seminar Hall 1</strong> with your booking of <strong>Computer Lab B204</strong> on <strong>April 25, 2025</strong>.</div>
+                        <div class="notification-time">Yesterday</div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="action-btn mark-read-btn"><i class="fas fa-check"></i></button>
+                        <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                
+                <div class="notification admin-alert">
+                    <div class="notification-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">System Update</div>
+                        <div class="notification-message">BlockBook will be undergoing maintenance on April 30, 2025 from 2:00 AM to 4:00 AM. The system may be unavailable during this time.</div>
+                        <div class="notification-time">April 20, 2025</div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="action-btn mark-read-btn"><i class="fas fa-check"></i></button>
+                        <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                
+                <div class="notification booking-status">
+                    <div class="notification-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Booking Confirmed</div>
+                        <div class="notification-message">Your booking for <strong>Main Auditorium</strong> on <strong>May 5, 2025</strong> has been confirmed.</div>
+                        <div class="notification-time">April 19, 2025</div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="action-btn mark-read-btn"><i class="fas fa-check"></i></button>
+                        <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                
+                <div class="notification reminder">
+                    <div class="notification-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Booking Completed</div>
+                        <div class="notification-message">Your booking for <strong>Lecture Hall A101</strong> on <strong>March 15, 2025</strong> has been completed. Please leave a review of your experience.</div>
+                        <div class="notification-time">March 15, 2025</div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="action-btn mark-read-btn"><i class="fas fa-check"></i></button>
+                        <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 BlockBook - College Room and Venue Booking System. All rights reserved.</p>
+        </footer>
+        
+        <script src="js/main.js"></script>
+        <script src="js/notifications.js"></script>
+    </body>
+    </html>

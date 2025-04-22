@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community - BlockBook</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/community.css">
+</head>
+<body>
+    <header>
+        <a href="mainPage.html" class="logo">BlockBook</a>
+        <div class="nav-links" id="navLinks">
+            <a href="mainPage.html">Home</a>
+            <a href="explore-venues.html">Explore Venues</a>
+            <a href="community.html">Community</a>
+            <a href="my-bookings.html">My Bookings</a>
+            <a href="inbox.html">Inbox</a>
+            <a href="notifications.html" class="notification-indicator">Notifications</a>
+        </div>
+        <div class="user-menu">
+            <div class="user-icon">JD</div>
+        </div>
+        <button class="hamburger" id="hamburgerBtn">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+    </header>
+    
+    <main>
+        <h1 class="section-title">Community</h1>
+        
+        <div class="community-tabs">
+            <button class="tab-btn active" data-tab="booking-board">Booking Board</button>
+            <button class="tab-btn" data-tab="exchange-history">Exchange History</button>
+        </div>
+        
+        <div class="tab-content active" id="booking-board">
+            <div class="filter-bar">
+                <div class="search-box">
+                    <input type="text" placeholder="Search by student body or venue...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="filter-dropdown">
+                    <select>
+                        <option value="">All Student Bodies</option>
+                        <option value="student-council">Student Council</option>
+                        <option value="cultural-club">Cultural Club</option>
+                        <option value="tech-society">Tech Society</option>
+                        <option value="sports-club">Sports Club</option>
+                        <option value="debate-club">Debate Club</option>
+                    </select>
+                </div>
+                <div class="filter-dropdown">
+                    <select>
+                        <option value="">All Venues</option>
+                        <option value="lecture-halls">Lecture Halls</option>
+                        <option value="seminar-halls">Seminar Halls</option>
+                        <option value="auditoriums">Auditoriums</option>
+                        <option value="outdoor">Outdoor Venues</option>
+                    </select>
+                </div>
+                <div class="filter-dropdown">
+                    <select>
+                        <option value="">All Dates</option>
+                        <option value="today">Today</option>
+                        <option value="tomorrow">Tomorrow</option>
+                        <option value="this-week">This Week</option>
+                        <option value="next-week">Next Week</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="booking-list">
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <div class="student-body">
+                            <img src="https://via.placeholder.com/40" alt="Student Council Logo">
+                            <h3>Student Council</h3>
+                        </div>
+                        <div class="booking-date">
+                            <i class="far fa-calendar-alt"></i> April 23, 2025
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <div class="venue-info">
+                            <h4>Main Auditorium</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> Central Campus</p>
+                            <p><i class="far fa-clock"></i> 4:00 PM - 8:00 PM</p>
+                        </div>
+                        <div class="event-info">
+                            <h4>Annual Cultural Festival</h4>
+                            <p>A celebration of diverse cultures with performances, food stalls, and interactive sessions.</p>
+                            <div class="event-tags">
+                                <span class="tag">Cultural</span>
+                                <span class="tag">Festival</span>
+                                <span class="tag">Open to All</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn btn-secondary"><i class="fas fa-exchange-alt"></i> Request Exchange</button>
+                        <button class="btn"><i class="far fa-calendar-plus"></i> Add to Calendar</button>
+                    </div>
+                </div>
+                
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <div class="student-body">
+                            <img src="https://via.placeholder.com/40" alt="Tech Society Logo">
+                            <h3>Tech Society</h3>
+                        </div>
+                        <div class="booking-date">
+                            <i class="far fa-calendar-alt"></i> April 24, 2025
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <div class="venue-info">
+                            <h4>Seminar Hall 1</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> Central Building, First Floor</p>
+                            <p><i class="far fa-clock"></i> 12:00 PM - 4:00 PM</p>
+                        </div>
+                        <div class="event-info">
+                            <h4>Coding Workshop</h4>
+                            <p>Learn the basics of web development with HTML, CSS, and JavaScript. Bring your laptops!</p>
+                            <div class="event-tags">
+                                <span class="tag">Workshop</span>
+                                <span class="tag">Coding</span>
+                                <span class="tag">Beginners Welcome</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn btn-secondary"><i class="fas fa-exchange-alt"></i> Request Exchange</button>
+                        <button class="btn"><i class="far fa-calendar-plus"></i> Add to Calendar</button>
+                    </div>
+                </div>
+                
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <div class="student-body">
+                            <img src="https://via.placeholder.com/40" alt="Debate Club Logo">
+                            <h3>Debate Club</h3>
+                        </div>
+                        <div class="booking-date">
+                            <i class="far fa-calendar-alt"></i> April 25, 2025
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <div class="venue-info">
+                            <h4>Lecture Hall A101</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> Academic Block 1, Ground Floor</p>
+                            <p><i class="far fa-clock"></i> 4:00 PM - 8:00 PM</p>
+                        </div>
+                        <div class="event-info">
+                            <h4>Inter-College Debate Competition</h4>
+                            <p>Annual debate competition with participants from various colleges discussing current social issues.</p>
+                            <div class="event-tags">
+                                <span class="tag">Competition</span>
+                                <span class="tag">Debate</span>
+                                <span class="tag">Inter-College</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn btn-secondary"><i class="fas fa-exchange-alt"></i> Request Exchange</button>
+                        <button class="btn"><i class="far fa-calendar-plus"></i> Add to Calendar</button>
+                    </div>
+                </div>
+                
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <div class="student-body">
+                            <img src="https://via.placeholder.com/40" alt="Sports Club Logo">
+                            <h3>Sports Club</h3>
+                        </div>
+                        <div class="booking-date">
+                            <i class="far fa-calendar-alt"></i> April 26, 2025
+                        </div>
+                    </div>
+                    <div class="booking-details">
+                        <div class="venue-info">
+                            <h4>Student Plaza</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> Central Campus</p>
+                            <p><i class="far fa-clock"></i> 8:00 AM - 12:00 PM</p>
+                        </div>
+                        <div class="event-info">
+                            <h4>Yoga and Fitness Workshop</h4>
+                            <p>Start your weekend with a refreshing yoga session followed by fitness tips from professional trainers.</p>
+                            <div class="event-tags">
+                                <span class="tag">Fitness</span>
+                                <span class="tag">Yoga</span>
+                                <span class="tag">Wellness</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn btn-secondary"><i class="fas fa-exchange-alt"></i> Request Exchange</button>
+                        <button class="btn"><i class="far fa-calendar-plus"></i> Add to Calendar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="exchange-history">
+            <div class="exchange-list">
+                <div class="exchange-card">
+                    <div class="exchange-header">
+                        <div class="exchange-status completed">
+                            <i class="fas fa-check-circle"></i> Completed
+                        </div>
+                        <div class="exchange-date">April 15, 2025</div>
+                    </div>
+                    <div class="exchange-details">
+                        <div class="exchange-parties">
+                            <div class="exchange-party">
+                                <h4>Your Booking</h4>
+                                <p class="venue">Lecture Hall A101</p>
+                                <p class="time">8:00 AM - 12:00 PM</p>
+                                <p class="date">April 15, 2025</p>
+                            </div>
+                            <div class="exchange-arrow">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="exchange-party">
+                                <h4>Cultural Club's Booking</h4>
+                                <p class="venue">Seminar Hall 1</p>
+                                <p class="time">8:00 AM - 12:00 PM</p>
+                                <p class="date">April 15, 2025</p>
+                            </div>
+                        </div>
+                        <div class="exchange-reason">
+                            <h4>Reason for Exchange</h4>
+                            <p>Needed a larger venue for unexpected increase in attendees.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="exchange-card">
+                    <div class="exchange-header">
+                        <div class="exchange-status rejected">
+                            <i class="fas fa-times-circle"></i> Rejected
+                        </div>
+                        <div class="exchange-date">April 10, 2025</div>
+                    </div>
+                    <div class="exchange-details">
+                        <div class="exchange-parties">
+                            <div class="exchange-party">
+                                <h4>Your Booking</h4>
+                                <p class="venue">Computer Lab B204</p>
+                                <p class="time">12:00 PM - 4:00 PM</p>
+                                <p class="date">April 10, 2025</p>
+                            </div>
+                            <div class="exchange-arrow">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="exchange-party">
+                                <h4>Tech Society's Booking</h4>
+                                <p class="venue">Lecture Hall A101</p>
+                                <p class="time">12:00 PM - 4:00 PM</p>
+                                <p class="date">April 10, 2025</p>
+                            </div>
+                        </div>
+                        <div class="exchange-reason">
+                            <h4>Reason for Exchange</h4>
+                            <p>Needed a venue with computer facilities for a coding workshop.</p>
+                        </div>
+                        <div class="rejection-reason">
+                            <h4>Reason for Rejection</h4>
+                            <p>The Tech Society had a scheduled coding competition that required the computer lab facilities.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="exchange-card">
+                    <div class="exchange-header">
+                        <div class="exchange-status pending">
+                            <i class="fas fa-clock"></i> Pending
+                        </div>
+                        <div class="exchange-date">April 25, 2025</div>
+                    </div>
+                    <div class="exchange-details">
+                        <div class="exchange-parties">
+                            <div class="exchange-party">
+                                <h4>Your Booking</h4>
+                                <p class="venue">Main Auditorium</p>
+                                <p class="time">4:00 PM - 8:00 PM</p>
+                                <p class="date">April 25, 2025</p>
+                            </div>
+                            <div class="exchange-arrow">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="exchange-party">
+                                <h4>Student Council's Booking</h4>
+                                <p class="venue">Seminar Hall 1</p>
+                                <p class="time">4:00 PM - 8:00 PM</p>
+                                <p class="date">April 25, 2025</p>
+                            </div>
+                        </div>
+                        <div class="exchange-reason">
+                            <h4>Reason for Exchange</h4>
+                            <p>Need a smaller venue for a more intimate discussion panel.</p>
+                        </div>
+                        <div class="exchange-actions">
+                            <button class="btn btn-secondary">Cancel Request</button>
+                            <button class="btn">Send Reminder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 BlockBook - College Room and Venue Booking System. All rights reserved.</p>
+    </footer>
+    
+    <script src="js/main.js"></script>
+    <script src="js/community.js"></script>
+</body>
+</html>

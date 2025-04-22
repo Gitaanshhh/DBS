@@ -1,0 +1,154 @@
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.notifications-actions {
+    display: flex;
+    direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.filter-dropdown select {
+    padding: 0.8rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background-color: white;
+    min-width: 180px;
+}
+
+.notifications-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.notification {
+    display: flex;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    padding: 1.2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.notification:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.notification.unread {
+    border-left: 4px solid #4a90e2;
+}
+
+.notification-icon {
+    font-size: 1.5rem;
+    margin-right: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.notification.booking-status .notification-icon {
+    color: #4a90e2;
+}
+
+.notification.admin-alert .notification-icon {
+    color: #f44336;
+}
+
+.notification.reminder .notification-icon {
+    color: #ffa000;
+}
+
+.notification.exchange-request .notification-icon {
+    color: #7e57c2;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.notification-message {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.notification-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-left: 1rem;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.3rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.action-btn:hover {
+    background-color: #f1f1f1;
+    color: #4a90e2;
+}
+
+.action-btn.delete-btn:hover {
+    color: #f44336;
+}
+
+@media (max-width: 768px) {
+    .notifications-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .notifications-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .notification {
+        flex-direction: column;
+    }
+    
+    .notification-icon {
+        margin-bottom: 1rem;
+        margin-right: 0;
+    }
+    
+    .notification-actions {
+        flex-direction: row;
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+}

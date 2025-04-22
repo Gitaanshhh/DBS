@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox - BlockBook</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/inbox.css">
+</head>
+<body>
+    <header>
+        <a href="mainPage.html" class="logo">BlockBook</a>
+        <div class="nav-links" id="navLinks">
+            <a href="mainPage.html">Home</a>
+            <a href="explore-venues.html">Explore Venues</a>
+            <a href="community.html">Community</a>
+            <a href="my-bookings.html">My Bookings</a>
+            <a href="inbox.html">Inbox</a>
+            <a href="notifications.html" class="notification-indicator">Notifications</a>
+        </div>
+        <div class="user-menu">
+            <div class="user-icon">JD</div>
+        </div>
+        <button class="hamburger" id="hamburgerBtn">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+    </header>
+    
+    <main>
+        <h1 class="section-title">Inbox</h1>
+        
+        <div class="inbox-container">
+            <div class="inbox-sidebar">
+                <div class="inbox-tabs">
+                    <button class="inbox-tab active" data-tab="exchange">Exchange Chat</button>
+                    <button class="inbox-tab" data-tab="admin">Admin Queries</button>
+                </div>
+                
+                <div class="inbox-search">
+                    <input type="text" placeholder="Search messages...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                
+                <div class="conversation-list">
+                    <div class="conversation active" data-conversation="tech-society">
+                        <div class="conversation-avatar">
+                            <img src="https://via.placeholder.com/40" alt="Tech Society">
+                        </div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">Tech Society</div>
+                            <div class="conversation-preview">Sure, we can discuss the exchange...</div>
+                        </div>
+                        <div class="conversation-meta">
+                            <div class="conversation-time">10:30 AM</div>
+                            <div class="conversation-badge">2</div>
+                        </div>
+                    </div>
+                    
+                    <div class="conversation" data-conversation="student-council">
+                        <div class="conversation-avatar">
+                            <img src="https://via.placeholder.com/40" alt="Student Council">
+                        </div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">Student Council</div>
+                            <div class="conversation-preview">We need the auditorium for...</div>
+                        </div>
+                        <div class="conversation-meta">
+                            <div class="conversation-time">Yesterday</div>
+                        </div>
+                    </div>
+                    
+                    <div class="conversation" data-conversation="admin-support">
+                        <div class="conversation-avatar admin">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">Admin Support</div>
+                            <div class="conversation-preview">Your booking request has been...</div>
+                        </div>
+                        <div class="conversation-meta">
+                            <div class="conversation-time">Apr 20</div>
+                        </div>
+                    </div>
+                    
+                    <div class="conversation" data-conversation="venue-manager">
+                        <div class="conversation-avatar admin">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">Venue Manager</div>
+                            <div class="conversation-preview">Regarding your setup requirements...</div>
+                        </div>
+                        <div class="conversation-meta">
+                            <div class="conversation-time">Apr 19</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="chat-contact">
+                        <div class="contact-avatar">
+                            <img src="https://via.placeholder.com/40" alt="Tech Society">
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-name">Tech Society</div>
+                            <div class="contact-status">Online</div>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="action-btn"><i class="fas fa-phone"></i></button>
+                        <button class="action-btn"><i class="fas fa-video"></i></button>
+                        <button class="action-btn"><i class="fas fa-info-circle"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-messages">
+                    <div class="message-date">Today, April 22, 2025</div>
+                    
+                    <div class="message received">
+                        <div class="message-avatar">
+                            <img src="https://via.placeholder.com/40" alt="Tech Society">
+                        </div>
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <p>Hi there! I noticed you've booked Computer Lab B204 for April 25th morning. We were planning to use it for our coding workshop.</p>
+                            </div>
+                            <div class="message-time">10:15 AM</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message sent">
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <p>Hello! Yes, I've booked it for a programming workshop for freshmen. What did you have in mind?</p>
+                            </div>
+                            <div class="message-time">10:20 AM</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-avatar">
+                            <img src="https://via.placeholder.com/40" alt="Tech Society">
+                        </div>
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <p>I was wondering if you'd be open to exchanging for Seminar Hall 1 at the same time? It has a projector and we can bring laptops.</p>
+                            </div>
+                            <div class="message-time">10:25 AM</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message sent">
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <p>That's an interesting offer. Would the Seminar Hall have enough power outlets for all participants?</p>
+                            </div>
+                            <div class="message-time">10:28 AM</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-avatar">
+                            <img src="https://via.placeholder.com/40" alt="Tech Society">
+                        </div>
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <p>Yes, it does! There are power strips along the walls and we can arrange for additional ones if needed. How many participants are you expecting?</p>
+                            </div>
+                            <div class="message-time">10:30 AM</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <button class="attachment-btn"><i class="fas fa-paperclip"></i></button>
+                    <input type="text" placeholder="Type a message...">
+                    <button class="send-btn"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 BlockBook - College Room and Venue Booking System. All rights reserved.</p>
+    </footer>
+    
+    <script src="js/main.js"></script>
+    <script src="js/inbox.js"></script>
+</body>
+</html>
