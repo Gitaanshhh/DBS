@@ -1,169 +1,96 @@
 # DBS (Database System Project)
 
-A database management system project using **Django** for the backend and **React.js** for the frontend.
+A database management system project with a **Django** backend and a **React.js** (or plain HTML/CSS/JS) frontend, organized in independent directories.
 
 ---
 
-## Software Stack
+## Directory Structure
 
-| Component         | Technology Used         |
-|:-----------------|:------------------------|
-| Frontend           | React.js                 |
-| Backend            | Django (Python)          |
-| Database           | Oracle SQL               |
-| DB Connectivity    | Django ORM / oracledb    |
-
----
-
-## Table of Contents
-
-- [Getting Started](#getting-started)
-- [Frontend Workflow](#frontend-workflow)
-- [Database Configuration](#database-configuration)
-- [Development Credentials](#development-credentials)
-- [References](#references)
+```
+DBS/
+├── backend/    # Django backend (API, admin, etc.)
+├── frontend/   # Frontend (HTML/CSS/JS/React)
+└── README.md
+```
 
 ---
 
-## Getting Started
+## Requirements
 
-### Setup Virtual Environment (Optional)
+### Backend
+
+- Python 3.9+
+- Django 5.x
+- djangorestframework
+- django-cors-headers
+
+Install dependencies:
 
 ```bash
-python -m venv env
-env\Scripts\activate        # Windows
-source env/bin/activate     # macOS/Linux
-pip install -r requirements.txt
+cd backend
+pip install django djangorestframework django-cors-headers
 ```
 
-Ignore virtual environment in Git:
-```bash
-echo "env/" >> .gitignore
-git rm -r --cached env
-git commit -m "Ignored virtual environment"
-git push origin main
-```
+### Frontend
 
-### Run Django Server
-
-```bash
-python manage.py runserver
-```
-Open `http://127.0.0.1:8000/` in a browser.
+- For plain HTML/CSS/JS: No dependencies required.
+- For React: Node.js and npm.
 
 ---
 
-## Frontend Workflow
+## Running the Backend (Django)
 
-- Frontend React code lives in `/frontend/`
-- Install dependencies:
-  ```bash
-  cd frontend
-  npm install
-  ```
+1. Navigate to the backend directory:
 
-- Run development server:
-  ```bash
-  npm run dev
-  ```
+    ```bash
+    cd backend
+    ```
 
-- Build for production:
-  ```bash
-  npm run build
-  ```
+2. Run database migrations (if needed):
 
-**Integrating with Django:**
-- Copy `/frontend/dist/` contents to `Application/static/js/`
-- In your Django template:
-  ```html
-  <div id="root"></div>
-  <script src="{% static 'js/bundle.js' %}"></script>
-  ```
+    ```bash
+    python manage.py migrate
+    ```
+
+3. Start the Django development server:
+
+    ```bash
+    python manage.py runserver
+    ```
+
+4. The API will be available at `http://localhost:8000/api/`
 
 ---
 
-## Database Configuration
+## Running the Frontend
 
-### Install Oracle SQL  
-[Oracle 23ai Free Download](https://www.oracle.com/database/free/get-started/#free-platforms)
+### Plain HTML/CSS/JS
 
-### Create Database User
+- Open `frontend/index.html` directly in your browser.
 
-```sql
-sqlplus / as sysdba
+### React (optional)
 
-CREATE USER my_django_user IDENTIFIED BY my_secure_password;
-ALTER USER my_django_user DEFAULT TABLESPACE SYSTEM;
-ALTER USER my_django_user QUOTA UNLIMITED ON SYSTEM;
-GRANT CONNECT, RESOURCE TO my_django_user;
-ALTER USER my_django_user ACCOUNT UNLOCK;
-```
+1. Initialize a React app in `/frontend/` (if not already):
 
-### tnsnames.ora Setup
+    ```bash
+    cd frontend
+    npx create-react-app .
+    ```
 
-Add:
-```ora
-XE =
-  (DESCRIPTION =
-    (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521))
-    (CONNECT_DATA =
-      (SERVICE_NAME = XEPDB1)
-    )
-  )
-```
+2. Install dependencies and start the React app:
 
-### Managing PDB
+    ```bash
+    npm install
+    npm start
+    ```
 
-```sql
-ALTER SESSION SET CONTAINER = XEPDB1;
-ALTER PLUGGABLE DATABASE ALL OPEN;
-ALTER PLUGGABLE DATABASE XEPDB1 SAVE STATE;
-```
-
-Check status:
-```sql
-SELECT STATUS FROM V$INSTANCE;
-SELECT OPEN_MODE FROM V$DATABASE;
-```
-
-### Change Password
-
-```sql
-ALTER USER username IDENTIFIED BY newpassword;
-```
-
-### SQLPlus GUI Login Syntax
-
-```
-username[@service_name] [AS SYSDBA]
-```
-
-Examples:
-```bash
-sys@FREE AS SYSDBA
-sys@XE AS SYSDBA
-```
+3. The React app will run on `http://localhost:3000/` by default.
 
 ---
 
-## Development Credentials
+## Integration
 
-- **Oracle PDB Admin:** `pdbadmin` / `pdbpassword`
-- **Test User:** `git` / `rootpw`
-- **SQLPlus Commands:**
-  ```bash
-  sqlplus / as sysdba
-  sqlplus sys@XE as sysdba
-  sqlplus your_user@XE
-  ```
-
----
-
-## References
-
-- [Django & Database Tutorial](https://youtu.be/hzjlOKhnJrs?si=URqF2D9xWqiYn4EC)
-- [Oracle 23ai Free](https://www.oracle.com/database/free/get-started/#free-platforms)
-- [Django Docs](https://docs.djangoproject.com/en/5.0/)
-- [React Docs](https://react.dev/)
+- The frontend communicates with the backend via REST API calls to `http://localhost:8000/api/`
+- Make sure the backend server is running before using frontend features that require API access.
 
 ---

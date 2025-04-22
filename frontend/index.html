@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BlockBook - College Room and Venue Booking</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <a href="#" class="logo">BlockBook</a>
+      <div class="nav-links" id="navLinks">
+        <a href="#">Home</a>
+        <a href="#">Explore Venues</a>
+        <a href="#">Community</a>
+        <a href="#">My Bookings</a>
+        <a href="#">Inbox</a>
+        <a href="#">Notifications</a>
+      </div>
+      <div class="user-menu">
+        <div class="user-icon">JD</div>
+      </div>
+      <button class="hamburger" id="hamburgerBtn">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+    </header>
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Book College Venues & Rooms</h1>
+        <p>
+          Easy booking system for academic spaces, seminar halls, and event
+          venues
+        </p>
+        <form
+          class="search-bar"
+          onsubmit="event.preventDefault(); alert('Search functionality to be implemented');"
+        >
+          <select aria-label="Venue type" required>
+            <option value="" disabled selected>Select Venue Type</option>
+            <option value="classroom">Classroom</option>
+            <option value="seminar">Seminar Hall</option>
+            <option value="lab">Laboratory</option>
+            <option value="library">Library Space</option>
+            <option value="conference">Conference Room</option>
+            <option value="outdoor">Outdoor Space</option>
+          </select>
+          <input type="date" aria-label="Date" required />
+          <select aria-label="Time slot" required>
+            <option value="" disabled selected>Select Time Slot</option>
+            <option value="early-morning">8:00 AM - 10:00 AM</option>
+            <option value="morning">10:00 AM - 12:00 PM</option>
+            <option value="lunch">12:00 PM - 2:00 PM</option>
+            <option value="afternoon">2:00 PM - 4:00 PM</option>
+            <option value="evening">4:00 PM - 6:00 PM</option>
+            <option value="night">6:00 PM - 8:00 PM</option>
+            <option value="late-night">8:00 PM - 10:00 PM</option>
+            <option value="overnight">10:00 PM - 8:00 AM</option>
+            <option value="all-day">All Day</option>
+            <option value="morning-afternoon">8:00 AM - 4:00 PM</option>
+            <option value="afternoon-evening">12:00 PM - 8:00 PM</option>
+            <option value="evening-night">4:00 PM - 10:00 PM</option>
+          </select>
+          <button type="submit">Find Available Venues</button>
+        </form>
+      </div>
+    </section>
+    <main>
+      <!-- Category Icons (Airbnb style) -->
+      <div class="category-icons">
+        <div class="category-item active">
+          <div class="category-icon">
+            <i class="fas fa-th-large"></i>
+          </div>
+          <span class="category-label">All</span>
+        </div>
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-chalkboard"></i>
+          </div>
+          <span class="category-label">Classrooms</span>
+        </div>
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <span class="category-label">Seminar Halls</span>
+        </div>
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-flask"></i>
+          </div>
+          <span class="category-label">Labs</span>
+        </div>
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-book"></i>
+          </div>
+          <span class="category-label">Library</span>
+        </div>
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-calendar-day"></i>
+          </div>
+          <span class="category-label">Event Spaces</span>
+        </div>
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-handshake"></i>
+          </div>
+          <span class="category-label">Conference Rooms</span>
+        </div>
+      </div>
+
+      <section class="browse-venues">
+        <h2 class="section-title">Browse Venues</h2>
+        <div class="venue-categories">
+          <div class="venue-category">
+            <img
+              src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Academic Block 1"
+            />
+            <span>Academic Block 1</span>
+          </div>
+          <div class="venue-category">
+            <img
+              src="https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Academic Block 2"
+            />
+            <span>Academic Block 2</span>
+          </div>
+          <div class="venue-category">
+            <img
+              src="https://images.unsplash.com/photo-1588075592446-265bad1d6d8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Academic Block 3"
+            />
+            <span>Academic Block 3</span>
+          </div>
+          <div class="venue-category">
+            <img
+              src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Seminar Halls"
+            />
+            <span>Seminar Halls</span>
+          </div>
+          <div class="venue-category">
+            <img
+              src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Auditoriums"
+            />
+            <span>Auditoriums</span>
+          </div>
+          <div class="venue-category">
+            <img
+              src="https://images.unsplash.com/photo-1533551037358-c8f7182cdb79?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Outdoor Venues"
+            />
+            <span>Outdoor Venues</span>
+          </div>
+        </div>
+
+        <h3>Popular Venues</h3>
+        <div class="venues">
+          <article class="venue">
+            <img
+              src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Lecture Hall A101"
+            />
+            <div class="venue-content">
+              <div>
+                <h3 class="venue-title">Lecture Hall A101</h3>
+                <p class="venue-location">
+                  <i class="fas fa-map-marker-alt"></i> Academic Block 1, Ground
+                  Floor
+                </p>
+                <p class="venue-capacity">
+                  <i class="fas fa-users"></i> Capacity: 120 people
+                </p>
+                <div class="venue-features">
+                  <span class="feature">Projector</span>
+                  <span class="feature">Air Conditioned</span>
+                  <span class="feature">Audio System</span>
+                </div>
+              </div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </article>
+          <article class="venue">
+            <img
+              src="https://images.unsplash.com/photo-1588075592446-265bad1d6d8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Computer Lab B204"
+            />
+            <div class="venue-content">
+              <div>
+                <h3 class="venue-title">Computer Lab B204</h3>
+                <p class="venue-location">
+                  <i class="fas fa-map-marker-alt"></i> Academic Block 2, Second
+                  Floor
+                </p>
+                <p class="venue-capacity">
+                  <i class="fas fa-users"></i> Capacity: 60 workstations
+                </p>
+                <div class="venue-features">
+                  <span class="feature">High-end PCs</span>
+                  <span class="feature">Projector</span>
+                  <span class="feature">Smart Board</span>
+                </div>
+              </div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </article>
+          <article class="venue">
+            <img
+              src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Seminar Hall 1"
+            />
+            <div class="venue-content">
+              <div>
+                <h3 class="venue-title">Seminar Hall 1</h3>
+                <p class="venue-location">
+                  <i class="fas fa-map-marker-alt"></i> Central Building, First
+                  Floor
+                </p>
+                <p class="venue-capacity">
+                  <i class="fas fa-users"></i> Capacity: 150 people
+                </p>
+                <div class="venue-features">
+                  <span class="feature">Projector</span>
+                  <span class="feature">Podium</span>
+                  <span class="feature">Sound System</span>
+                </div>
+              </div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </article>
+          <article class="venue">
+            <img
+              src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Main Auditorium"
+            />
+            <div class="venue-content">
+              <div>
+                <h3 class="venue-title">Main Auditorium</h3>
+                <p class="venue-location">
+                  <i class="fas fa-map-marker-alt"></i> Central Campus
+                </p>
+                <p class="venue-capacity">
+                  <i class="fas fa-users"></i> Capacity: 500 people
+                </p>
+                <div class="venue-features">
+                  <span class="feature">Stage</span>
+                  <span class="feature">Professional Audio</span>
+                  <span class="feature">Lighting System</span>
+                </div>
+              </div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </article>
+          <article class="venue">
+            <img
+              src="https://images.unsplash.com/photo-1533551037358-c8f7182cdb79?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Student Plaza"
+            />
+            <div class="venue-content">
+              <div>
+                <h3 class="venue-title">Student Plaza</h3>
+                <p class="venue-location">
+                  <i class="fas fa-map-marker-alt"></i> Central Campus
+                </p>
+                <p class="venue-capacity">
+                  <i class="fas fa-users"></i> Capacity: 300+ people
+                </p>
+                <div class="venue-features">
+                  <span class="feature">Open Air</span>
+                  <span class="feature">Power Outlets</span>
+                  <span class="feature">Seating Available</span>
+                </div>
+              </div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </article>
+          <article class="venue">
+            <img
+              src="https://images.unsplash.com/photo-1573167507387-6b4b98cb7c13?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Conference Room"
+            />
+            <div class="venue-content">
+              <div>
+                <h3 class="venue-title">Conference Room C103</h3>
+                <p class="venue-location">
+                  <i class="fas fa-map-marker-alt"></i> Administrative Block,
+                  First Floor
+                </p>
+                <p class="venue-capacity">
+                  <i class="fas fa-users"></i> Capacity: 25 people
+                </p>
+                <div class="venue-features">
+                  <span class="feature">Video Conferencing</span>
+                  <span class="feature">Whiteboard</span>
+                  <span class="feature">Coffee Service</span>
+                </div>
+              </div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="booking-requests">
+        <h2 class="section-title">Your Booking Requests</h2>
+        <div class="booking">
+          <div class="booking-info">
+            <p class="booking-venue">Seminar Hall 1</p>
+            <p class="booking-date">
+              <i class="far fa-calendar-alt"></i> April 20, 2025
+            </p>
+            <p class="booking-time">
+              <i class="far fa-clock"></i> 12:00 PM - 4:00 PM
+            </p>
+          </div>
+          <div class="booking-status status-pending">Pending</div>
+        </div>
+        <div class="booking">
+          <div class="booking-info">
+            <p class="booking-venue">Computer Lab B204</p>
+            <p class="booking-date">
+              <i class="far fa-calendar-alt"></i> April 25, 2025
+            </p>
+            <p class="booking-time">
+              <i class="far fa-clock"></i> 8:00 AM - 12:00 PM
+            </p>
+          </div>
+          <div class="booking-status status-approved">Approved</div>
+        </div>
+        <div class="booking">
+          <div class="booking-info">
+            <p class="booking-venue">Main Auditorium</p>
+            <p class="booking-date">
+              <i class="far fa-calendar-alt"></i> May 5, 2025
+            </p>
+            <p class="booking-time">
+              <i class="far fa-clock"></i> 4:00 PM - 8:00 PM
+            </p>
+          </div>
+          <div class="booking-status status-rejected">Rejected</div>
+        </div>
+      </section>
+
+      <section class="past-bookings">
+        <h2 class="section-title">Your Past Bookings</h2>
+        <div class="booking">
+          <div class="booking-info">
+            <p class="booking-venue">Lecture Hall A101</p>
+            <p class="booking-date">
+              <i class="far fa-calendar-alt"></i> March 15, 2025
+            </p>
+            <p class="booking-time">
+              <i class="far fa-clock"></i> 8:00 AM - 12:00 PM
+            </p>
+          </div>
+          <div class="booking-status status-completed">Completed</div>
+        </div>
+        <div class="booking">
+          <div class="booking-info">
+            <p class="booking-venue">Student Plaza</p>
+            <p class="booking-date">
+              <i class="far fa-calendar-alt"></i> March 10, 2025
+            </p>
+            <p class="booking-time">
+              <i class="far fa-clock"></i> 4:00 PM - 8:00 PM
+            </p>
+          </div>
+          <div class="booking-status status-completed">Completed</div>
+        </div>
+        <div class="booking">
+          <div class="booking-info">
+            <p class="booking-venue">Conference Room C103</p>
+            <p class="booking-date">
+              <i class="far fa-calendar-alt"></i> February 28, 2025
+            </p>
+            <p class="booking-time">
+              <i class="far fa-clock"></i> 12:00 PM - 4:00 PM
+            </p>
+          </div>
+          <div class="booking-status status-completed">Completed</div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <p>
+        &copy; 2025 BlockBook - College Room and Venue Booking System. All
+        rights reserved.
+      </p>
+    </footer>
+
+    <script src="./js/script.js"></script>
+  </body>
+</html>
