@@ -4,6 +4,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db import connection
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 @api_view(['GET'])
 def test_api(request):
@@ -61,17 +63,29 @@ User login details
 
 Can add verification of user login details here
 """
-@api_view(['GET'])
+@api_view(['POST'])
+@csrf_exempt
 def getUsers(request):
+    # Get email and password from POST data
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    if not email or not password:
+        return Response({'error': 'Email and password are required'}, status=400)
+
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM Users")
+        # Use parameterized queries to prevent SQL injection
+        cursor.execute("SELECT * FROM Users WHERE email = %s AND password = %s", [email, password])
         columns = [col[0] for col in cursor.description]
         data = [
             dict(zip(columns, row))
             for row in cursor.fetchall()
         ]
-    return Response({'User Details': data})
 
+    if not data:
+        return Response({'error': 'Invalid email or password'}, status=401)
+
+    return Response({'User Details': data})
 
 """
 Vanues 
@@ -79,7 +93,14 @@ Vanues
 @api_view(['GET'])
 def getVenues(request):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM Venue")
+        # Join Venue with Building to get building_name and floor_number, and select all required fields
+        cursor.execute("""
+            SELECT 
+                v.venue_id, v.venue_name, v.seating_capacity, v.features, v.image_url,
+                v.floor_number, b.building_name
+            FROM Venue v
+            LEFT JOIN Building b ON v.building_id = b.building_id
+        """)
         columns = [col[0] for col in cursor.description]
         data = [
             dict(zip(columns, row))

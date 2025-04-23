@@ -1,222 +1,237 @@
--- Users table (base user information)
+DROP TABLE IF EXISTS Message;
+DROP TABLE IF EXISTS ConversationParticipant;
+DROP TABLE IF EXISTS Conversation;
+DROP TABLE IF EXISTS Notification;
+DROP TABLE IF EXISTS ExchangeRequest;
+DROP TABLE IF EXISTS BookingHistory;
+DROP TABLE IF EXISTS BookingApproval;
+DROP TABLE IF EXISTS ApprovalStep;
+DROP TABLE IF EXISTS BookingRequest;
+DROP TABLE IF EXISTS VenueAvailability;
+DROP TABLE IF EXISTS Venue;
+DROP TABLE IF EXISTS VenueType;
+DROP TABLE IF EXISTS Building;
+DROP TABLE IF EXISTS StudentBodyMembership;
+DROP TABLE IF EXISTS StudentBody;
+DROP TABLE IF EXISTS Student;
+DROP TABLE IF EXISTS FacultyRoles;
+DROP TABLE IF EXISTS Faculty;
+DROP TABLE IF EXISTS Users;
+
 CREATE TABLE Users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    user_type ENUM('student', 'faculty', 'admin') NOT NULL,
+    user_id NUMBER PRIMARY KEY,
+    email VARCHAR2(100) UNIQUE NOT NULL,
+    password_hash VARCHAR2(255) NOT NULL,
+    user_type VARCHAR2(20) DEFAULT 'student' CHECK (user_type IN ('student', 'faculty', 'admin')) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_login TIMESTAMP NULL
+    last_login TIMESTAMP
 );
 
--- Faculty table
 CREATE TABLE Faculty (
-    faculty_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    registration_id INT UNIQUE NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    department VARCHAR(100) NOT NULL,
-    post VARCHAR(50) NOT NULL,
-    contact_number BIGINT,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+    faculty_id NUMBER PRIMARY KEY,
+    user_id NUMBER NOT NULL,
+    registration_id NUMBER UNIQUE NOT NULL,
+    name VARCHAR2(100) NOT NULL,
+    department VARCHAR2(100) NOT NULL,
+    post VARCHAR2(50) NOT NULL,
+    contact_number NUMBER
 );
 
--- Faculty roles table (separated for normalization)
 CREATE TABLE FacultyRoles (
-    role_id INT AUTO_INCREMENT PRIMARY KEY,
-    faculty_id INT NOT NULL,
-    role_name ENUM('FA', 'SWO', 'Security', 'SC_Advisor') NOT NULL,
+    role_id NUMBER PRIMARY KEY,
+    faculty_id NUMBER NOT NULL,
+    role_name VARCHAR2(20) DEFAULT 'FA' CHECK (role_name IN ('FA', 'SWO', 'Security', 'SC_Advisor')) NOT NULL,
     assigned_date DATE NOT NULL,
-    FOREIGN KEY (faculty_id) REFERENCES Faculty(faculty_id) ON DELETE CASCADE,
     UNIQUE (faculty_id, role_name)
 );
 
--- Student table
 CREATE TABLE Student (
-    student_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    registration_id INT UNIQUE NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    contact_number BIGINT,
-    is_sc_member BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+    student_id NUMBER PRIMARY KEY,
+    user_id NUMBER NOT NULL,
+    registration_id NUMBER UNIQUE NOT NULL,
+    name VARCHAR2(100) NOT NULL,
+    contact_number NUMBER,
+    is_sc_member CHAR(1) DEFAULT 'N' CHECK (is_sc_member IN ('Y', 'N'))
 );
 
--- StudentBody table
 CREATE TABLE StudentBody (
-    student_body_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    description TEXT,
-    faculty_advisor_id INT,
-    primary_rep_id INT,
-    secondary_rep_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (faculty_advisor_id) REFERENCES Faculty(faculty_id) ON DELETE SET NULL,
-    FOREIGN KEY (primary_rep_id) REFERENCES Student(student_id) ON DELETE SET NULL,
-    FOREIGN KEY (secondary_rep_id) REFERENCES Student(student_id) ON DELETE SET NULL
-);
-
--- StudentBodyMembership (many-to-many relationship)
-CREATE TABLE StudentBodyMembership (
-    membership_id INT AUTO_INCREMENT PRIMARY KEY,
-    student_id INT NOT NULL,
-    student_body_id INT NOT NULL,
-    role VARCHAR(50) DEFAULT 'Member',
-    joined_date DATE NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
-    FOREIGN KEY (student_body_id) REFERENCES StudentBody(student_body_id) ON DELETE CASCADE,
-    UNIQUE (student_id, student_body_id)
-);
-
--- Building table (normalized from IndoorVenue)
-CREATE TABLE Building (
-    building_id INT AUTO_INCREMENT PRIMARY KEY,
-    building_name VARCHAR(100) NOT NULL,
-    location VARCHAR(100),
-    floors INT NOT NULL
-);
-
--- VenueType table (normalized from Venue)
-CREATE TABLE VenueType (
-    type_id INT AUTO_INCREMENT PRIMARY KEY,
-    type_name VARCHAR(50) UNIQUE NOT NULL,
-    description TEXT
-);
-
--- Venue table
-CREATE TABLE Venue (
-    venue_id INT AUTO_INCREMENT PRIMARY KEY,
-    venue_name VARCHAR(100) NOT NULL,
-    venue_type_id INT NOT NULL,
-    seating_capacity INT NOT NULL,
-    is_indoor BOOLEAN NOT NULL,
-    building_id INT,
-    floor_number INT,
-    manager_contact BIGINT,
-    description TEXT,
-    features TEXT,
-    image_url VARCHAR(255),
-    FOREIGN KEY (venue_type_id) REFERENCES VenueType(type_id),
-    FOREIGN KEY (building_id) REFERENCES Building(building_id) ON DELETE SET NULL
-);
-
--- VenueAvailability table (for tracking when venues are available)
-CREATE TABLE VenueAvailability (
-    availability_id INT AUTO_INCREMENT PRIMARY KEY,
-    venue_id INT NOT NULL,
-    day_of_week ENUM('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday') NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    is_available BOOLEAN DEFAULT TRUE,
-    FOREIGN KEY (venue_id) REFERENCES Venue(venue_id) ON DELETE CASCADE,
-    UNIQUE (venue_id, day_of_week, start_time, end_time)
-);
-
--- BookingRequest table
-CREATE TABLE BookingRequest (
-    booking_id INT AUTO_INCREMENT PRIMARY KEY,
-    venue_id INT NOT NULL,
-    student_body_id INT NOT NULL,
-    requester_id INT NOT NULL,
-    booking_date DATE NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    purpose VARCHAR(500) NOT NULL,
-    attendees_count INT,
-    setup_requirements TEXT,
-    status ENUM('Pending', 'Approved', 'Rejected', 'Cancelled', 'Completed') NOT NULL DEFAULT 'Pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (venue_id) REFERENCES Venue(venue_id) ON DELETE CASCADE,
-    FOREIGN KEY (student_body_id) REFERENCES StudentBody(student_body_id) ON DELETE CASCADE,
-    FOREIGN KEY (requester_id) REFERENCES Users(user_id) ON DELETE CASCADE
-);
-
--- ApprovalStep table (normalized from ApprovalProcess)
-CREATE TABLE ApprovalStep (
-    step_id INT AUTO_INCREMENT PRIMARY KEY,
-    step_name VARCHAR(50) UNIQUE NOT NULL,
-    description TEXT,
-    order_number INT NOT NULL
-);
-
--- BookingApproval table
-CREATE TABLE BookingApproval (
-    approval_id INT AUTO_INCREMENT PRIMARY KEY,
-    booking_id INT NOT NULL,
-    step_id INT NOT NULL,
-    approver_id INT,
-    is_approved BOOLEAN DEFAULT NULL,
-    comments TEXT,
-    approval_date TIMESTAMP NULL,
-    FOREIGN KEY (booking_id) REFERENCES BookingRequest(booking_id) ON DELETE CASCADE,
-    FOREIGN KEY (step_id) REFERENCES ApprovalStep(step_id),
-    FOREIGN KEY (approver_id) REFERENCES Faculty(faculty_id) ON DELETE SET NULL,
-    UNIQUE (booking_id, step_id)
-);
-
--- BookingHistory table
-CREATE TABLE BookingHistory (
-    history_id INT AUTO_INCREMENT PRIMARY KEY,
-    booking_id INT NOT NULL,
-    action_taken VARCHAR(255) NOT NULL,
-    action_by INT NOT NULL,
-    action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (booking_id) REFERENCES BookingRequest(booking_id) ON DELETE CASCADE,
-    FOREIGN KEY (action_by) REFERENCES Users(user_id) ON DELETE CASCADE
-);
-
--- ExchangeRequest table (for venue exchange functionality)
-CREATE TABLE ExchangeRequest (
-    exchange_id INT AUTO_INCREMENT PRIMARY KEY,
-    requester_booking_id INT NOT NULL,
-    requested_booking_id INT NOT NULL,
-    reason TEXT NOT NULL,
-    status ENUM('Pending', 'Accepted', 'Rejected', 'Cancelled') NOT NULL DEFAULT 'Pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (requester_booking_id) REFERENCES BookingRequest(booking_id) ON DELETE CASCADE,
-    FOREIGN KEY (requested_booking_id) REFERENCES BookingRequest(booking_id) ON DELETE CASCADE
-);
-
--- Notification table
-CREATE TABLE Notification (
-    notification_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    title VARCHAR(100) NOT NULL,
-    message TEXT NOT NULL,
-    type ENUM('booking-status', 'admin-alert', 'reminder', 'exchange-request') NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
-);
-
--- Conversation table (for chat functionality)
-CREATE TABLE Conversation (
-    conversation_id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(100),
-    type ENUM('exchange', 'admin') NOT NULL,
+    student_body_id NUMBER PRIMARY KEY,
+    name VARCHAR2(100) NOT NULL,
+    email VARCHAR2(100) UNIQUE NOT NULL,
+    description CLOB,
+    faculty_advisor_id NUMBER,
+    primary_rep_id NUMBER,
+    secondary_rep_id NUMBER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ConversationParticipant table
-CREATE TABLE ConversationParticipant (
-    participant_id INT AUTO_INCREMENT PRIMARY KEY,
-    conversation_id INT NOT NULL,
-    user_id INT NOT NULL,
-    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (conversation_id) REFERENCES Conversation(conversation_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
-    UNIQUE (conversation_id, user_id)
+CREATE TABLE StudentBodyMembership (
+    membership_id NUMBER PRIMARY KEY,
+    student_id NUMBER NOT NULL,
+    student_body_id NUMBER NOT NULL,
+    role VARCHAR2(50) DEFAULT 'Member',
+    joined_date DATE NOT NULL,
+    UNIQUE (student_id, student_body_id)
 );
 
--- Message table
-CREATE TABLE Message (
-    message_id INT AUTO_INCREMENT PRIMARY KEY,
-    conversation_id INT NOT NULL,
-    sender_id INT NOT NULL,
-    content TEXT NOT NULL,
-    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (conversation_id) REFERENCES Conversation(conversation_id) ON DELETE CASCADE,
-    FOREIGN KEY (sender_id) REFERENCES Users(user_id) ON DELETE CASCADE
+CREATE TABLE Building (
+    building_id NUMBER PRIMARY KEY,
+    building_name VARCHAR2(100) NOT NULL,
+    location VARCHAR2(100),
+    floors NUMBER NOT NULL
 );
+
+CREATE TABLE VenueType (
+    type_id NUMBER PRIMARY KEY,
+    type_name VARCHAR2(50) UNIQUE NOT NULL,
+    description CLOB
+);
+
+CREATE TABLE Venue (
+    venue_id NUMBER PRIMARY KEY,
+    venue_name VARCHAR2(100) NOT NULL,
+    venue_type_id NUMBER NOT NULL,
+    seating_capacity NUMBER NOT NULL,
+    is_indoor CHAR(1) CHECK (is_indoor IN ('Y', 'N')) NOT NULL,
+    building_id NUMBER,
+    floor_number NUMBER,
+    manager_contact NUMBER,
+    description CLOB,
+    features CLOB,
+    image_url VARCHAR2(255)
+);
+
+CREATE TABLE VenueAvailability (
+    availability_id NUMBER PRIMARY KEY,
+    venue_id NUMBER NOT NULL,
+    day_of_week VARCHAR2(10) CHECK (day_of_week IN ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')) NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    is_available CHAR(1) DEFAULT 'Y' CHECK (is_available IN ('Y', 'N')),
+    UNIQUE (venue_id, day_of_week, start_time, end_time)
+);
+
+CREATE TABLE BookingRequest (
+    booking_id NUMBER PRIMARY KEY,
+    venue_id NUMBER NOT NULL,
+    student_body_id NUMBER NOT NULL,
+    requester_id NUMBER NOT NULL,
+    booking_date DATE NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    purpose VARCHAR2(500) NOT NULL,
+    attendees_count NUMBER,
+    setup_requirements CLOB,
+    status VARCHAR2(20) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Approved', 'Rejected', 'Cancelled', 'Completed')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ApprovalStep (
+    step_id NUMBER PRIMARY KEY,
+    step_name VARCHAR2(50) UNIQUE NOT NULL,
+    description CLOB,
+    order_number NUMBER NOT NULL
+);
+
+CREATE TABLE BookingApproval (
+    approval_id NUMBER PRIMARY KEY,
+    booking_id NUMBER NOT NULL,
+    step_id NUMBER NOT NULL,
+    approver_id NUMBER,
+    is_approved CHAR(1) CHECK (is_approved IN ('Y', 'N')),
+    comments CLOB,
+    approval_date TIMESTAMP,
+    UNIQUE (booking_id, step_id)
+);
+
+CREATE TABLE BookingHistory (
+    history_id NUMBER PRIMARY KEY,
+    booking_id NUMBER NOT NULL,
+    action_taken VARCHAR2(255) NOT NULL,
+    action_by NUMBER NOT NULL,
+    action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ExchangeRequest (
+    exchange_id NUMBER PRIMARY KEY,
+    requester_booking_id NUMBER NOT NULL,
+    requested_booking_id NUMBER NOT NULL,
+    reason CLOB NOT NULL,
+    status VARCHAR2(20) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Accepted', 'Rejected', 'Cancelled')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Notification (
+    notification_id NUMBER PRIMARY KEY,
+    user_id NUMBER NOT NULL,
+    title VARCHAR2(255) NOT NULL,
+    message CLOB NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_read CHAR(1) DEFAULT 'N' CHECK (is_read IN ('Y', 'N'))
+);
+
+CREATE TABLE Conversation (
+    conversation_id NUMBER PRIMARY KEY,
+    topic VARCHAR2(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ConversationParticipant (
+    conversation_id NUMBER NOT NULL,
+    user_id NUMBER NOT NULL,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (conversation_id, user_id)
+);
+
+CREATE TABLE Message (
+    message_id NUMBER PRIMARY KEY,
+    conversation_id NUMBER NOT NULL,
+    sender_id NUMBER NOT NULL,
+    message_text CLOB NOT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Add foreign key constraints after all tables are created
+ALTER TABLE Faculty ADD CONSTRAINT fk_faculty_user FOREIGN KEY (user_id) REFERENCES Users(user_id);
+ALTER TABLE FacultyRoles ADD CONSTRAINT fk_facultyroles_faculty FOREIGN KEY (faculty_id) REFERENCES Faculty(faculty_id);
+ALTER TABLE Student ADD CONSTRAINT fk_student_user FOREIGN KEY (user_id) REFERENCES Users(user_id);
+ALTER TABLE StudentBody ADD CONSTRAINT fk_studentbody_faculty FOREIGN KEY (faculty_advisor_id) REFERENCES Faculty(faculty_id);
+ALTER TABLE StudentBody ADD CONSTRAINT fk_studentbody_primaryrep FOREIGN KEY (primary_rep_id) REFERENCES Student(student_id);
+ALTER TABLE StudentBody ADD CONSTRAINT fk_studentbody_secondaryrep FOREIGN KEY (secondary_rep_id) REFERENCES Student(student_id);
+ALTER TABLE StudentBodyMembership ADD CONSTRAINT fk_sbmembership_student FOREIGN KEY (student_id) REFERENCES Student(student_id);
+ALTER TABLE StudentBodyMembership ADD CONSTRAINT fk_sbmembership_body FOREIGN KEY (student_body_id) REFERENCES StudentBody(student_body_id);
+ALTER TABLE Venue ADD CONSTRAINT fk_venue_type FOREIGN KEY (venue_type_id) REFERENCES VenueType(type_id);
+ALTER TABLE Venue ADD CONSTRAINT fk_venue_building FOREIGN KEY (building_id) REFERENCES Building(building_id);
+ALTER TABLE VenueAvailability ADD CONSTRAINT fk_venueavailability_venue FOREIGN KEY (venue_id) REFERENCES Venue(venue_id);
+ALTER TABLE BookingRequest ADD CONSTRAINT fk_bookingrequest_venue FOREIGN KEY (venue_id) REFERENCES Venue(venue_id);
+ALTER TABLE BookingRequest ADD CONSTRAINT fk_bookingrequest_body FOREIGN KEY (student_body_id) REFERENCES StudentBody(student_body_id);
+ALTER TABLE BookingRequest ADD CONSTRAINT fk_bookingrequest_user FOREIGN KEY (requester_id) REFERENCES Users(user_id);
+ALTER TABLE BookingApproval ADD CONSTRAINT fk_bookingapproval_booking FOREIGN KEY (booking_id) REFERENCES BookingRequest(booking_id);
+ALTER TABLE BookingApproval ADD CONSTRAINT fk_bookingapproval_step FOREIGN KEY (step_id) REFERENCES ApprovalStep(step_id);
+ALTER TABLE BookingApproval ADD CONSTRAINT fk_bookingapproval_faculty FOREIGN KEY (approver_id) REFERENCES Faculty(faculty_id);
+ALTER TABLE BookingHistory ADD CONSTRAINT fk_bookinghistory_booking FOREIGN KEY (booking_id) REFERENCES BookingRequest(booking_id);
+ALTER TABLE BookingHistory ADD CONSTRAINT fk_bookinghistory_user FOREIGN KEY (action_by) REFERENCES Users(user_id);
+ALTER TABLE ExchangeRequest ADD CONSTRAINT fk_exchangerequest_requester FOREIGN KEY (requester_booking_id) REFERENCES BookingRequest(booking_id);
+ALTER TABLE ExchangeRequest ADD CONSTRAINT fk_exchangerequest_requested FOREIGN KEY (requested_booking_id) REFERENCES BookingRequest(booking_id);
+ALTER TABLE Notification ADD CONSTRAINT fk_notification_user FOREIGN KEY (user_id) REFERENCES Users(user_id);
+ALTER TABLE ConversationParticipant ADD CONSTRAINT fk_conversationparticipant_conversation FOREIGN KEY (conversation_id) REFERENCES Conversation(conversation_id);
+ALTER TABLE ConversationParticipant ADD CONSTRAINT fk_conversationparticipant_user FOREIGN KEY (user_id) REFERENCES Users(user_id);
+ALTER TABLE Message ADD CONSTRAINT fk_message_conversation FOREIGN KEY (conversation_id) REFERENCES Conversation(conversation_id);
+ALTER TABLE Message ADD CONSTRAINT fk_message_user FOREIGN KEY (sender_id) REFERENCES Users(user_id);
+
+/*
+CAN add the following trigger
+-- Create sequence
+CREATE SEQUENCE users_seq START WITH 1 INCREMENT BY 1 NOCACHE;
+
+-- Trigger to auto-assign user_id
+CREATE OR REPLACE TRIGGER users_bi_trigger
+BEFORE INSERT ON Users
+FOR EACH ROW
+BEGIN
+  :NEW.user_id := users_seq.NEXTVAL;
+END;
+/
+*/

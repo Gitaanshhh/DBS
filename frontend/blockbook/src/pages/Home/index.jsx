@@ -1,37 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useVenueBooking } from '../../hooks/useVenueBooking';
 import styles from './Home.module.css';
+import { getVenues } from '../../api/venues';
 
 const Home = () => {
   const { currentDate, handleBookVenue } = useVenueBooking();
-  const [categoryItems, setCategoryItems] = useState([]);
-  
+  const [venues, setVenues] = useState([]);
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Simulate loading category items
-    setCategoryItems(document.querySelectorAll('.category-item'));
+    // Fetch venues from backend
+    getVenues().then(data => {
+      // Always extract the array of venues from the backend response
+      if (Array.isArray(data)) {
+        setVenues(data);
+      } else if (data && (Array.isArray(data.Venues) || Array.isArray(data.venues))) {
+        setVenues(data.Venues || data.venues);
+      } else if (data && typeof data === "object" && Object.keys(data).length > 0) {
+        // If backend returns an object with venue_id keys (edge case)
+        setVenues(Object.values(data));
+      } else {
+        setVenues([]);
+      }
+    });
   }, []);
-  
-  const handleCategoryClick = (e) => {
-    // Remove active class from all items
-    categoryItems.forEach(item => item.classList.remove('active'));
-    // Add active class to clicked item
-    e.currentTarget.classList.add('active');
-  };
-  
-  const handleBookNow = (e, venue) => {
-    e.preventDefault();
-    
-    // Extract venue information
-    const venueCard = e.target.closest('.venue');
+
+  const handleVenueClick = (venue) => {
+    // Prepare venue data for booking page
     const venueData = {
-      title: venueCard.querySelector('.venue-title').textContent,
-      location: venueCard.querySelector('.venue-location').textContent,
-      capacity: venueCard.querySelector('.venue-capacity').textContent,
-      image: venueCard.querySelector('img').src
+      title: venue.venue_name,
+      location: `${venue.building_name || ''}${venue.floor_number ? ', Floor ' + venue.floor_number : ''}`,
+      capacity: `Capacity: ${venue.seating_capacity} people`,
+      image: venue.image_url,
+      features: venue.features ? venue.features.split(',').map(f => f.trim()) : [],
+      id: venue.venue_id
     };
-    
     handleBookVenue(venueData);
+    navigate('/booking');
   };
 
   return (
@@ -71,58 +77,47 @@ const Home = () => {
 
       <section className={styles.browseVenues}>
         <h2 className={styles.sectionTitle}>Browse Venues</h2>
-        <div className={styles.venueCategories}>
-          <div className={styles.venueCategory}>
-            <img src="/assets/venues/academic-block-1.jpg" alt="Academic Block 1" />
-            <span>Academic Block 1</span>
-          </div>
-          <div className={styles.venueCategory}>
-            <img src="/assets/venues/academic-block-2.jpg" alt="Academic Block 2" />
-            <span>Academic Block 2</span>
-          </div>
-          <div className={styles.venueCategory}>
-            <img src="/assets/venues/academic-block-3.jpg" alt="Academic Block 3" />
-            <span>Academic Block 3</span>
-          </div>
-          <div className={styles.venueCategory}>
-            <img src="/assets/venues/seminar-halls.jpg" alt="Seminar Halls" />
-            <span>Seminar Halls</span>
-          </div>
-          <div className={styles.venueCategory}>
-            <img src="/assets/venues/auditoriums.jpg" alt="Auditoriums" />
-            <span>Auditoriums</span>
-          </div>
-          <div className={styles.venueCategory}>
-            <img src="/assets/venues/outdoor-venues.jpg" alt="Outdoor Venues" />
-            <span>Outdoor Venues</span>
-          </div>
-        </div>
-        
-        <h3>Popular Venues</h3>
         <div className={styles.venues}>
-          {/* Venue cards */}
-          <article className={styles.venue}>
-            <img src="/assets/venues/lecture-hall-a101.jpg" alt="Lecture Hall A101" />
-            <div className={styles.venueContent}>
-              <div>
-                <h3 className={styles.venueTitle}>Lecture Hall A101</h3>
-                <p className={styles.venueLocation}>
-                  <i className="fas fa-map-marker-alt"></i> Academic Block 1, Ground Floor
-                </p>
-                <p className={styles.venueCapacity}>
-                  <i className="fas fa-users"></i> Capacity: 120 people
-                </p>
-                <div className={styles.venueFeatures}>
-                  <span className={styles.feature}>Projector</span>
-                  <span className={styles.feature}>Air Conditioned</span>
-                  <span className={styles.feature}>Audio System</span>
-                </div>
-              </div>
-              <Link to="/booking" className={styles.bookBtn}>Book Now</Link>
+          {venues.length === 0 && (
+            <div style={{ padding: "2rem", textAlign: "center", color: "#888" }}>
+              No venues found.
             </div>
-          </article>
-          
-          {/* More venue cards would go here */}
+          )}
+          {venues.map((venue) => (
+            <div
+              key={venue.venue_id}
+              className={styles.venue}
+              onClick={() => handleVenueClick(venue)}
+              style={{ cursor: 'pointer' }}
+            >
+              <img src={venue.image_url} alt={venue.venue_name} />
+              <div className={styles.venueContent}>
+                <div>
+                  <h3 className={styles.venueTitle}>{venue.venue_name}</h3>
+                  <p className={styles.venueLocation}>
+                    <i className="fas fa-map-marker-alt"></i> {venue.building_name || '—'}{venue.floor_number ? `, Floor ${venue.floor_number}` : ''}
+                  </p>
+                  <p className={styles.venueCapacity}>
+                    <i className="fas fa-users"></i> Capacity: {venue.seating_capacity} people
+                  </p>
+                  <div className={styles.venueFeatures}>
+                    {venue.features && venue.features.split(',').map((feature, idx) => (
+                      <span className={styles.feature} key={idx}>{feature.trim()}</span>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  className={styles.bookBtn}
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleVenueClick(venue);
+                  }}
+                >
+                  Book Now
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
       
