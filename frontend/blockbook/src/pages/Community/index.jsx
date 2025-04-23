@@ -6,9 +6,7 @@ const Community = () => {
   const {
     activeTab,
     switchTab,
-    requestExchange,
     addToCalendar,
-    cancelExchangeRequest,
     sendReminder,
     searchEvents,
     applyFilter,
@@ -26,14 +24,6 @@ const Community = () => {
           onClick={() => switchTab("booking-board")}
         >
           Booking Board
-        </button>
-        <button
-          className={`${styles.tabBtn} ${
-            activeTab === "exchange-history" ? styles.active : ""
-          }`}
-          onClick={() => switchTab("exchange-history")}
-        >
-          Exchange History
         </button>
       </div>
 
@@ -120,62 +110,9 @@ const Community = () => {
                 </div>
               </div>
             </div>
-            <div className={styles.bookingActions}>
-              <button className={`${styles.btn} ${styles.btnSecondary}`}>
-                <i className="fas fa-exchange-alt"></i> Request Exchange
-              </button>
-              <button className={styles.btn}>
-                <i className="far fa-calendar-plus"></i> Add to Calendar
-              </button>
-            </div>
           </div>
 
           {/* More booking cards would go here */}
-        </div>
-      </div>
-
-      <div
-        className={`${styles.tabContent} ${
-          activeTab === "exchange-history" ? styles.active : ""
-        }`}
-        id="exchange-history"
-      >
-        <div className={styles.exchangeList}>
-          <div className={styles.exchangeCard}>
-            <div className={styles.exchangeHeader}>
-              <div className={`${styles.exchangeStatus} ${styles.completed}`}>
-                <i className="fas fa-check-circle"></i> Completed
-              </div>
-              <div className={styles.exchangeDate}>April 15, 2025</div>
-            </div>
-            <div className={styles.exchangeDetails}>
-              <div className={styles.exchangeParties}>
-                <div className={styles.exchangeParty}>
-                  <h4>Your Booking</h4>
-                  <p className={styles.venue}>Lecture Hall A101</p>
-                  <p className={styles.time}>8:00 AM - 12:00 PM</p>
-                  <p className={styles.date}>April 15, 2025</p>
-                </div>
-                <div className={styles.exchangeArrow}>
-                  <i className="fas fa-exchange-alt"></i>
-                </div>
-                <div className={styles.exchangeParty}>
-                  <h4>Cultural Club's Booking</h4>
-                  <p className={styles.venue}>Seminar Hall 1</p>
-                  <p className={styles.time}>8:00 AM - 12:00 PM</p>
-                  <p className={styles.date}>April 15, 2025</p>
-                </div>
-              </div>
-              <div className={styles.exchangeReason}>
-                <h4>Reason for Exchange</h4>
-                <p>
-                  Needed a larger venue for unexpected increase in attendees.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* More exchange cards would go here */}
         </div>
       </div>
     </main>
