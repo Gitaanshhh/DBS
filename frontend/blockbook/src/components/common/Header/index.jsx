@@ -25,7 +25,6 @@ const Header = () => {
         <Link to="/app/explore-venues" className={isActive('/app/explore-venues') ? styles.active : ''}>Explore Venues</Link>
         <Link to="/app/community" className={isActive('/app/community') ? styles.active : ''}>Community</Link>
         <Link to="/app/my-bookings" className={isActive('/app/my-bookings') ? styles.active : ''}>My Bookings</Link>
-        <Link to="/app/inbox" className={isActive('/app/inbox') ? styles.active : ''}>Inbox</Link>
         <Link to="/app/notifications" className={isActive('/app/notifications') ? styles.active : ''}>Notifications</Link>
         
         {/* Only show Approval link for student council */}
