@@ -70,7 +70,7 @@ We follow these steps:
 ---
 
 #### **6. BookingRequest**
-| Attribute         | Type   | Constraints              |
+| Attribute        | Type   | Constraints              |
 |------------------|--------|--------------------------|
 | booking_id       | INT    | PK                       |
 | venue_id         | INT    | FK → Venue               |
@@ -78,6 +78,7 @@ We follow these steps:
 | booking_date     | DATE   |                          |
 | start_time       | TIME   |                          |
 | end_time         | TIME   |                          |
+| purpose          | STRING |                          |
 | status           | STRING |                          |
 
 ---
@@ -162,3 +163,77 @@ See `ERD/ERModel.md` for the full ER model and relationships.
 - Adjust tablespace/quotas as needed for your Oracle installation.
 
 ---
+
+## Functionalities
+
+1. **Search Venues**:
+   - Filters: Date, Time, Type, Capacity, Location, Equipment.
+   - API Endpoint: `/api/venues/search/` (GET).
+
+2. **Show All Venues**:
+   - API Endpoint: `/api/venues/` (GET).
+
+3. **Book Venue**:
+   - Inserts booking data into `BookingRequest` and triggers the approval process.
+   - API Endpoint: `/api/bookings/` (POST).
+
+4. **Community Page**:
+   - Shows all confirmed bookings for all users.
+   - API Endpoint: `/api/bookings/confirmed/` (GET).
+
+5. **MyBookings Page**:
+   - Shows past, pending, rejected, and confirmed bookings for the logged-in user.
+   - API Endpoint: `/api/bookings/user/` (GET).
+
+6. **Approval Process**:
+   - Sequential approval by Faculty Advisor, SC, SWO, and Security.
+   - API Endpoints:
+     - `/api/bookings/<id>/approve/` (POST).
+     - `/api/bookings/<id>/reject/` (POST).
+
+---
+
+Authentication Endpoints
+/api/auth/login/                # POST: User login
+/api/auth/logout/               # POST: User logout
+/api/auth/register/             # POST: User registration
+/api/auth/user/                 # GET: Current user info
+/api/auth/refresh-token/        # POST: Refresh JWT token
+---
+Venue Endpoints
+/api/venues/                    # GET: List venues with filtering
+/api/venues/<id>/               # GET: Venue details
+/api/venues/types/              # GET: List venue types
+/api/venues/availability/       # GET: Check venue availability
+/api/venues/<id>/availability/  # GET: Specific venue availability
+---
+Booking Endpoints
+/api/bookings/                  # GET: List user's bookings, POST: Create booking
+/api/bookings/<id>/             # GET: Booking details, PUT: Update, DELETE: Cancel
+/api/bookings/upcoming/         # GET: Upcoming bookings
+/api/bookings/pending/          # GET: Pending booking requests
+/api/bookings/rejected/         # GET: Rejected bookings
+/api/bookings/history/          # GET: Past bookings
+/api/bookings/<id>/approve/     # POST: Approve booking step
+/api/bookings/<id>/reject/      # POST: Reject booking
+---
+Community Endpoints
+/api/student-bodies/            # GET: List student bodies
+/api/student-bodies/<id>/       # GET: Student body details
+/api/student-bodies/<id>/members/ # GET: Student body members
+/api/community/booking-board/   # GET: Community booking board
+/api/exchange-requests/         # GET: List, POST: Create exchange request
+/api/exchange-requests/<id>/    # GET: Details, PUT: Update, DELETE: Cancel
+/api/exchange-history/          # GET: Exchange history
+---
+Notification Endpoints
+/api/notifications/             # GET: List notifications
+/api/notifications/<id>/read/   # POST: Mark notification as read
+/api/notifications/read-all/    # POST: Mark all as read
+/api/notifications/<id>/        # DELETE: Delete notification
+---
+Chat Endpoints
+/api/conversations/             # GET: List conversations
+/api/conversations/<id>/        # GET: Conversation details
+/api/conversations/<id>/messages/ # GET: List messages, POST: Send message
+/api/conversations/create/      # POST: Create new conversation

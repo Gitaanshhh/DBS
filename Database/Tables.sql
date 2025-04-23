@@ -2,7 +2,6 @@ CREATE TABLE Venue (
     venue_id INT PRIMARY KEY,
     venue_name VARCHAR(100),
     venue_type VARCHAR(50),
-    booking_status INT,
     seating_capacity INT,
     manager_contact BIGINT
 );
@@ -11,8 +10,8 @@ CREATE TABLE IndoorVenue (
     venue_id INT PRIMARY KEY,
     floor_number INT,
     building_id INT,
-    building_name VARCHAR(100),
-    FOREIGN KEY (venue_id) REFERENCES Venue(venue_id)
+    FOREIGN KEY (venue_id) REFERENCES Venue(venue_id),
+    FOREIGN KEY (building_id) REFERENCES Location(building_id)
 );
 
 CREATE TABLE Faculty (
@@ -29,10 +28,7 @@ CREATE TABLE StudentBody (
     name VARCHAR(100),
     email VARCHAR(100),
     faculty_advisor_id INT,
-    primary_rep_id INT,
-    secondary_rep_id INT,
     FOREIGN KEY (faculty_advisor_id) REFERENCES Faculty(faculty_id)
-    -- You can enforce primary/secondary rep FK after Student is created
 );
 
 CREATE TABLE Student (
@@ -44,11 +40,6 @@ CREATE TABLE Student (
     FOREIGN KEY (student_body_id) REFERENCES StudentBody(student_body_id)
 );
 
--- Now we add the missing FKs in StudentBody for primary and secondary reps
-ALTER TABLE StudentBody
-ADD CONSTRAINT fk_primary_rep FOREIGN KEY (primary_rep_id) REFERENCES Student(student_id),
-ADD CONSTRAINT fk_secondary_rep FOREIGN KEY (secondary_rep_id) REFERENCES Student(student_id);
-
 CREATE TABLE BookingRequest (
     booking_id INT PRIMARY KEY,
     venue_id INT,
@@ -56,6 +47,7 @@ CREATE TABLE BookingRequest (
     booking_date DATE,
     start_time TIME,
     end_time TIME,
+    purpose VARCHAR(500),
     status VARCHAR(50),
     FOREIGN KEY (venue_id) REFERENCES Venue(venue_id),
     FOREIGN KEY (student_body_id) REFERENCES StudentBody(student_body_id)
@@ -64,10 +56,6 @@ CREATE TABLE BookingRequest (
 CREATE TABLE ApprovalProcess (
     approval_id INT PRIMARY KEY,
     booking_id INT,
-    FA_approval BOOLEAN,
-    SC_approval BOOLEAN,
-    SWO_approval BOOLEAN,
-    Sec_approval BOOLEAN,
     approver_id INT,
     approval_status VARCHAR(50),
     FOREIGN KEY (booking_id) REFERENCES BookingRequest(booking_id),
@@ -84,7 +72,7 @@ CREATE TABLE BookingHistory (
 
 CREATE TABLE RoleAssignments (
     faculty_id INT,
-    role ENUM('SWO', 'Security'),
+    role ENUM('FA', 'SWO', 'Security'),
     PRIMARY KEY (faculty_id, role),
     FOREIGN KEY (faculty_id) REFERENCES Faculty(faculty_id)
 );
@@ -93,4 +81,25 @@ CREATE TABLE SC_Assignment (
     student_id INT PRIMARY KEY,
     is_SC BOOLEAN,
     FOREIGN KEY (student_id) REFERENCES Student(student_id)
+);
+
+CREATE TABLE Equipment (
+    equipment_id INT PRIMARY KEY,
+    equipment_name VARCHAR(100),
+    quantity INT
+);
+
+CREATE TABLE VenueEquipment (
+    venue_id INT,
+    equipment_id INT,
+    quantity_available INT,
+    PRIMARY KEY (venue_id, equipment_id),
+    FOREIGN KEY (venue_id) REFERENCES Venue(venue_id),
+    FOREIGN KEY (equipment_id) REFERENCES Equipment(equipment_id)
+);
+
+CREATE TABLE Location (
+    building_id INT PRIMARY KEY,
+    building_name VARCHAR(100),
+    address VARCHAR(255)
 );
