@@ -4,6 +4,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db import connection
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 @api_view(['GET'])
 def test_api(request):
@@ -61,17 +63,19 @@ User login details
 
 Can add verification of user login details here
 """
-@api_view(['GET'])
+@api_view(['POST'])
+@csrf_exempt
 def getUsers(request):
-    # Get the username or email from the query parameters
-    username = request.GET.get('username', None)  # Replace 'username' with the desired parameter name
+    # Get email and password from POST data
+    email = request.data.get('email')
+    password = request.data.get('password')
 
-    if not username:
-        return Response({'error': 'Username is required'}, status=400)
+    if not email or not password:
+        return Response({'error': 'Email and password are required'}, status=400)
 
     with connection.cursor() as cursor:
         # Use parameterized queries to prevent SQL injection
-        cursor.execute("SELECT * FROM Users WHERE username = %s", [username])
+        cursor.execute("SELECT * FROM Users WHERE email = %s AND password = %s", [email, password])
         columns = [col[0] for col in cursor.description]
         data = [
             dict(zip(columns, row))
@@ -79,7 +83,7 @@ def getUsers(request):
         ]
 
     if not data:
-        return Response({'error': 'User not found'}, status=404)
+        return Response({'error': 'Invalid email or password'}, status=401)
 
     return Response({'User Details': data})
 

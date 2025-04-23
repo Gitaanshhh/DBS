@@ -21,16 +21,16 @@ DELETE FROM Users;
 
 -- Insert sample users
 INSERT INTO Users (user_id, email, password_hash, user_type) VALUES
-(1, 'admin@uni.edu', 'hashed_password_here', 'admin'),
-(2, 'rao@uni.edu', 'hashed_password_here', 'faculty'),
-(3, 'sharma@uni.edu', 'hashed_password_here', 'faculty'),
-(4, 'john.doe@uni.edu', 'hashed_password_here', 'student'),
-(5, 'alice.smith@uni.edu', 'hashed_password_here', 'student'),
-(6, 'bob.johnson@uni.edu', 'hashed_password_here', 'student'),
-(7, 'emma.wilson@uni.edu', 'hashed_password_here', 'student'),
-(8, 'michael.brown@uni.edu', 'hashed_password_here', 'student'),
-(9, 'patel@uni.edu', 'hashed_password_here', 'faculty'),
-(10, 'gupta@uni.edu', 'hashed_password_here', 'faculty');
+(1, 'admin@manipal.edu', 'admin', 'admin'),
+(2, 'rao@manipal.edu', 'hashed_password_here', 'faculty'),
+(3, 'sharma@manipal.edu', 'hashed_password_here', 'faculty'),
+(4, 'john.doe@manipal.edu', 'hashed_password_here', 'student'),
+(5, 'alice.smith@manipal.edu', 'hashed_password_here', 'student'),
+(6, 'bob.johnson@manipal.edu', 'hashed_password_here', 'student'),
+(7, 'emma.wilson@manipal.edu', 'hashed_password_here', 'student'),
+(8, 'michael.brown@manipal.edu', 'hashed_password_here', 'student'),
+(9, 'patel@manipal.edu', 'hashed_password_here', 'faculty'),
+(10, 'gupta@manipal.edu', 'hashed_password_here', 'faculty');
 
 -- Insert faculty members
 INSERT INTO Faculty (faculty_id, user_id, registration_id, name, department, post, contact_number) VALUES
@@ -56,9 +56,9 @@ INSERT INTO Student (student_id, user_id, registration_id, name, contact_number,
 
 -- Insert student bodies
 INSERT INTO StudentBody (student_body_id, name, email, description, faculty_advisor_id, primary_rep_id, secondary_rep_id) VALUES
-(1, 'Tech Club', 'tech@uni.edu', 'Technology enthusiasts club', 1, 1, 2),
-(2, 'Cultural Society', 'cultural@uni.edu', 'Promoting cultural activities', 2, 3, 4),
-(3, 'Debate Club', 'debate@uni.edu', 'Platform for debate competitions', 3, 5, NULL);
+(1, 'Tech Club', 'tech@manipal.edu', 'Technology enthusiasts club', 1, 1, 2),
+(2, 'Cultural Society', 'cultural@manipal.edu', 'Promoting cultural activities', 2, 3, 4),
+(3, 'Debate Club', 'debate@manipal.edu', 'Platform for debate competitions', 3, 5, NULL);
 
 -- Insert student body memberships
 INSERT INTO StudentBodyMembership (membership_id, student_id, student_body_id, role, joined_date) VALUES

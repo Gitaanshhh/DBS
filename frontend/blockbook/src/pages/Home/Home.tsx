@@ -2,12 +2,22 @@ import React, { useEffect, useState } from 'react';
 import styles from './Home.module.css';
 import { getVenues } from '../../api/venues'; // adjust path if needed
 
+
 const Home = () => {
   const [venues, setVenues] = useState([]);
 
   useEffect(() => {
     getVenues().then((data) => {
-      setVenues(data);
+      // Accept both array and object with Venues/venues key
+      if (Array.isArray(data)) {
+        setVenues(data);
+      } else if (data && (Array.isArray(data.Venues) || Array.isArray(data.venues))) {
+        setVenues(data.Venues || data.venues);
+      } else if (data && typeof data === "object" && Object.keys(data).length > 0) {
+        setVenues(Object.values(data));
+      } else {
+        setVenues([]);
+      }
     });
   }, []);
 
@@ -31,21 +41,22 @@ const Home = () => {
       </div>
       <h2 className={styles.sectionTitle}>Venues</h2>
       <div className={styles.venues}>
-        {venues.map((venue) => (
-          <div className={styles.venue} key={venue.id}>
-            <img src={venue.image} alt={venue.name} />
+        {venues.map((venue: any) => (
+          <div className={styles.venue} key={venue.venue_id}>
+            <img src={venue.image_url} alt={venue.venue_name} />
             <div className={styles.venueContent}>
-              <h3 className={styles.venueTitle}>{venue.name}</h3>
+              <h3 className={styles.venueTitle}>{venue.venue_name}</h3>
               <p className={styles.venueLocation}>
-                <i className="fas fa-map-marker-alt"></i> {venue.location}
+                <i className="fas fa-map-marker-alt"></i> {venue.building_name || '—'}
+                {venue.floor_number ? `, Floor ${venue.floor_number}` : ''}
               </p>
               <p className={styles.venueCapacity}>
-                <i className="fas fa-users"></i> Capacity: {venue.capacity}
+                <i className="fas fa-users"></i> Capacity: {venue.seating_capacity}
               </p>
               <div className={styles.venueFeatures}>
-                {venue.features.map((feature, index) => (
+                {venue.features && venue.features.split(',').map((feature: string, index: number) => (
                   <span className={styles.feature} key={index}>
-                    {feature}
+                    {feature.trim()}
                   </span>
                 ))}
               </div>
