@@ -1,16 +1,43 @@
+Frontend–Backend Flow
+
+1. On login, POST credentials to /api/auth/login/.
+    Backend returns a JWT and the user’s role (student, student-council, faculty, swo, security).
+
+2. Use the role to redirect:
+    Faculty/FA/SWO/Security: /approval
+    Student/Student Council: /home (main app)
+
+3. The Approval page fetches pending requests for the current user’s approval stage:
+    GET /api/approval-requests/?role=FA (or SC, SWO, Security)
+
+4. Approve/Reject buttons POST to:
+    /api/approval-requests/<booking_id>/approve/
+    /api/approval-requests/<booking_id>/reject/
+
+5. Backend updates the request’s status and moves it to the next stage in the pipeline:
+    FA → SC → SWO → Security
+
+6. Each stage only sees requests pending their approval.
+
+Backend (Django) Suggestions
+1. Use Django REST Framework for APIs.
+2. Store the current approval stage in each BookingRequest or a related ApprovalProcess table.
+3. When a request is approved at one stage, update the stage to the next approver.
+4. Only show requests at the user’s stage (filter by current_stage).
+5. Use Django’s permissions to ensure only the right users see the right requests.
+
+
 Core Application Files
 
 src/main.jsx
     Entry point of the application
     Renders the App component into the DOM
     Sets up React StrictMode for development quality checks
-
 src/App.jsx
     Root component that structures the overall application layout
     Wraps the entire application in Router for navigation
     Includes Header and Footer components that appear on all pages
     Contains the Routes component that handles page navigation
-
 src/routes.jsx
     Defines all application routes
     Maps URL paths to specific page components
@@ -24,7 +51,6 @@ src/components/common/Header/index.jsx
     Handles responsive menu toggling
     Shows user information and notification indicators
     Highlights active navigation links
-
 src/components/common/Footer/index.jsx
     Displays copyright information and potentially other links
     Appears consistently across all pages
@@ -37,33 +63,27 @@ src/pages/Home/index.jsx
     Landing page with venue browsing, search functionality
     Shows booking requests and past bookings
     Uses useVenueBooking hook for booking functionality
-
 src/pages/ExploreVenues/index.jsx
     Advanced venue search with multiple filters
     Displays detailed venue cards with availability
     Includes map and gallery modals
     Uses useModal and useExploreVenues hooks
-
 src/pages/Community/index.jsx
     Shows booking board and exchange history
     Allows users to request exchanges and add events to calendar
     Uses useCommunity hook for community-related functionality
-
 src/pages/MyBookings/index.jsx
     Manages user's bookings across different states
     Handles booking cancellation, modification, and rebooking
     Uses useBookingManagement hook
-
 src/pages/Inbox/index.jsx
     Messaging interface for exchange discussions and admin communication
     Handles real-time chat functionality
     Uses useChat hook for message management
-
 src/pages/Notifications/index.jsx
     Displays system notifications with filtering options
     Allows marking as read and deletion
     Uses useNotifications hook
-
 src/pages/Booking/index.jsx
     Detailed booking form for a specific venue
     Handles time slot selection and form submission
@@ -78,43 +98,36 @@ src/hooks/useVenueBooking.js
     Handles storing selected venue data in localStorage
     Provides navigation to booking page
     Sets up date inputs with current date
-
 src/hooks/useModal.js
     Controls modal visibility (map, gallery)
     Manages body overflow when modals are open
     Handles modal closing via outside clicks
     Stores selected venue for modal content
-
 src/hooks/useTabSwitching.js
     Manages tab state for tabbed interfaces
     Provides tab switching functionality
     Used in Community and MyBookings pages
-
 src/hooks/useNotifications.js
     Manages notification state and filtering
     Handles marking notifications as read/unread
     Provides notification deletion functionality
     Controls navigation based on notification type
-
 src/hooks/useChat.js
     Manages chat state including messages and active conversations
     Handles message sending and receiving
     Provides tab switching between exchange and admin chats
     Simulates responses for demo purposes
-
 src/hooks/useBookingManagement.js
     Manages booking state across different categories
     Handles booking cancellation, status checking
     Provides rebooking functionality
     Manages tab switching between booking categories
-
 src/hooks/useCommunity.js
     Manages community-related functionality
     Handles exchange requests and calendar integration
     Provides search and filtering for community events
     Manages tab switching between booking board and exchange history
-    
-src/hooks/useExploreVenues.js
+    src/hooks/useExploreVenues.js
     Manages venue filtering state
     Handles filter application and clearing
     Provides venue booking functionality

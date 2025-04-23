@@ -1,0 +1,78 @@
+.approvalBg {
+    min-height: 100vh;
+    background: linear-gradient(120deg, #e3f0ff 0%, #f8fafc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .approvalBox {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+    padding: 2.5rem 2rem;
+    width: 90%;
+    max-width: 700px;
+  }
+  .approvalBox h2 {
+    color: #357abd;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .roleSwitch {
+    margin-bottom: 1.5rem;
+    text-align: right;
+  }
+  .roleSwitch label {
+    margin-right: 0.5rem;
+    color: #555;
+  }
+  .roleSwitch select {
+    padding: 0.3rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #dbeafe;
+    font-size: 1rem;
+  }
+  .noRequests {
+    color: #888;
+    text-align: center;
+    margin: 2rem 0;
+  }
+  .requestTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  .requestTable th, .requestTable td {
+    padding: 0.7rem 0.5rem;
+    border-bottom: 1px solid #eaeaea;
+    text-align: left;
+  }
+  .requestTable th {
+    color: #357abd;
+    font-weight: 600;
+    background: #f7faff;
+  }
+  .approveBtn, .rejectBtn {
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    border: none;
+    font-weight: bold;
+    margin-right: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  .approveBtn {
+    background: #4caf50;
+    color: #fff;
+  }
+  .approveBtn:hover {
+    background: #388e3c;
+  }
+  .rejectBtn {
+    background: #f44336;
+    color: #fff;
+  }
+  .rejectBtn:hover {
+    background: #c62828;
+  }
+  
