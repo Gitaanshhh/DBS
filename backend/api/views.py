@@ -63,15 +63,25 @@ Can add verification of user login details here
 """
 @api_view(['GET'])
 def getUsers(request):
+    # Get the username or email from the query parameters
+    username = request.GET.get('username', None)  # Replace 'username' with the desired parameter name
+
+    if not username:
+        return Response({'error': 'Username is required'}, status=400)
+
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM Users")
+        # Use parameterized queries to prevent SQL injection
+        cursor.execute("SELECT * FROM Users WHERE username = %s", [username])
         columns = [col[0] for col in cursor.description]
         data = [
             dict(zip(columns, row))
             for row in cursor.fetchall()
         ]
-    return Response({'User Details': data})
 
+    if not data:
+        return Response({'error': 'User not found'}, status=404)
+
+    return Response({'User Details': data})
 
 """
 Vanues 
@@ -79,7 +89,14 @@ Vanues
 @api_view(['GET'])
 def getVenues(request):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM Venue")
+        # Join Venue with Building to get building_name and floor_number, and select all required fields
+        cursor.execute("""
+            SELECT 
+                v.venue_id, v.venue_name, v.seating_capacity, v.features, v.image_url,
+                v.floor_number, b.building_name
+            FROM Venue v
+            LEFT JOIN Building b ON v.building_id = b.building_id
+        """)
         columns = [col[0] for col in cursor.description]
         data = [
             dict(zip(columns, row))
