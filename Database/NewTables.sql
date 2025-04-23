@@ -172,26 +172,6 @@ CREATE TABLE Notification (
     is_read CHAR(1) DEFAULT 'N' CHECK (is_read IN ('Y', 'N'))
 );
 
-CREATE TABLE Conversation (
-    conversation_id NUMBER PRIMARY KEY,
-    topic VARCHAR2(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE ConversationParticipant (
-    conversation_id NUMBER NOT NULL,
-    user_id NUMBER NOT NULL,
-    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (conversation_id, user_id)
-);
-
-CREATE TABLE Message (
-    message_id NUMBER PRIMARY KEY,
-    conversation_id NUMBER NOT NULL,
-    sender_id NUMBER NOT NULL,
-    message_text CLOB NOT NULL,
-    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
 
 -- Add foreign key constraints after all tables are created
 ALTER TABLE Faculty ADD CONSTRAINT fk_faculty_user FOREIGN KEY (user_id) REFERENCES Users(user_id);
@@ -216,10 +196,6 @@ ALTER TABLE BookingHistory ADD CONSTRAINT fk_bookinghistory_user FOREIGN KEY (ac
 ALTER TABLE ExchangeRequest ADD CONSTRAINT fk_exchangerequest_requester FOREIGN KEY (requester_booking_id) REFERENCES BookingRequest(booking_id);
 ALTER TABLE ExchangeRequest ADD CONSTRAINT fk_exchangerequest_requested FOREIGN KEY (requested_booking_id) REFERENCES BookingRequest(booking_id);
 ALTER TABLE Notification ADD CONSTRAINT fk_notification_user FOREIGN KEY (user_id) REFERENCES Users(user_id);
-ALTER TABLE ConversationParticipant ADD CONSTRAINT fk_conversationparticipant_conversation FOREIGN KEY (conversation_id) REFERENCES Conversation(conversation_id);
-ALTER TABLE ConversationParticipant ADD CONSTRAINT fk_conversationparticipant_user FOREIGN KEY (user_id) REFERENCES Users(user_id);
-ALTER TABLE Message ADD CONSTRAINT fk_message_conversation FOREIGN KEY (conversation_id) REFERENCES Conversation(conversation_id);
-ALTER TABLE Message ADD CONSTRAINT fk_message_user FOREIGN KEY (sender_id) REFERENCES Users(user_id);
 
 /*
 CAN add the following trigger
