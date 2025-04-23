@@ -1,0 +1,25 @@
+To connect this to your Django backend:
+
+1. Create the authentication endpoints in Django:
+    /api/auth/login/ - For user login
+    /api/auth/logout/ - For user logout
+    /api/auth/user/ - To get current user info
+2. Create the approval endpoints:
+    /api/approval-requests/ - To get requests for the current user's role
+    /api/approval-requests/<id>/approve/ - To approve a request
+    /api/approval-requests/<id>/reject/ - To reject a request
+3. In your Django views, implement the approval pipeline logic:
+    When a booking request is created, set its initial approval stage to 'FA'
+    When approved by FA, update to 'SC'
+    When approved by SC, update to 'SWO'
+    When approved by SWO, update to 'Security'
+    When approved by Security, mark as fully approved
+4. Replace the mock authentication in the AuthContext with actual API calls to your Django backend.
+    
+With these changes, your application will:
+    Start at the landing page with login
+    Redirect users based on their role after login
+    Provide appropriate access to pages based on user roles
+    Implement the approval pipeline for venue booking requests
+
+This structure ensures that users first land on the login page, then get redirected to their appropriate dashboard based on their role, maintaining the security and user experience requirements you specified
