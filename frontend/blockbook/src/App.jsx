@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Header from './components/common/Header/index.jsx';
@@ -23,23 +23,11 @@ function App() {
         <Route path="/" element={<Landing />} />
         
         {/* All protected routes wrapped with AuthProvider */}
-        <Route path="/*" element={
+        <Route element={
           <AuthProvider>
-            <AppRoutes />
+            <ProtectedLayout />
           </AuthProvider>
-        } />
-      </Routes>
-    </Router>
-  );
-}
-
-// Protected routes component
-const AppRoutes = () => {
-  return (
-    <>
-      <Header />
-      <main className="container mx-auto px-4 py-8 min-h-screen">
-        <Routes>
+        }>
           {/* Student and Student Council routes */}
           <Route path="/home" element={
             <ProtectedRoute allowedRoles={['student', 'student-council']}>
@@ -72,20 +60,47 @@ const AppRoutes = () => {
             </ProtectedRoute>
           } />
           
-          {/* Faculty, SWO, Security approval page */}
+          {/*SC, Faculty, SWO, Security approval page */}
           <Route path="/approvals" element={
-            <ProtectedRoute allowedRoles={['faculty', 'swo', 'security']}>
+            <ProtectedRoute allowedRoles={['student-council','faculty', 'swo', 'security']}>
               <Approval />
             </ProtectedRoute>
           } />
           
           {/* Catch-all route */}
           <Route path="*" element={<Navigate to="/home" replace />} />
-        </Routes>
+        </Route>
+      </Routes>
+    </Router>
+  );
+}
+
+// Protected layout component with Header and Footer
+const ProtectedLayout = () => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>;
+  }
+  
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return (
+    <>
+      <Header />
+      <main className="container mx-auto px-4 py-8 min-h-screen">
+        <Outlet />
       </main>
       <Footer />
     </>
   );
 };
+
+// Import useAuth at the top of the file
+import { useAuth } from './context/AuthContext';
 
 export default App;

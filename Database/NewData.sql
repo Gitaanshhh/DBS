@@ -30,6 +30,9 @@ INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (7, 'emma.wi
 INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (8, 'michael.brown@manipal.edu', 'hashed_password_here', 'student');
 INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (9, 'patel@manipal.edu', 'hashed_password_here', 'faculty');
 INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (10, 'gupta@manipal.edu', 'hashed_password_here', 'faculty');
+INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (11, 'kumar@manipal.edu', 'hashed_password_here', 'faculty');
+INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (12, 'singh@manipal.edu', 'hashed_password_here', 'faculty');
+INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (13, 'verma@manipal.edu', 'hashed_password_here', 'faculty');
 
 
 -- Insert faculty members
@@ -37,7 +40,9 @@ INSERT INTO Faculty (faculty_id, user_id, registration_id, name, department, pos
 INSERT INTO Faculty (faculty_id, user_id, registration_id, name, department, post, contact_number) VALUES (2, 3, 5002, 'Ms. Sharma', 'Science', 'Lecturer', 9876543211);
 INSERT INTO Faculty (faculty_id, user_id, registration_id, name, department, post, contact_number) VALUES (3, 9, 5003, 'Dr. Patel', 'Computer Science', 'Associate Professor', 9876543212);
 INSERT INTO Faculty (faculty_id, user_id, registration_id, name, department, post, contact_number) VALUES (4, 10, 5004, 'Dr. Gupta', 'Mathematics', 'Professor', 9876543213);
-
+INSERT INTO Faculty (faculty_id, user_id, registration_id, name, department, post, contact_number) VALUES (5, 11, 5005, 'Dr. Kumar', 'Physics', 'Assistant Professor', 9876543214);
+INSERT INTO Faculty (faculty_id, user_id, registration_id, name, department, post, contact_number) VALUES (6, 12, 5006, 'Dr. Singh', 'Chemistry', 'Assistant Professor', 9876543215);
+INSERT INTO Faculty (faculty_id, user_id, registration_id, name, department, post, contact_number) VALUES (7, 13, 5007, 'Dr. Verma', 'Biology', 'Assistant Professor', 9876543216);
 
 -- Insert faculty roles
 INSERT INTO FacultyRoles (role_id, faculty_id, role_name, assigned_date) VALUES (1, 1, 'SWO', TO_DATE('2024-01-01', 'YYYY-MM-DD'));
