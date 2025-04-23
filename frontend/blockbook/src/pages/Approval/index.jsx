@@ -1,104 +1,244 @@
+// src/pages/Approval/index.jsx
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import styles from './Approval.module.css';
-
-// Simulate fetching approval requests from backend
-const fetchApprovalRequests = async (role) => {
-  // Replace with real API call: `/api/approval-requests/?role=${role}`
-  return [
-    {
-      booking_id: 501,
-      venue: 'Lecture Hall AB1-101',
-      requested_by: 'IEEE Student Branch',
-      booking_date: '2025-04-25',
-      start_time: '10:00',
-      end_time: '12:00',
-      purpose: 'IEEE Technical Workshop',
-      status: 'Pending',
-      current_stage: 'FA'
-    },
-    {
-      booking_id: 502,
-      venue: 'Seminar Room AB1-201',
-      requested_by: 'ACM Student Chapter',
-      booking_date: '2025-04-26',
-      start_time: '14:00',
-      end_time: '16:00',
-      purpose: 'ACM Coding Competition',
-      status: 'Pending',
-      current_stage: 'SC'
-    }
-  ];
-};
 
 const Approval = () => {
   const [requests, setRequests] = useState([]);
-  const [role, setRole] = useState('FA'); // Simulate role, set from login context in real app
   const [loading, setLoading] = useState(true);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setLoading(true);
-    fetchApprovalRequests(role).then((data) => {
-      setRequests(data.filter(r => r.current_stage === role));
-      setLoading(false);
-    });
-  }, [role]);
+    // Fetch approval requests based on user role
+    const fetchRequests = async () => {
+      try {
+        // ACTUAL API CALL:
+        // const response = await fetch(`http://your-django-api.com/api/approval-requests/?role=${user.role}`, {
+        //   headers: {
+        //     'Authorization': `Bearer ${localStorage.getItem('token')}`
+        //   }
+        // });
+        // 
+        // if (!response.ok) {
+        //   throw new Error('Failed to fetch approval requests');
+        // }
+        // 
+        // const data = await response.json();
+        // setRequests(data.requests);
+        
+        // Mock data for testing
+        const mockRequests = [
+          {
+            id: 1,
+            venue: 'Lecture Hall AB1-101',
+            requestedBy: 'IEEE Student Branch',
+            date: '2025-04-25',
+            time: '10:00 AM - 12:00 PM',
+            purpose: 'Technical Workshop on IoT',
+            currentApprover: user.role
+          },
+          {
+            id: 2,
+            venue: 'Seminar Hall 2',
+            requestedBy: 'Computer Science Club',
+            date: '2025-04-26',
+            time: '2:00 PM - 4:00 PM',
+            purpose: 'Guest Lecture on AI',
+            currentApprover: user.role
+          },
+          {
+            id: 3,
+            venue: 'Main Auditorium',
+            requestedBy: 'Cultural Club',
+            date: '2025-04-27',
+            time: '6:00 PM - 9:00 PM',
+            purpose: 'Annual Cultural Festival',
+            currentApprover: user.role
+          }
+        ];
+        
+        setRequests(mockRequests);
+      } catch (error) {
+        console.error('Error fetching approval requests:', error);
+        alert('Failed to load approval requests. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchRequests();
+  }, [user]);
 
-  const handleApprove = async (booking_id) => {
-    // Real API: POST `/api/approval-requests/${booking_id}/approve/`
-    setRequests(reqs => reqs.filter(r => r.booking_id !== booking_id));
-    // Optionally show a toast/alert
+  const handleApprove = async (requestId) => {
+    try {
+      setLoading(true);
+      
+      // ACTUAL API CALL:
+      // const response = await fetch(`http://your-django-api.com/api/approval-requests/${requestId}/approve/`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify({ role: user.role })
+      // });
+      // 
+      // if (!response.ok) {
+      //   throw new Error('Failed to approve request');
+      // }
+      // 
+      // const data = await response.json();
+      // // Update the requests list
+      // setRequests(prevRequests => 
+      //   prevRequests.filter(req => req.id !== requestId)
+      // );
+      
+      // Mock approval for testing
+      setRequests(prevRequests => 
+        prevRequests.filter(req => req.id !== requestId)
+      );
+      
+      alert('Request approved successfully!');
+    } catch (error) {
+      console.error('Error approving request:', error);
+      alert('Failed to approve request. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
-  const handleReject = async (booking_id) => {
-    // Real API: POST `/api/approval-requests/${booking_id}/reject/`
-    setRequests(reqs => reqs.filter(r => r.booking_id !== booking_id));
+
+  const handleReject = async (requestId) => {
+    try {
+      setLoading(true);
+      
+      // ACTUAL API CALL:
+      // const response = await fetch(`http://your-django-api.com/api/approval-requests/${requestId}/reject/`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify({ 
+      //     role: user.role,
+      //     reason: prompt('Please provide a reason for rejection:') || 'No reason provided'
+      //   })
+      // });
+      // 
+      // if (!response.ok) {
+      //   throw new Error('Failed to reject request');
+      // }
+      // 
+      // const data = await response.json();
+      // // Update the requests list
+      // setRequests(prevRequests => 
+      //   prevRequests.filter(req => req.id !== requestId)
+      // );
+      
+      // Mock rejection for testing
+      const reason = prompt('Please provide a reason for rejection:') || 'No reason provided';
+      setRequests(prevRequests => 
+        prevRequests.filter(req => req.id !== requestId)
+      );
+      
+      alert(`Request rejected. Reason: ${reason}`);
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      alert('Failed to reject request. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className={styles.approvalBg}>
-      <div className={styles.approvalBox}>
-        <h2>Approve Venue Booking Requests</h2>
-        <div className={styles.roleSwitch}>
-          <label>Logged in as: </label>
-          <select value={role} onChange={e => setRole(e.target.value)}>
-            <option value="FA">Faculty Advisor</option>
-            <option value="SC">Student Council</option>
-            <option value="SWO">SWO</option>
-            <option value="Security">Security</option>
-          </select>
+    <div className={styles.approvalPage}>
+      <div className={styles.header}>
+        <h1>Approval Dashboard</h1>
+        <div className={styles.userActions}>
+          <span className={styles.userInfo}>
+            Logged in as: <strong>{user?.email}</strong> ({user?.role})
+          </span>
+          <button className={styles.logoutBtn} onClick={logout}>Logout</button>
+          {user?.role === 'student-council' && (
+            <button className={styles.homeBtn} onClick={() => navigate('/app/home')}>
+              Go to Home
+            </button>
+          )}
         </div>
+      </div>
+      
+      <div className={styles.approvalContainer}>
+        <h2>Pending Approval Requests</h2>
+        
         {loading ? (
-          <div>Loading...</div>
+          <div className={styles.loading}>Loading requests...</div>
         ) : requests.length === 0 ? (
-          <div className={styles.noRequests}>No requests to approve.</div>
+          <div className={styles.emptyState}>
+            <p>No pending requests require your approval.</p>
+          </div>
         ) : (
-          <table className={styles.requestTable}>
-            <thead>
-              <tr>
-                <th>Venue</th>
-                <th>Requested By</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Purpose</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {requests.map(req => (
-                <tr key={req.booking_id}>
-                  <td>{req.venue}</td>
-                  <td>{req.requested_by}</td>
-                  <td>{req.booking_date}</td>
-                  <td>{req.start_time} - {req.end_time}</td>
-                  <td>{req.purpose}</td>
-                  <td>
-                    <button className={styles.approveBtn} onClick={() => handleApprove(req.booking_id)}>Approve</button>
-                    <button className={styles.rejectBtn} onClick={() => handleReject(req.booking_id)}>Reject</button>
-                  </td>
+          <div className={styles.requestsTable}>
+            <table>
+              <thead>
+                <tr>
+                  <th>Venue</th>
+                  <th>Requested By</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Purpose</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {requests.map(request => (
+                  <tr key={request.id}>
+                    <td>{request.venue}</td>
+                    <td>{request.requestedBy}</td>
+                    <td>{request.date}</td>
+                    <td>{request.time}</td>
+                    <td>{request.purpose}</td>
+                    <td className={styles.actions}>
+                      <button 
+                        className={styles.approveBtn}
+                        onClick={() => handleApprove(request.id)}
+                      >
+                        Approve
+                      </button>
+                      <button 
+                        className={styles.rejectBtn}
+                        onClick={() => handleReject(request.id)}
+                      >
+                        Reject
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
+        
+        <div className={styles.approvalInfo}>
+          <h3>Approval Pipeline</h3>
+          <div className={styles.pipeline}>
+            <div className={`${styles.stage} ${user?.role === 'faculty' ? styles.active : ''}`}>
+              Faculty Advisor
+            </div>
+            <div className={styles.arrow}>→</div>
+            <div className={`${styles.stage} ${user?.role === 'student-council' ? styles.active : ''}`}>
+              Student Council
+            </div>
+            <div className={styles.arrow}>→</div>
+            <div className={`${styles.stage} ${user?.role === 'swo' ? styles.active : ''}`}>
+              SWO
+            </div>
+            <div className={styles.arrow}>→</div>
+            <div className={`${styles.stage} ${user?.role === 'security' ? styles.active : ''}`}>
+              Security
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

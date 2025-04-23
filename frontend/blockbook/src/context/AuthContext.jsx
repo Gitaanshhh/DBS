@@ -1,60 +1,141 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+// Create the context
 const AuthContext = createContext(null);
 
+// Create the provider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
+  // Check if user is already logged in when the app loads
   useEffect(() => {
-    // Check if user is already logged in (from localStorage or session)
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    const checkLoggedIn = async () => {
+      try {
+        // Get user data from localStorage
+        const storedUser = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
+        
+        if (storedUser && token) {
+          // ACTUAL API CALL:
+          // Verify the token with the backend
+          // const response = await fetch('http://your-django-api.com/api/auth/verify-token/', {
+          //   method: 'GET',
+          //   headers: {
+          //     'Authorization': `Bearer ${token}`
+          //   }
+          // });
+          
+          // if (response.ok) {
+          //   const userData = await response.json();
+          //   setUser(userData);
+          // } else {
+          //   // Token invalid, clear storage
+          //   localStorage.removeItem('user');
+          //   localStorage.removeItem('token');
+          // }
+          
+          // For testing, just use the stored user
+          setUser(JSON.parse(storedUser));
+        }
+      } catch (error) {
+        console.error('Authentication check failed:', error);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    checkLoggedIn();
   }, []);
 
+  // Login function
   const login = async (email, password) => {
-    try {
-      // In a real app, this would be an API call to your Django backend
-      // const response = await api.post('/auth/login/', { email, password });
-      
-      // For demonstration, we'll simulate the response
-      let role;
-      if (email.endsWith('@manipal.edu')) {
-        if (email.includes('faculty') || email.includes('swo') || email.includes('security')) {
-          role = 'faculty';
-        } else if (email.includes('studentcouncil')) {
-          role = 'student-council';
-        } else {
-          role = 'student';
-        }
-      } else {
-        throw new Error('Invalid email domain');
-      }
-      
-      const userData = { email, role };
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-      
-      return { success: true, role };
-    } catch (error) {
-      return { success: false, error: error.message };
+    // ACTUAL API CALL:
+    // const response = await fetch('http://your-django-api.com/api/auth/login/', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({ email, password }),
+    // });
+    
+    // if (!response.ok) {
+    //   const errorData = await response.json();
+    //   throw new Error(errorData.message || 'Login failed');
+    // }
+    
+    // const data = await response.json();
+    // localStorage.setItem('token', data.token);
+    // localStorage.setItem('user', JSON.stringify(data.user));
+    // setUser(data.user);
+    // return data.user;
+    
+    // For testing purposes only
+    if (!email.endsWith('@manipal.edu')) {
+      throw new Error('Only Manipal University emails are allowed');
     }
+    
+    let mockUser;
+    if (email === 'student@manipal.edu' && password === 'student-password') {
+      mockUser = { email, role: 'student' };
+    } else if (email === 'sc@manipal.edu' && password === 'sc-password') {
+      mockUser = { email, role: 'student-council' };
+    } else if (email === 'faculty@manipal.edu' && password === 'faculty-password') {
+      mockUser = { email, role: 'faculty' };
+    } else if (email === 'swo@manipal.edu' && password === 'swo-password') {
+      mockUser = { email, role: 'swo' };
+    } else {
+      throw new Error('Invalid email or password');
+    }
+    
+    localStorage.setItem('user', JSON.stringify(mockUser));
+    localStorage.setItem('token', 'mock-token');
+    setUser(mockUser);
+    return mockUser;
   };
 
+  // Logout function
   const logout = () => {
-    setUser(null);
+    // ACTUAL API CALL:
+    // fetch('http://your-django-api.com/api/auth/logout/', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Authorization': `Bearer ${localStorage.getItem('token')}`
+    //   }
+    // });
+    
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setUser(null);
+    navigate('/');
+  };
+
+  // Check if user has a specific role
+  const hasRole = (roles) => {
+    if (!user) return false;
+    if (Array.isArray(roles)) {
+      return roles.includes(user.role);
+    }
+    return user.role === roles;
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, hasRole }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+// Custom hook to use the auth context
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

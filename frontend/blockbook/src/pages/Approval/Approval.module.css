@@ -1,78 +1,188 @@
-.approvalBg {
-    min-height: 100vh;
-    background: linear-gradient(120deg, #e3f0ff 0%, #f8fafc 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .approvalBox {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.09);
-    padding: 2.5rem 2rem;
-    width: 90%;
-    max-width: 700px;
-  }
-  .approvalBox h2 {
-    color: #357abd;
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
-  .roleSwitch {
-    margin-bottom: 1.5rem;
-    text-align: right;
-  }
-  .roleSwitch label {
-    margin-right: 0.5rem;
-    color: #555;
-  }
-  .roleSwitch select {
-    padding: 0.3rem 1rem;
-    border-radius: 6px;
-    border: 1px solid #dbeafe;
-    font-size: 1rem;
-  }
-  .noRequests {
-    color: #888;
-    text-align: center;
-    margin: 2rem 0;
-  }
-  .requestTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-  }
-  .requestTable th, .requestTable td {
-    padding: 0.7rem 0.5rem;
-    border-bottom: 1px solid #eaeaea;
-    text-align: left;
-  }
-  .requestTable th {
-    color: #357abd;
-    font-weight: 600;
-    background: #f7faff;
-  }
-  .approveBtn, .rejectBtn {
-    padding: 0.4rem 1rem;
-    border-radius: 6px;
-    border: none;
-    font-weight: bold;
-    margin-right: 0.5rem;
-    cursor: pointer;
-    font-size: 1rem;
-  }
-  .approveBtn {
-    background: #4caf50;
-    color: #fff;
-  }
-  .approveBtn:hover {
-    background: #388e3c;
-  }
-  .rejectBtn {
-    background: #f44336;
-    color: #fff;
-  }
-  .rejectBtn:hover {
-    background: #c62828;
+/* src/pages/Approval/Approval.module.css */
+.approvalPage {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header h1 {
+  color: #357abd;
+  margin: 0;
+}
+
+.userActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.userInfo {
+  color: #555;
+}
+
+.logoutBtn, .homeBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logoutBtn {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.logoutBtn:hover {
+  background-color: #e0e0e0;
+}
+
+.homeBtn {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.homeBtn:hover {
+  background-color: #357abd;
+}
+
+.approvalContainer {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  padding: 2rem;
+}
+
+.approvalContainer h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.loading, .emptyState {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.requestsTable {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.requestsTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.requestsTable th, .requestsTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.requestsTable th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+  color: #333;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.approveBtn, .rejectBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.approveBtn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.approveBtn:hover {
+  background-color: #388e3c;
+}
+
+.rejectBtn {
+  background-color: #f44336;
+  color: white;
+}
+
+.rejectBtn:hover {
+  background-color: #d32f2f;
+}
+
+.approvalInfo {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.approvalInfo h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.pipeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.stage {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+  color: #555;
+  font-weight: 500;
+}
+
+.stage.active {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.arrow {
+  color: #999;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
   }
   
+  .pipeline {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .arrow {
+    transform: rotate(90deg);
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
+}
