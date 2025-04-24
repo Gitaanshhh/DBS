@@ -486,3 +486,42 @@ def getMyBookings(request):
         print("MY BOOKINGS ERROR:", str(e))
         return JsonResponse({'error': f'Failed to fetch bookings: {str(e)}'}, status=500)
 
+@api_view(['DELETE'])
+@csrf_exempt
+def deleteBooking(request, booking_id):
+    """
+    Delete a booking from BookingRequest.
+    The trigger will log this action in BookingHistory.
+    """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM BookingRequest WHERE booking_id = %s", [booking_id])
+        return Response({'message': 'Booking deleted successfully.'})
+    except Exception as e:
+        return Response({'error': f'Failed to delete booking: {str(e)}'}, status=500)
+
+@api_view(['GET'])
+def getBookingLogs(request):
+    """
+    Fetch booking logs from BookingHistory for the Community page.
+    """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    bh.history_id,
+                    bh.booking_id,
+                    bh.action_taken,
+                    bh.action_by,
+                    TO_CHAR(bh.action_date, 'YYYY-MM-DD HH24:MI:SS') as action_date,
+                    u.email as user_email
+                FROM BookingHistory bh
+                LEFT JOIN Users u ON bh.action_by = u.user_id
+                ORDER BY bh.action_date DESC
+            """)
+            columns = [col[0] for col in cursor.description]
+            logs = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        return Response({'logs': logs})
+    except Exception as e:
+        return Response({'error': f'Failed to fetch booking logs: {str(e)}'}, status=500)
+

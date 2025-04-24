@@ -219,8 +219,26 @@ ALTER TABLE ExchangeRequest ADD CONSTRAINT fk_exchangerequest_requester FOREIGN 
 ALTER TABLE ExchangeRequest ADD CONSTRAINT fk_exchangerequest_requested FOREIGN KEY (requested_booking_id) REFERENCES BookingRequest(booking_id);
 ALTER TABLE Notification ADD CONSTRAINT fk_notification_user FOREIGN KEY (user_id) REFERENCES Users(user_id);
 
--- Create sequence for Users table
-CREATE SEQUENCE users_seq START WITH 1000 INCREMENT BY 1 NOCACHE;
+-- Trigger: On delete from BookingRequest, insert into BookingHistory
+CREATE OR REPLACE TRIGGER trg_booking_delete_log
+AFTER DELETE ON BookingRequest
+FOR EACH ROW
+BEGIN
+  INSERT INTO BookingHistory (
+    history_id,
+    booking_id,
+    action_taken,
+    action_by,
+    action_date
+  ) VALUES (
+    bookinghistory_seq.NEXTVAL,
+    :OLD.booking_id,
+    'Booking deleted',
+    :OLD.requester_id,
+    SYSDATE
+  );
+END;
+/
 
--- Create sequence for BookingRequest table
-CREATE SEQUENCE bookingrequest_seq START WITH 1000 INCREMENT BY 1 NOCACHE;
+-- Create sequence for BookingHistory if not exists
+CREATE SEQUENCE bookinghistory_seq START WITH 1000 INCREMENT BY 1 NOCACHE;

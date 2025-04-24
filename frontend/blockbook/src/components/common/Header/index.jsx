@@ -47,10 +47,10 @@ const Header = () => {
               Explore Venues
             </Link>
             <Link
-              to="/community"
-              className={isActive("/community") ? styles.active : ""}
+              to="/records"
+              className={isActive("/records") ? styles.active : ""}
             >
-              Community
+              Records
             </Link>
             <Link
               to="/my-bookings"

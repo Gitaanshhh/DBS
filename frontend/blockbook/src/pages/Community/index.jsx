@@ -1,83 +1,74 @@
-import React from "react";
-import { useCommunity } from "../../hooks/useCommunity";
+import React, { useEffect, useState } from "react";
 import styles from "./Community.module.css";
 
-const Community = () => {
-  const {
-    activeTab,
-    switchTab,
-    addToCalendar,
-    sendReminder,
-    searchEvents,
-    applyFilter,
-  } = useCommunity();
+/**
+ * Records page - shows booking logs (BookingHistory)
+ */
+const Records = () => {
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    // Fetch booking logs from backend
+    const fetchLogs = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const response = await fetch("http://localhost:8000/api/booking-logs/");
+        if (!response.ok) throw new Error("Failed to fetch booking logs");
+        const data = await response.json();
+        // Defensive: convert all fields to string for display
+        const logsArr = (data.logs || []).map(log =>
+          Object.fromEntries(
+            Object.entries(log).map(([k, v]) => [k, v == null ? "" : v.toString()])
+          )
+        );
+        setLogs(logsArr);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLogs();
+  }, []);
 
   return (
     <main className={styles.main}>
-      <h1 className={styles.sectionTitle}>Community</h1>
-
-      <div className={styles.communityTabs}>
-        <button
-          className={`${styles.tabBtn} ${
-            activeTab === "booking-board" ? styles.active : ""
-          }`}
-          onClick={() => switchTab("booking-board")}
-        >
-          Booking Board
-        </button>
-      </div>
-
-      <div className={`${styles.tabContent} ${activeTab === 'board' ? styles.active : ''}`}>
-        <div className={styles.bookingList}>
-          <div className={styles.bookingCard}>
-            <div className={styles.bookingHeader}>
-              <div className={styles.studentBody}>
-                <img
-                  src="/assets/logos/student-council.jpg"
-                  alt="Student Council Logo"
-                />
-                <h3>Student Council</h3>
+      <h1 className={styles.sectionTitle}>Booking Logs</h1>
+      {loading && <div>Loading logs...</div>}
+      {error && <div className={styles.error}>{error}</div>}
+      <div className={styles.logsGrid}>
+        {logs.length === 0 && !loading && (
+          <div className={styles.noLogs}>No booking logs found.</div>
+        )}
+        {logs.map((log) => {
+          // Defensive: try all casings for each field
+          const bookingId = log.booking_id || log.BOOKING_ID;
+          const action = log.action_taken || log.ACTION_TAKEN;
+          const user = log.user_email || log.USER_EMAIL || log.action_by || log.ACTION_BY;
+          const date = log.action_date || log.ACTION_DATE;
+          return (
+            <div key={log.history_id || log.HISTORY_ID} className={styles.logCard}>
+              <div>
+                <strong>Booking ID:</strong> {bookingId}
               </div>
-              <div className={styles.bookingDate}>
-                <i className="far fa-calendar-alt"></i> April 23, 2025
+              <div>
+                <strong>Action:</strong> {action}
               </div>
-            </div>
-            <div className={styles.bookingDetails}>
-              <div className={styles.venueInfo}>
-                <h4>Main Auditorium</h4>
-                <p>
-                  <i className="fas fa-map-marker-alt"></i> Central Campus
-                </p>
-                <p>
-                  <i className="far fa-clock"></i> 4:00 PM - 8:00 PM
-                </p>
+              <div>
+                <strong>User:</strong> {user}
               </div>
-              <div className={styles.eventInfo}>
-                <h4>Annual Cultural Festival</h4>
-                <p>
-                  A celebration of diverse cultures with performances, food
-                  stalls, and interactive sessions.
-                </p>
-                <div className={styles.eventTags}>
-                  <span className={styles.tag}>Cultural</span>
-                  <span className={styles.tag}>Festival</span>
-                  <span className={styles.tag}>Open to All</span>
-                </div>
+              <div>
+                <strong>Date:</strong> {date}
               </div>
             </div>
-          </div>
-
-          {/* More booking cards would go here */}
-        </div>
-      </div>
-
-      <div className={`${styles.tabContent} ${activeTab === 'exchange' ? styles.active : ''}`}>
-        <div className={styles.exchangeList}>
-          {/* ... existing exchange list content ... */}
-        </div>
+          );
+        })}
       </div>
     </main>
   );
 };
 
-export default Community;
+export default Records;

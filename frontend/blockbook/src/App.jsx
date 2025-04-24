@@ -7,7 +7,7 @@ import Footer from './components/common/Footer/index.jsx';
 import Landing from './pages/Landing/index.jsx';
 import Home from './pages/Home/index.jsx';
 import ExploreVenues from './pages/ExploreVenues/index.jsx';
-import Community from './pages/Community';
+import Records from './pages/Community';
 import MyBookings from './pages/MyBookings';
 import Booking from './pages/Booking';
 import Approval from './pages/Approval';
@@ -47,9 +47,9 @@ function App() {
               <ExploreVenues />
             </ProtectedRoute>
           } />
-          <Route path="/community" element={
+          <Route path="/records" element={
             <ProtectedRoute allowedRoles={['admin', 'student', 'student-council']}>
-              <Community />
+              <Records />
             </ProtectedRoute>
           } />
           <Route path="/my-bookings" element={
