@@ -11,10 +11,10 @@ export const useExploreVenues = () => {
     date: new Date().toISOString().split('T')[0],
     time: '',
     capacity: '',
-    location: '',
-    equipment: '',
-    availableOnly: false,
-    exchangeOnly: false
+    building: '',
+    venueType: '',
+    features: '',
+    availableOnly: false
   });
   
   // Fetch venues from the backend
@@ -82,35 +82,42 @@ export const useExploreVenues = () => {
         const capacity = venue.seating_capacity;
         switch (filters.capacity) {
           case 'small':
-            return capacity <= 30;
+            return capacity <= 50;
           case 'medium':
-            return capacity > 30 && capacity <= 100;
+            return capacity > 50 && capacity <= 150;
           case 'large':
-            return capacity > 100 && capacity <= 200;
+            return capacity > 150 && capacity <= 300;
           case 'xlarge':
-            return capacity > 200;
+            return capacity > 300;
           default:
             return true;
         }
       });
     }
     
-    // Filter by location (building)
-    if (filters.location) {
+    // Filter by building
+    if (filters.building) {
       filtered = filtered.filter(venue => 
-        venue.building_name && venue.building_name.toLowerCase().includes(filters.location.toLowerCase())
+        venue.building_name && venue.building_name.toLowerCase().includes(filters.building.toLowerCase())
       );
     }
     
-    // Filter by equipment/features
-    if (filters.equipment) {
+    // Filter by venue type
+    if (filters.venueType) {
+      filtered = filtered.filter(venue => 
+        venue.venue_type && venue.venue_type.toLowerCase().includes(filters.venueType.toLowerCase())
+      );
+    }
+    
+    // Filter by features/equipment
+    if (filters.features) {
       filtered = filtered.filter(venue => {
         const features = venue.features || '';
         const venueFeatures = typeof features === 'string' 
           ? features.split(',').map(f => f.trim())
           : features;
         return venueFeatures.some(feature => 
-          feature.toLowerCase().includes(filters.equipment.toLowerCase())
+          feature.toLowerCase().includes(filters.features.toLowerCase())
         );
       });
     }
@@ -129,10 +136,10 @@ export const useExploreVenues = () => {
       date: new Date().toISOString().split('T')[0],
       time: '',
       capacity: '',
-      location: '',
-      equipment: '',
-      availableOnly: false,
-      exchangeOnly: false
+      building: '',
+      venueType: '',
+      features: '',
+      availableOnly: false
     });
     setFilteredVenues(venues);
   };

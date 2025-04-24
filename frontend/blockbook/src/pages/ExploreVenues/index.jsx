@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useModal } from "../../hooks/useModal";
 import { useExploreVenues } from "../../hooks/useExploreVenues";
 import VenueCard from "../../components/VenueCard";
@@ -16,23 +16,102 @@ const ExploreVenues = () => {
     closeGalleryModal,
   } = useModal();
 
-  const {
-    venues,
-    loading,
-    error,
-    filters,
-    handleFilterChange,
-    applyFilters,
-    clearFilters,
-    bookVenue,
-    requestExchange,
-  } = useExploreVenues();
+  const navigate = useNavigate();
+  const [venues, setVenues] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [filterOptions, setFilterOptions] = useState({
+    buildings: [],
+    venueTypes: [],
+    features: []
+  });
+  const [filters, setFilters] = useState({
+    date: new Date().toISOString().split('T')[0],
+    time: '',
+    capacity: '',
+    building: '',
+    venueType: '',
+    features: '',
+    availableOnly: false
+  });
 
-  const mapModalRef = useRef(null);
-  const galleryModalRef = useRef(null);
+  const mapModalRef = React.useRef(null);
+  const galleryModalRef = React.useRef(null);
+
+  // Fetch filter options
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/filter-options/');
+        if (!response.ok) throw new Error('Failed to fetch filter options');
+        const data = await response.json();
+        setFilterOptions({
+          buildings: data.buildings,
+          venueTypes: data.venue_types,
+          features: data.features
+        });
+      } catch (err) {
+        console.error('Error fetching filter options:', err);
+      }
+    };
+    fetchFilterOptions();
+  }, []);
+
+  // Fetch venues with filters
+  const fetchVenues = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const queryParams = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) queryParams.append(key, value);
+      });
+
+      const response = await fetch(`http://localhost:8000/api/venues/?${queryParams}`);
+      if (!response.ok) throw new Error('Failed to fetch venues');
+      const data = await response.json();
+      setVenues(data.Venues);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVenues();
+  }, [filters]);
+
+  const handleFilterChange = (e) => {
+    const { id, value, type, checked } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [id.replace('-filter', '')]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      date: new Date().toISOString().split('T')[0],
+      time: '',
+      capacity: '',
+      building: '',
+      venueType: '',
+      features: '',
+      availableOnly: false
+    });
+  };
+
+  const bookVenue = (venueData) => {
+    localStorage.setItem('selectedVenue', JSON.stringify(venueData));
+    navigate(`/booking/${venueData.venue_id}`);
+  };
 
   // Get unique building names for location filter
   const buildingNames = [...new Set(venues.map(venue => venue.building_name).filter(Boolean))];
+  
+  // Get unique venue types
+  const venueTypes = [...new Set(venues.map(venue => venue.venue_type).filter(Boolean))];
   
   // Get unique features for equipment filter
   const allFeatures = venues.reduce((features, venue) => {
@@ -65,18 +144,14 @@ const ExploreVenues = () => {
           </div>
 
           <div className={styles.filterGroup}>
-            <label htmlFor="time-filter">Time Slot</label>
-            <select
+            <label htmlFor="time-filter">Time</label>
+            <input
+              type="time"
               id="time-filter"
               className={styles.filterInput}
               value={filters.time}
               onChange={handleFilterChange}
-            >
-              <option value="">Any Time</option>
-              <option value="morning">8:00 AM - 12:00 PM</option>
-              <option value="afternoon">12:00 PM - 4:00 PM</option>
-              <option value="evening">4:00 PM - 8:00 PM</option>
-            </select>
+            />
           </div>
 
           <div className={styles.filterGroup}>
@@ -88,49 +163,60 @@ const ExploreVenues = () => {
               onChange={handleFilterChange}
             >
               <option value="">Any Capacity</option>
-              <option value="small">Small (&lt;= 30)</option>
-              <option value="medium">Medium (31-100)</option>
-              <option value="large">Large (101-200)</option>
-              <option value="xlarge">Extra Large (&gt;200)</option>
+              <option value="small">Small (≤50)</option>
+              <option value="medium">Medium (51-150)</option>
+              <option value="large">Large (151-300)</option>
+              <option value="xlarge">Extra Large (&gt;300)</option>
             </select>
           </div>
 
           <div className={styles.filterGroup}>
-            <label htmlFor="location-filter">Location</label>
+            <label htmlFor="building-filter">Building</label>
             <select
-              id="location-filter"
+              id="building-filter"
               className={styles.filterInput}
-              value={filters.location}
+              value={filters.building}
               onChange={handleFilterChange}
             >
-              <option value="">Any Location</option>
-              {buildingNames.map((building, index) => (
-                <option key={index} value={building}>
-                  {building}
-                </option>
+              <option value="">All Buildings</option>
+              {filterOptions.buildings.map(building => (
+                <option key={building} value={building}>{building}</option>
               ))}
             </select>
           </div>
 
           <div className={styles.filterGroup}>
-            <label htmlFor="equipment-filter">Equipment</label>
+            <label htmlFor="venueType-filter">Venue Type</label>
             <select
-              id="equipment-filter"
+              id="venueType-filter"
               className={styles.filterInput}
-              value={filters.equipment}
+              value={filters.venueType}
               onChange={handleFilterChange}
             >
-              <option value="">Any Equipment</option>
-              {uniqueFeatures.map((feature, index) => (
-                <option key={index} value={feature}>
-                  {feature}
-                </option>
+              <option value="">All Types</option>
+              {filterOptions.venueTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
               ))}
             </select>
           </div>
 
           <div className={styles.filterGroup}>
-            <label className={styles.filterCheckbox}>
+            <label htmlFor="features-filter">Features</label>
+            <select
+              id="features-filter"
+              className={styles.filterInput}
+              value={filters.features}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Features</option>
+              {filterOptions.features.map(feature => (
+                <option key={feature} value={feature}>{feature}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.filterGroup}>
+            <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
                 id="availableOnly-filter"
@@ -143,7 +229,7 @@ const ExploreVenues = () => {
         </div>
 
         <div className={styles.filterActions}>
-          <button className={styles.filterBtn} onClick={applyFilters}>
+          <button className={styles.filterBtn} onClick={fetchVenues}>
             Apply Filters
           </button>
           <button className={styles.clearBtn} onClick={clearFilters}>
@@ -184,8 +270,7 @@ const ExploreVenues = () => {
                     id: venue.venue_id
                   };
                   // Store venue info and navigate to booking page for this venue
-                  localStorage.setItem('selectedVenue', JSON.stringify(venueData));
-                  window.location.href = `/booking/${venue.venue_id}`;
+                  bookVenue(venueData);
                 }}
                 showDetails={true}
               />

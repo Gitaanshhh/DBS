@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 
 # Create your views here.
 from rest_framework.decorators import api_view
@@ -155,26 +156,103 @@ Vanues
 @api_view(['GET'])
 def getVenues(request):
     try:
+        # Get filter parameters from request
+        date = request.GET.get('date')
+        time = request.GET.get('time')
+        capacity = request.GET.get('capacity')
+        building = request.GET.get('building')
+        venue_type = request.GET.get('venue_type')
+        features = request.GET.get('features')
+        available_only = request.GET.get('available_only', 'false').lower() == 'true'
+
+        # Base query
+        query = """
+            SELECT v.venue_id, v.venue_name, v.seating_capacity, 
+                   TO_CHAR(v.features) as features, 
+                   v.image_url, v.floor_number, 
+                   b.building_name, vt.type_name as venue_type
+            FROM Venue v
+            JOIN Building b ON v.building_id = b.building_id
+            JOIN VenueType vt ON v.venue_type_id = vt.type_id
+            WHERE 1=1
+        """
+
+        # Add filters
+        params = []
+        if building:
+            query += " AND b.building_name = :building"
+            params.append(building)
+        if venue_type:
+            query += " AND vt.type_name = :venue_type"
+            params.append(venue_type)
+        if capacity:
+            if capacity == 'small':
+                query += " AND v.seating_capacity <= 50"
+            elif capacity == 'medium':
+                query += " AND v.seating_capacity > 50 AND v.seating_capacity <= 150"
+            elif capacity == 'large':
+                query += " AND v.seating_capacity > 150 AND v.seating_capacity <= 300"
+            elif capacity == 'xlarge':
+                query += " AND v.seating_capacity > 300"
+        if features:
+            query += " AND v.features LIKE :features"
+            params.append(f'%{features}%')
+
+        # Add availability check if needed
+        if available_only and date and time:
+            query += """
+                AND NOT EXISTS (
+                    SELECT 1 FROM BookingRequest br
+                    WHERE br.venue_id = v.venue_id
+                    AND br.booking_date = TO_DATE(:date, 'YYYY-MM-DD')
+                    AND br.start_time <= TO_TIMESTAMP(:time, 'HH24:MI:SS')
+                    AND br.end_time > TO_TIMESTAMP(:time, 'HH24:MI:SS')
+                    AND br.status = 'Approved'
+                )
+            """
+            params.extend([date, time])
+
+        # Execute query
         with connection.cursor() as cursor:
-            # Join Venue with Building to get building_name and floor_number, and select all required fields
-            cursor.execute("""
-                SELECT 
-                    v.venue_id, v.venue_name, v.seating_capacity, 
-                    TO_CHAR(v.features) as features, 
-                    v.image_url,
-                    v.floor_number, b.building_name
-                FROM Venue v
-                LEFT JOIN Building b ON v.building_id = b.building_id
-            """)
+            cursor.execute(query, params)
             columns = [col[0] for col in cursor.description]
-            data = [
-                dict(zip(columns, row))
-                for row in cursor.fetchall()
-            ]
-        return Response({'Venues': data})
+            venues = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+        return JsonResponse({'Venues': venues})
     except Exception as e:
-        print(f"Error in getVenues: {str(e)}", file=sys.stderr)
-        return Response({'error': f'Failed to fetch venues: {str(e)}'}, status=500)
+        print(f"Error in getVenues: {str(e)}")  # Add logging
+        return JsonResponse({'error': str(e)}, status=500)
+
+@api_view(['GET'])
+def getFilterOptions(request):
+    try:
+        with connection.cursor() as cursor:
+            # Get unique building names
+            cursor.execute("SELECT DISTINCT building_name FROM Building ORDER BY building_name")
+            buildings = [row[0] for row in cursor.fetchall()]
+
+            # Get unique venue types
+            cursor.execute("SELECT DISTINCT type_name FROM VenueType ORDER BY type_name")
+            venue_types = [row[0] for row in cursor.fetchall()]
+
+            # Get unique features - using a simpler approach for Oracle
+            cursor.execute("""
+                SELECT DISTINCT TRIM(REGEXP_SUBSTR(features, '[^,]+', 1, LEVEL)) as feature
+                FROM Venue
+                WHERE features IS NOT NULL
+                CONNECT BY LEVEL <= LENGTH(REGEXP_REPLACE(features, '[^,]+', '')) + 1
+                ORDER BY feature
+            """)
+            features = [row[0] for row in cursor.fetchall() if row[0]]  # Filter out None values
+
+        return JsonResponse({
+            'buildings': buildings,
+            'venue_types': venue_types,
+            'features': features
+        })
+    except Exception as e:
+        print(f"Error in getFilterOptions: {str(e)}")  # Add logging
+        return JsonResponse({'error': str(e)}, status=500)
 
 """
 Details of a particular venue

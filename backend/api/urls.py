@@ -8,4 +8,5 @@ urlpatterns = [
     path('users/', views.getUsers),  # add this line for frontend compatibility
     path('venues/', views.getVenues),
     path('venue-details/', views.getVenueDetails),
+    path('filter-options/', views.getFilterOptions),  # add this line for filter options
 ]
