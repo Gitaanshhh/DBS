@@ -14,6 +14,9 @@ import Booking from './pages/Booking';
 import Approval from './pages/Approval';
 import './styles/global.css';
 
+// Import useAuth at the top of the file
+import { useAuth } from './context/AuthContext';
+
 // Main App component
 function App() {
   return (
@@ -99,8 +102,5 @@ const ProtectedLayout = () => {
     </>
   );
 };
-
-// Import useAuth at the top of the file
-import { useAuth } from './context/AuthContext';
 
 export default App;
