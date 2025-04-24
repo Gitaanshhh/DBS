@@ -1,84 +1,164 @@
-# DBS (Database System Project)
+# BlockBook - College Venue Booking System
 
-A college room/venue booking system using **Django** (Python) for the backend, **Oracle SQL** for the database, and **React.js** or plain HTML/CSS/JS for the frontend.
+A modern web application for managing venue bookings in educational institutions.
 
----
+## Features
+
+- **User Authentication**
+  - Role-based access (Admin, Faculty, Student, Student Council)
+  - Secure login with email/password
+  - Session management
+
+- **Venue Management**
+  - Browse available venues
+  - View venue details and features
+  - Check venue availability
+  - Book venues for events
+
+- **Booking System**
+  - Create and manage booking requests
+  - Multi-step approval workflow
+  - Booking history tracking
+  - Exchange requests between users
+
+- **Approval Workflow**
+  - Role-based approval steps
+  - Faculty advisor approval
+  - Student council approval
+  - Security clearance
+  - Status tracking
 
 ## Tech Stack
 
-| Layer      | Technology         |
-|------------|--------------------|
-| Frontend   | React.js / HTML/JS |
-| Backend    | Django (Python)    |
-| Database   | Oracle SQL         |
-| DB Access  | Django ORM / oracledb |
-
----
-
-## Quick Start
+### Frontend
+- React.js
+- React Router v6
+- Context API for state management
+- CSS Modules for styling
+- Axios for API calls
 
 ### Backend
+- Django REST Framework
+- Oracle Database
+- JWT Authentication
+- CORS enabled
 
+## Project Structure
+
+```
+blockbook/
+├── frontend/              # React frontend
+│   ├── src/
+│   │   ├── components/    # Reusable UI components
+│   │   ├── pages/        # Page components
+│   │   ├── context/      # React context providers
+│   │   ├── hooks/        # Custom React hooks
+│   │   └── styles/       # Global styles
+│   └── public/           # Static assets
+│
+├── backend/              # Django backend
+│   ├── api/             # API endpoints
+│   ├── DBS/            # Django project settings
+│   └── Database/       # Database scripts
+│
+└── docs/               # Documentation
+```
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v14+)
+- Python (v3.8+)
+- Oracle Database
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/blockbook.git
+cd blockbook
+```
+
+2. Install frontend dependencies:
+```bash
+cd frontend/blockbook
+npm install
+```
+
+3. Install backend dependencies:
+```bash
+cd ../../backend
+pip install -r requirements.txt
+```
+
+4. Set up the database:
+```bash
+cd Database
+sqlplus sys/sys as sysdba @NewTables.sql
+sqlplus sys/sys as sysdba @NewData.sql
+```
+
+5. Configure environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your database credentials
+```
+
+### Development
+
+1. Start the backend server:
 ```bash
 cd backend
-pip install -r requirements.txt  # or install django, djangorestframework, django-cors-headers
-python manage.py migrate         # run migrations if needed
 python manage.py runserver
 ```
-- API runs at: [http://localhost:8000/api/](http://localhost:8000/api/)
 
-### Frontend
-
-#### Plain HTML/JS
-- Open `frontend/index.html` in your browser.
-
-#### React (optional)
+2. Start the frontend development server:
 ```bash
-cd frontend
-npm install
+cd frontend/blockbook
 npm start
 ```
-- React app runs at: [http://localhost:3000/](http://localhost:3000/)
 
----
+3. Access the application at `http://localhost:3000`
 
-## Database Setup
+## Testing
 
-- Install [Oracle Database Free](https://www.oracle.com/database/free/get-started/#free-platforms)
-- Create a user and grant privileges:
-  ```sql
-  CREATE USER git IDENTIFIED BY rootpw;
-  ALTER USER git QUOTA UNLIMITED ON SYSTEM;
-  GRANT CONNECT, RESOURCE TO git;
-  ALTER USER git ACCOUNT UNLOCK;
-  ```
-- Make sure your Oracle service (e.g., `FREE`, `XE`, or `XEPDB1`) is running and open.
+Run frontend tests:
+```bash
+cd frontend/blockbook
+npm test
+```
 
-- Example SQLPlus login:
-  ```
-  sqlplus git/rootpw@localhost:1521/FREE
-  ```
+Run backend tests:
+```bash
+cd backend
+python manage.py test
+```
 
----
+## Deployment
 
-## Integration
+1. Build the frontend:
+```bash
+cd frontend/blockbook
+npm run build
+```
 
-- The frontend communicates with the backend via REST API calls to `http://localhost:8000/api/`
-- CORS is enabled by default in backend settings.
+2. Configure production settings:
+```bash
+cd backend
+python manage.py collectstatic
+```
 
----
+3. Deploy using your preferred method (e.g., Docker, Heroku, AWS)
 
-## Troubleshooting
+## Contributing
 
-- If you see Oracle connection errors, check:
-  - The Oracle service name in your Django `settings.py` matches your running service.
-  - The Oracle listener is running (`lsnrctl status`).
-  - Your user/password are correct and the account is unlocked.
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
----
+## License
 
-## References
-
-- [Django Docs](https://docs.djangoproject.com/en/5.0/)
-- [React Docs](https://react.dev/)
-- [Oracle Free Database](https://www.oracle.com/database/free/get-started/#free-platforms)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

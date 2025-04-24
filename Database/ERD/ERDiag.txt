@@ -4,82 +4,204 @@ config:
 ---
 classDiagram
 direction LR
-    class IndoorVenue {
-	    - floor_number: int
-	    - building_id: int
-	    - building_name: string
+
+    class Users {
+        +user_id: int
+        +email: string
+        +password_hash: string
+        +user_type: enum
+        +created_at: timestamp
+        +last_login: timestamp
     }
-    class Venue {
-	    - venue_name: string 
-	    - venue_id: int
-	    - venue_type: string
-	    - booking_status: int
-	    - seating_capacity: int
-	    - manager_contact: int
-    }
-    class StudentBody {
-	    - student_body_id: int
-	    - name: string
-	    - email: string
-	    - faculty_advisor_id: int
-	    - primary_rep_id: int
-	    - secondary_rep_id: int
-    }
-    class Student {
-	    - student_id: int
-	    - registration_id: int
-	    - name: string
-	    - contact_details: int
-	    - student_body_id: int
-    }
+
     class Faculty {
-	    - faculty_id: int
-	    - registration_id: int
-	    - name: string
-	    - email: string
-	    - department: string
-	    - post: string
+        +faculty_id: int
+        +user_id: int
+        +registration_id: int
+        +name: string
+        +department: string
+        +post: string
+        +contact_number: bigint
     }
+
+    class FacultyRoles {
+        +role_id: int
+        +faculty_id: int
+        +role_name: enum
+        +assigned_date: date
+    }
+
+    class Student {
+        +student_id: int
+        +user_id: int
+        +registration_id: int
+        +name: string
+        +contact_number: bigint
+        +is_sc_member: boolean
+    }
+
+    class StudentBody {
+        +student_body_id: int
+        +name: string
+        +email: string
+        +description: text
+        +faculty_advisor_id: int
+        +primary_rep_id: int
+        +secondary_rep_id: int
+        +created_at: timestamp
+    }
+
+    class StudentBodyMembership {
+        +membership_id: int
+        +student_id: int
+        +student_body_id: int
+        +role: string
+        +joined_date: date
+    }
+
+    class Building {
+        +building_id: int
+        +building_name: string
+        +location: string
+        +floors: int
+    }
+
+    class VenueType {
+        +type_id: int
+        +type_name: string
+        +description: text
+    }
+
+    class Venue {
+        +venue_id: int
+        +venue_name: string
+        +venue_type_id: int
+        +seating_capacity: int
+        +is_indoor: boolean
+        +building_id: int
+        +floor_number: int
+        +manager_contact: bigint
+        +description: text
+        +features: text
+        +image_url: string
+    }
+
+    class VenueAvailability {
+        +availability_id: int
+        +venue_id: int
+        +day_of_week: enum
+        +start_time: time
+        +end_time: time
+        +is_available: boolean
+    }
+
     class BookingRequest {
-	    - booking_id: int
-	    - venue_id: int
-	    - student_body_id: int
-	    - booking_date: date
-	    - start_time: time
-	    - end_time: time
-	    - status: string
+        +booking_id: int
+        +venue_id: int
+        +student_body_id: int
+        +requester_id: int
+        +booking_date: date
+        +start_time: time
+        +end_time: time
+        +purpose: string
+        +attendees_count: int
+        +setup_requirements: text
+        +status: enum
+        +created_at: timestamp
+        +updated_at: timestamp
     }
-    class ApprovalProcess {
-	    - approval_id: int
-	    - booking_id: int
-	    - FA_approval: boolean
-	    - SC_approval: boolean
-	    - SWO_approval: boolean
-	    - Sec_approval: boolean
-	    - approver_id: int
-	    - approval_status: string
+
+    class ApprovalStep {
+        +step_id: int
+        +step_name: string
+        +description: text
+        +order_number: int
     }
+
+    class BookingApproval {
+        +approval_id: int
+        +booking_id: int
+        +step_id: int
+        +approver_id: int
+        +is_approved: boolean
+        +comments: text
+        +approval_date: timestamp
+    }
+
     class BookingHistory {
-	    - booking_id: int
-	    - booking_id: int
-	    - booking_date: date
-	    - action_taken: string
+        +history_id: int
+        +booking_id: int
+        +action_taken: string
+        +action_by: int
+        +action_date: timestamp
     }
 
-    IndoorVenue "1" *.. "1" Venue : VenueId for (indoor)
-    Venue "1" *-- "many" BookingRequest : requests for
-    StudentBody "1" *--* "many" Student : includes
-    StudentBody "1" --* "many" BookingRequest : can issue
-    Faculty "many" --* "1" StudentBody : advises
-    BookingRequest "1" *--* "1" ApprovalProcess : goes through
-    BookingRequest .. BookingHistory : logs
-    Faculty "1" -- "1" Faculty : is SWO
-    Faculty "1" -- "1" Faculty : is Security
-    Student "1" -- "1" Student : is SC
+    class ExchangeRequest {
+        +exchange_id: int
+        +requester_booking_id: int
+        +requested_booking_id: int
+        +reason: text
+        +status: enum
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
 
-	style IndoorVenue :,stroke-width:2px,stroke-dasharray: 2
+    class Notification {
+        +notification_id: int
+        +user_id: int
+        +title: string
+        +message: text
+        +type: enum
+        +is_read: boolean
+        +created_at: timestamp
+    }
 
-	style BookingHistory :,stroke-width:2px,stroke-dasharray: 2
+    class Conversation {
+        +conversation_id: int
+        +title: string
+        +type: enum
+        +created_at: timestamp
+    }
 
-	class IndoorVenue:::WeakEntities
-	class BookingHistory:::WeakEntities
+    class ConversationParticipant {
+        +participant_id: int
+        +conversation_id: int
+        +user_id: int
+        +joined_at: timestamp
+    }
+
+    class Message {
+        +message_id: int
+        +conversation_id: int
+        +sender_id: int
+        +content: text
+        +sent_at: timestamp
+    }
+
+    %% Relationships
+    Users --> Faculty : user_id
+    Users --> Student : user_id
+    Faculty --> FacultyRoles : faculty_id
+    Faculty --> StudentBody : faculty_advisor_id
+    Student --> StudentBody : primary_rep_id
+    Student --> StudentBody : secondary_rep_id
+    Student --> StudentBodyMembership : student_id
+    StudentBody --> StudentBodyMembership : student_body_id
+    VenueType --> Venue : venue_type_id
+    Building --> Venue : building_id
+    Venue --> VenueAvailability : venue_id
+    Venue --> BookingRequest : venue_id
+    StudentBody --> BookingRequest : student_body_id
+    Users --> BookingRequest : requester_id
+    BookingRequest --> BookingApproval : booking_id
+    ApprovalStep --> BookingApproval : step_id
+    Faculty --> BookingApproval : approver_id
+    BookingRequest --> BookingHistory : booking_id
+    Users --> BookingHistory : action_by
+    BookingRequest --> ExchangeRequest : requester_booking_id
+    BookingRequest --> ExchangeRequest : requested_booking_id
+    Users --> Notification : user_id
+    Conversation --> ConversationParticipant : conversation_id
+    Users --> ConversationParticipant : user_id
+    Conversation --> Message : conversation_id
+    Users --> Message : sender_id
