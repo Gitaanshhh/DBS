@@ -90,26 +90,6 @@ const ExploreVenues = () => {
               <option value="video-conf">Video Conferencing</option>
             </select>
           </div>
-
-          <div className={`${styles.filterGroup} ${styles.filterCheckbox}`}>
-            <input
-              type="checkbox"
-              id="available-filter"
-              checked={filters.availableOnly}
-              onChange={handleFilterChange}
-            />
-            <label htmlFor="available-filter">Available Only</label>
-          </div>
-
-          <div className={`${styles.filterGroup} ${styles.filterCheckbox}`}>
-            <input
-              type="checkbox"
-              id="exchange-filter"
-              checked={filters.exchangeOnly}
-              onChange={handleFilterChange}
-            />
-            <label htmlFor="exchange-filter">Open for Exchange</label>
-          </div>
         </div>
 
         <button className={styles.filterBtn} onClick={applyFilters}>
