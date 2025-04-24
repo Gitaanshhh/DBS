@@ -4,15 +4,22 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import styles from "./Header.module.css";
 
+/**
+ * Header component that provides navigation and user menu
+ * Shows different navigation items based on user role
+ * Includes responsive mobile menu
+ */
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const { user, logout, hasRole } = useAuth();
 
+  // Check if current path matches the given path
   const isActive = (path) => {
     return location.pathname === path;
   };
 
+  // Toggle mobile menu
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -27,7 +34,7 @@ const Header = () => {
         className={`${styles.navLinks} ${menuOpen ? styles.active : ""}`}
         id="navLinks"
       >
-        {" "}
+        {/* Navigation items for students and student council */}
         {hasRole(["student", "student-council"]) && (
           <>
             <Link to="/home" className={isActive("/home") ? styles.active : ""}>
@@ -59,8 +66,9 @@ const Header = () => {
             </Link>
           </>
         )}
-        {/* Show Approval link for student council and faculty*/}
-        {hasRole(['student-council' ,'faculty', 'swo', 'security']) && (
+
+        {/* Approval link for authorized roles */}
+        {hasRole(['student-council', 'faculty', 'swo', 'security']) && (
           <Link
             to="/approvals"
             className={isActive("/approvals") ? styles.active : ""}
@@ -70,6 +78,7 @@ const Header = () => {
         )}
       </nav>
 
+      {/* User menu with role display and logout */}
       <div className={styles.userMenu}>
         {user ? (
           <div className={styles.userInfo}>
@@ -87,6 +96,7 @@ const Header = () => {
         )}
       </div>
 
+      {/* Mobile menu toggle button */}
       <button
         className={`${styles.hamburger} ${menuOpen ? styles.active : ""}`}
         id="hamburgerBtn"

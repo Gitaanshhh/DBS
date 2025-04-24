@@ -13,64 +13,70 @@ import Notifications from './pages/Notifications';
 import Booking from './pages/Booking';
 import Approval from './pages/Approval';
 import './styles/global.css';
-
-// Import useAuth at the top of the file
 import { useAuth } from './context/AuthContext';
 
-// Main App component
+/**
+ * Main App component that sets up routing and authentication
+ * Routes are protected based on user roles:
+ * - Admin: Access to all pages
+ * - Student and Student Council: Home, Explore, Community, My Bookings, Notifications
+ * - Faculty, SWO, Security: Approval page and other authorized pages
+ */
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Public route - Landing page should be outside AuthProvider */}
+        {/* Public route - Landing/Login page */}
         <Route path="/" element={<Landing />} />
         
-        {/* All protected routes wrapped with AuthProvider */}
+        {/* Protected routes wrapped with authentication */}
         <Route element={
           <AuthProvider>
             <ProtectedLayout />
           </AuthProvider>
         }>
-          {/* Student and Student Council routes */}
+          {/* Home page - accessible to all authenticated users */}
           <Route path="/home" element={
-            <ProtectedRoute allowedRoles={['admin','student', 'student-council']}>
+            <ProtectedRoute allowedRoles={['admin', 'student', 'student-council', 'faculty', 'swo', 'security']}>
               <Home />
             </ProtectedRoute>
           } />
+
+          {/* Student and Student Council specific routes */}
           <Route path="/explore" element={
-            <ProtectedRoute allowedRoles={['admin','student', 'student-council']}>
+            <ProtectedRoute allowedRoles={['admin', 'student', 'student-council']}>
               <ExploreVenues />
             </ProtectedRoute>
           } />
           <Route path="/community" element={
-            <ProtectedRoute allowedRoles={['admin','student', 'student-council']}>
+            <ProtectedRoute allowedRoles={['admin', 'student', 'student-council']}>
               <Community />
             </ProtectedRoute>
           } />
-          <Route path="/bookings" element={
-            <ProtectedRoute allowedRoles={['admin','student', 'student-council']}>
+          <Route path="/my-bookings" element={
+            <ProtectedRoute allowedRoles={['admin', 'student', 'student-council']}>
               <MyBookings />
             </ProtectedRoute>
           } />
           <Route path="/notifications" element={
-            <ProtectedRoute allowedRoles={['admin','student', 'student-council']}>
+            <ProtectedRoute allowedRoles={['admin', 'student', 'student-council']}>
               <Notifications />
             </ProtectedRoute>
           } />
           <Route path="/booking/:id" element={
-            <ProtectedRoute allowedRoles={['admin','student', 'student-council']}>
+            <ProtectedRoute allowedRoles={['admin', 'student', 'student-council']}>
               <Booking />
             </ProtectedRoute>
           } />
           
-          {/*SC, Faculty, SWO, Security approval page */}
+          {/* Approval routes for authorized roles */}
           <Route path="/approvals" element={
-            <ProtectedRoute allowedRoles={['admin','student-council','faculty', 'swo', 'security']}>
+            <ProtectedRoute allowedRoles={['admin', 'student-council', 'faculty', 'swo', 'security']}>
               <Approval />
             </ProtectedRoute>
           } />
           
-          {/* Catch-all route */}
+          {/* Catch-all route redirects to home */}
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Route>
       </Routes>
@@ -78,7 +84,11 @@ function App() {
   );
 }
 
-// Protected layout component with Header and Footer
+/**
+ * Protected layout component that wraps all authenticated routes
+ * Shows loading spinner while checking auth status
+ * Redirects to login if user is not authenticated
+ */
 const ProtectedLayout = () => {
   const { user, loading } = useAuth();
   

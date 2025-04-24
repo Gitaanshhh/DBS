@@ -3,6 +3,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Landing.module.css';
 
+/**
+ * Landing/Login page component
+ * Handles user authentication and redirects based on user role
+ */
 const Landing = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -10,21 +14,25 @@ const Landing = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  /**
+   * Handles form submission and user authentication
+   * @param {Event} e - Form submission event
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
     try {
-      console.log(email, password); // Debug: see the email and password being sent
       const response = await fetch('http://localhost:8000/api/users/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
+
       if (!response.ok) {
         if (response.status === 401) {
-          setError('Invalid email or password (Index.jsx)');
+          setError('Invalid email or password');
         } else if (response.status === 404) {
           setError('API endpoint not found. Please check server configuration.');
         } else {
@@ -33,6 +41,7 @@ const Landing = () => {
         setIsLoading(false);
         return;
       }
+
       const data = await response.json();
       if (data['User Details'] && data['User Details'].length > 0) {
         localStorage.setItem('user', JSON.stringify(data['User Details'][0]));
@@ -40,10 +49,7 @@ const Landing = () => {
         const user = data['User Details'][0];
         const role = user.user_type || user.role;
         
-        console.log('API DEBUG : Landing : ROLE : ', role)
-        // console.log('API DEBUG : Landing : DATA : ', data)
-        // console.log('API DEBUG : Landing : ROLES : ', user.user_type, user.role)
-
+        // Redirect based on user role
         if (role === 'student' || role === 'student-council' || role === 'admin') {
           navigate('/home');
         } else if (['faculty', 'swo', 'security'].includes(role)) {
@@ -54,40 +60,6 @@ const Landing = () => {
       } else {
         setError(data.error || 'Login failed. Please check credentials.');
       }
-
-      // Check if email ends with @manipal.edu
-      // if (!email.endsWith('@manipal.edu')) {
-      //   throw new Error('Only Manipal University emails are allowed');
-      // }
-      
-      // Mock authentication logic - in real app, this would be handled by the backend
-      // if (email === 'student@manipal.edu' && password === 'student-password') {
-      //   mockResponse = { success: true, user: { email, role: 'student' } };
-      // } else if (email === 'sc@manipal.edu' && password === 'sc-password') {
-      //   mockResponse = { success: true, user: { email, role: 'student-council' } };
-      // } else if (email === 'faculty@manipal.edu' && password === 'faculty-password') {
-      //   mockResponse = { success: true, user: { email, role: 'faculty' } };
-      // } else if (email === 'swo@manipal.edu' && password === 'swo-password') {
-      //   mockResponse = { success: true, user: { email, role: 'swo' } };
-      // } else {
-      //   // Simulate authentication failure
-      //   throw new Error('Invalid email or password');
-      // }
-
-      // ACTUAL RESPONSE HANDLING:
-      // const data = await response.json();
-      // if (!response.ok) {
-      //   throw new Error(data.message || 'Login failed');
-      // }
-      
-      
-      // Redirect based on user role
-      // if (user.role === 'student' || user.role === 'student-council') {
-      //   navigate('/app/home');
-      // } else if (['faculty', 'swo', 'security'].includes(user.role)) {
-      //   navigate('/approval');
-      // }
-
     } catch (err) {
       setError('Network error. Please check your connection and try again.');
     } finally {
@@ -102,6 +74,7 @@ const Landing = () => {
         <h1 className={styles.title}>Welcome to BlockBook</h1>
         <p className={styles.subtitle}>MIT Manipal's Venue Booking Platform</p>
         
+        {/* Login form */}
         <form className={styles.loginBox} onSubmit={handleSubmit}>
           <input
             type="email"
@@ -124,7 +97,7 @@ const Landing = () => {
           {error && <div className={styles.error}>{error}</div>}
         </form>
         
-        {/* Login instructions for testing */}
+        {/* Test accounts information */}
         <div className={styles.testingInfo}>
           <p>Test Accounts:</p>
           <ul>
@@ -136,7 +109,7 @@ const Landing = () => {
         </div>
       </div>
       
-      {/* Decorative Elements */}
+      {/* Decorative background elements */}
       <div className={styles.circles}>
         <div className={styles.circle1}></div>
         <div className={styles.circle2}></div>

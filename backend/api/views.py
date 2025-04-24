@@ -79,61 +79,75 @@ def getUsers(request):
 
     try:
         with connection.cursor() as cursor:
+            # First check if user exists in Users table
+            sql = "SELECT * FROM USERS WHERE email = %s AND password_hash = %s"
+            params = [email, password]
+            cursor.execute(sql, params)
+            columns = [col[0] for col in cursor.description]
+            user_data = [
+                dict(zip(columns, row))
+                for row in cursor.fetchall()
+            ]
+            print("LOGIN RESULT (USERS):", user_data, file=sys.stderr)
 
-            try:
-                sql = "SELECT * FROM USERS WHERE email = %s AND password_hash = %s"
-                params = [email, password]
-                cursor.execute(sql, params)
-                columns = [col[0] for col in cursor.description]
-                data = [
-                    dict(zip(columns, row))
+            if not user_data:
+                return Response({'error': 'Invalid email or password'}, status=401)
+
+            user = user_data[0]
+            
+            # Check if user is a faculty member
+            if user.get('USER_TYPE') == 'faculty':
+                # Get additional faculty details
+                cursor.execute("""
+                    SELECT f.*, fr.role_name 
+                    FROM Faculty f 
+                    LEFT JOIN FacultyRoles fr ON f.faculty_id = fr.faculty_id 
+                    WHERE f.user_id = %s
+                """, [user['USER_ID']])
+                faculty_columns = [col[0] for col in cursor.description]
+                faculty_data = [
+                    dict(zip(faculty_columns, row))
                     for row in cursor.fetchall()
                 ]
-                print("LOGIN RESULT (USERS):", data, file=sys.stderr)
-            except Exception as e:
-                print("LOGIN EXCEPTION (USERS):", str(e), file=sys.stderr)
-                data = []
+                if faculty_data:
+                    user['faculty_details'] = faculty_data[0]
+                    # Set role based on faculty role if available
+                    if faculty_data[0].get('ROLE_NAME'):
+                        user['role'] = faculty_data[0]['ROLE_NAME'].lower()
+                    else:
+                        user['role'] = 'faculty'
 
-            if not data:
-                try:
-                    print('DEBUG: Trying SELECT * FROM "USERS" ...', file=sys.stderr)
-                    sql = 'SELECT * FROM "USERS" WHERE email = %s AND password_hash = %s'
-                    cursor.execute(sql, params)
-                    columns = [col[0] for col in cursor.description]
-                    data = [
-                        dict(zip(columns, row))
-                        for row in cursor.fetchall()
-                    ]
-                    print('LOGIN RESULT ("USERS"):', data, file=sys.stderr)
-                except Exception as e:
-                    print('LOGIN EXCEPTION ("USERS"):', str(e), file=sys.stderr)
-                    data = []
-
-            # Print all emails and password_hashes for debug
-            try:
-                cursor.execute("SELECT email, password_hash, user_type FROM USERS")
-                all_creds = cursor.fetchall()
-                print("DEBUG: All emails and password_hashes in USERS:", all_creds, file=sys.stderr)
-            except Exception as e:
-                print("DEBUG: Could not fetch emails/password_hashes:", str(e), file=sys.stderr)
+            # Ensure user_type is properly set and not empty
+            if not user.get('USER_TYPE'):
+                # Check if user exists in Faculty table
+                cursor.execute("SELECT 1 FROM Faculty WHERE user_id = %s", [user['USER_ID']])
+                if cursor.fetchone():
+                    user['USER_TYPE'] = 'faculty'
+                    user['role'] = 'faculty'
+                else:
+                    user['USER_TYPE'] = 'student'
+                    user['role'] = 'student'
+            
+            # Set role for backward compatibility if not already set
+            if 'role' not in user:
+                user['role'] = user['USER_TYPE']
+            
+            # Convert response to lowercase keys for frontend compatibility
+            response_user = {
+                'user_id': user['USER_ID'],
+                'email': user['EMAIL'],
+                'user_type': user['USER_TYPE'],
+                'role': user['role']
+            }
+            if 'faculty_details' in user:
+                response_user['faculty_details'] = user['faculty_details']
+            
+            print("LOGIN SUCCESS: User authenticated", file=sys.stderr)
+            return Response({'User Details': [response_user]})
 
     except Exception as e:
         print("LOGIN EXCEPTION:", str(e), file=sys.stderr)
         return Response({'error': f'Internal server error: {str(e)}'}, status=500)
-
-    if not data:
-        print("LOGIN ERROR: No user found", file=sys.stderr)
-        return Response({'error': 'Invalid email or password (Views.py)'}, status=401)
-
-    # Ensure user_type is properly set
-    for user in data:
-        if 'user_type' not in user or not user['user_type']:
-            user['user_type'] = 'student'  # Default to student if not set
-        # Also set role for backward compatibility
-        user['role'] = user['user_type']
-    
-    print("LOGIN SUCCESS: User authenticated", file=sys.stderr)
-    return Response({'User Details': data})
 
 """
 Vanues 

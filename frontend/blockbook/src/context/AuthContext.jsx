@@ -2,6 +2,10 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * Authentication Context for managing user authentication state
+ * Provides user information, login/logout functionality, and role-based access control
+ */
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -9,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Check for existing session on mount
   useEffect(() => {
     const checkLoggedIn = () => {
       try {
@@ -27,8 +32,12 @@ export const AuthProvider = ({ children }) => {
     checkLoggedIn();
   }, [navigate]);
 
+  /**
+   * Handles user login by authenticating with the backend
+   * Stores user data in localStorage and updates context state
+   * Redirects based on user role after successful login
+   */
   const login = async (email, password) => {
-    console.log("AUTH : ",email, password); // Debug: see the email and password being sent
     try {
       const response = await fetch('http://localhost:8000/api/users/', {
         method: 'POST',
@@ -36,24 +45,27 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ email, password })
       });
       const data = await response.json();
+      
       if (response.ok && data['User Details'] && data['User Details'].length > 0) {
         const dbUser = data['User Details'][0];
         localStorage.setItem('user', JSON.stringify(dbUser));
         localStorage.setItem('token', 'mock-token');
         setUser(dbUser);
+        
         // Redirect based on user role
         const role = dbUser.user_type || dbUser.role;
-        console.log("User role:", role); 
-        if (role === 'student' || role === 'student-council' || role === 'admin') {
-          navigate('/home');
+        if (role === 'admin') {
+          navigate('/home'); // Admin can access all pages, start at home
         } else if (['faculty', 'swo', 'security'].includes(role)) {
-          navigate('/approvals');
+          navigate('/approvals'); // Faculty and other staff go to approval page
+        } else if (['student', 'student-council'].includes(role)) {
+          navigate('/home'); // Students and student council go to home
         } else {
-          navigate('/home');
+          navigate('/home'); // Default fallback
         }
         return { success: true, user: dbUser };
       } else {
-        throw new Error((data && data.error) || 'Invalid email or password (AuthContext)');
+        throw new Error((data && data.error) || 'Invalid email or password');
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -61,6 +73,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Handles user logout by clearing stored data and context state
+   * Redirects to landing page
+   */
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
@@ -68,9 +84,18 @@ export const AuthProvider = ({ children }) => {
     navigate('/');
   };
 
+  /**
+   * Checks if the current user has the required role(s)
+   * @param {string|string[]} roles - Single role or array of roles to check against
+   * @returns {boolean} - True if user has the required role
+   */
   const hasRole = (roles) => {
     if (!user) return false;
     const userRole = user.user_type || user.role;
+    
+    // Admin has access to everything
+    if (userRole === 'admin') return true;
+    
     return Array.isArray(roles)
       ? roles.includes(userRole)
       : userRole === roles;
@@ -83,6 +108,10 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+/**
+ * Custom hook to access authentication context
+ * @throws {Error} If used outside of AuthProvider
+ */
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
