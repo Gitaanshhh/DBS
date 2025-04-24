@@ -590,6 +590,7 @@ def approveBooking(request):
     """
     Approve or reject a booking step.
     Expects: approval_id, approve (Y/N), comments, approver_id
+    Only updates BookingApproval and BookingRequest status, does NOT insert into BookingHistory.
     """
     data = request.data
     approval_id = data.get('approval_id')
@@ -600,7 +601,7 @@ def approveBooking(request):
         return Response({'error': 'Missing required fields.'}, status=400)
     try:
         with connection.cursor() as cursor:
-            # Update BookingApproval
+            # Update BookingApproval only
             cursor.execute("""
                 UPDATE BookingApproval
                 SET is_approved = %s, comments = %s, approval_date = CURRENT_TIMESTAMP, approver_id = %s
@@ -614,23 +615,25 @@ def approveBooking(request):
                 return Response({'error': 'Approval not found.'}, status=404)
             booking_id, step_id = row
 
-            # If rejected, update BookingRequest status to 'Rejected'
             if approve == 'N':
+                # Mark booking as rejected
                 cursor.execute("UPDATE BookingRequest SET status = 'Rejected' WHERE booking_id = %s", [booking_id])
             else:
-                # If this is the last step, mark booking as Approved
+                # Check if all steps are approved for this booking
                 cursor.execute("""
-                    SELECT MAX(order_number) FROM ApprovalStep
-                """)
-                max_order = cursor.fetchone()[0]
-                cursor.execute("""
-                    SELECT order_number FROM ApprovalStep WHERE step_id = %s
-                """, [step_id])
-                this_order = cursor.fetchone()[0]
-                if this_order == max_order:
+                    SELECT COUNT(*) FROM BookingApproval
+                    WHERE booking_id = %s AND (is_approved IS NULL OR is_approved = 'N')
+                """, [booking_id])
+                pending_count = cursor.fetchone()[0]
+                if pending_count == 0:
+                    # All steps approved, mark booking as Approved
                     cursor.execute("UPDATE BookingRequest SET status = 'Approved' WHERE booking_id = %s", [booking_id])
                 else:
-                    # Otherwise, set next step's BookingApproval to pending (is_approved=NULL)
+                    # Set next step's BookingApproval to pending (is_approved=NULL)
+                    cursor.execute("""
+                        SELECT order_number FROM ApprovalStep WHERE step_id = %s
+                    """, [step_id])
+                    this_order = cursor.fetchone()[0]
                     cursor.execute("""
                         SELECT step_id FROM ApprovalStep WHERE order_number = %s
                     """, [this_order + 1])
