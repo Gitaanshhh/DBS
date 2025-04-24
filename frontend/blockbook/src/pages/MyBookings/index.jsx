@@ -108,51 +108,64 @@ const MyBookings = () => {
         <div className={styles.noBookings}>No bookings found.</div>
       )}
       <div className={styles.bookingsGrid}>
-        {bookings.map((booking) => (
-          <div 
-            key={`booking-${booking.BOOKING_ID || booking.booking_id}`} 
-            className={styles.bookingCard}
-          >
-            <div className={styles.venueImageWrapper}>
-              <img
-                src={booking.IMAGE_URL || booking.image_url || "/assets/venues/default.jpg"}
-                alt={booking.VENUE_NAME || booking.venue_name}
-                className={styles.venueImage}
-              />
+        {bookings.map((booking) => {
+          // Try all possible casings for each field
+          const bookingId = booking.booking_id || booking.BOOKING_ID;
+          const venueName = booking.venue_name || booking.VENUE_NAME;
+          const buildingName = booking.building_name || booking.BUILDING_NAME;
+          const floorNumber = booking.floor_number || booking.FLOOR_NUMBER;
+          const seatingCapacity = booking.seating_capacity || booking.SEATING_CAPACITY;
+          const imageUrl = booking.image_url || booking.IMAGE_URL || "/assets/venues/default.jpg";
+          const bookingDate = booking.booking_date || booking.BOOKING_DATE;
+          const startTime = booking.start_time || booking.START_TIME;
+          const endTime = booking.end_time || booking.END_TIME;
+          const purpose = booking.purpose || booking.PURPOSE;
+          const status = (booking.status || booking.STATUS || "").toLowerCase();
+
+          return (
+            <div 
+              key={`booking-${bookingId}`} 
+              className={styles.bookingCard}
+            >
+              <div className={styles.venueImageWrapper}>
+                <img
+                  src={imageUrl}
+                  alt={venueName}
+                  className={styles.venueImage}
+                />
+              </div>
+              <div className={styles.bookingInfo}>
+                <h2 className={styles.venueName}>{venueName}</h2>
+                <div className={styles.venueLocation}>
+                  {buildingName}
+                  {floorNumber ? `, Floor ${floorNumber}` : ""}
+                </div>
+                <div className={styles.venueCapacity}>
+                  Capacity: {seatingCapacity}
+                </div>
+                <div className={styles.bookingDateTime}>
+                  <span>
+                    <i className="far fa-calendar-alt"></i>{" "}
+                    {bookingDate}
+                  </span>
+                  <span>
+                    <i className="far fa-clock"></i>{" "}
+                    {startTime} - {endTime}
+                  </span>
+                </div>
+                <div className={styles.bookingPurpose}>
+                  <strong>Purpose:</strong> {purpose}
+                </div>
+                <div className={styles.bookingStatus}>
+                  Status:{" "}
+                  <span className={styles[`status${status.charAt(0).toUpperCase() + status.slice(1)}`] || ""}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className={styles.bookingInfo}>
-              <h2 className={styles.venueName}>{booking.VENUE_NAME || booking.venue_name}</h2>
-              <div className={styles.venueLocation}>
-                {booking.BUILDING_NAME || booking.building_name}
-                {booking.FLOOR_NUMBER || booking.floor_number
-                  ? `, Floor ${booking.FLOOR_NUMBER || booking.floor_number}`
-                  : ""}
-              </div>
-              <div className={styles.venueCapacity}>
-                Capacity: {booking.SEATING_CAPACITY || booking.seating_capacity}
-              </div>
-              <div className={styles.bookingDateTime}>
-                <span>
-                  <i className="far fa-calendar-alt"></i>{" "}
-                  {booking.BOOKING_DATE || booking.booking_date}
-                </span>
-                <span>
-                  <i className="far fa-clock"></i>{" "}
-                  {booking.START_TIME || booking.start_time} - {booking.END_TIME || booking.end_time}
-                </span>
-              </div>
-              <div className={styles.bookingPurpose}>
-                <strong>Purpose:</strong> {booking.PURPOSE || booking.purpose}
-              </div>
-              <div className={styles.bookingStatus}>
-                Status:{" "}
-                <span className={styles[`status${booking.STATUS || booking.status}`] || ""}>
-                  {booking.STATUS || booking.status}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </main>
   );

@@ -9,7 +9,6 @@ import Home from './pages/Home/index.jsx';
 import ExploreVenues from './pages/ExploreVenues/index.jsx';
 import Community from './pages/Community';
 import MyBookings from './pages/MyBookings';
-import Notifications from './pages/Notifications';
 import Booking from './pages/Booking';
 import Approval from './pages/Approval';
 import './styles/global.css';
@@ -56,11 +55,6 @@ function App() {
           <Route path="/my-bookings" element={
             <ProtectedRoute allowedRoles={['admin', 'student', 'student-council']}>
               <MyBookings />
-            </ProtectedRoute>
-          } />
-          <Route path="/notifications" element={
-            <ProtectedRoute allowedRoles={['admin', 'student', 'student-council']}>
-              <Notifications />
             </ProtectedRoute>
           } />
           <Route path="/booking/:venueId" element={

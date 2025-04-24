@@ -58,12 +58,6 @@ const Header = () => {
             >
               My Bookings
             </Link>
-            <Link
-              to="/notifications"
-              className={isActive("/notifications") ? styles.active : ""}
-            >
-              Notifications
-            </Link>
           </>
         )}
 
