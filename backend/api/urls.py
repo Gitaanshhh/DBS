@@ -13,4 +13,6 @@ urlpatterns = [
     path('my-bookings/', views.getMyBookings),  # endpoint for user's bookings
     path('bookings/<int:booking_id>/', views.deleteBooking, name='delete-booking'),
     path('booking-logs/', views.getBookingLogs, name='booking-logs'),
+    path('approvals/', views.getPendingApprovals, name='get-approvals'),
+    path('approve-booking/', views.approveBooking, name='approve-booking'),
 ]

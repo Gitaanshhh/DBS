@@ -525,3 +525,124 @@ def getBookingLogs(request):
     except Exception as e:
         return Response({'error': f'Failed to fetch booking logs: {str(e)}'}, status=500)
 
+@api_view(['GET'])
+def getPendingApprovals(request):
+    """
+    Fetch all bookings that require approval for the current user (faculty, swo, security, student-council).
+    Query param: user_id (required), role (required)
+    """
+    user_id = request.GET.get('user_id')
+    role = request.GET.get('role', '').lower()
+    if not user_id or not role:
+        return Response({'error': 'user_id and role are required'}, status=400)
+    try:
+        with connection.cursor() as cursor:
+            # Determine which step(s) this role can approve
+            step_map = {
+                'faculty': 'Faculty Advisor',
+                'swo': 'Student Welfare Officer',
+                'security': 'Security',
+                'student-council': 'Student Council'
+            }
+            step_name = step_map.get(role)
+            if not step_name:
+                return Response({'approvals': []})
+
+            cursor.execute("""
+                SELECT
+                    ba.approval_id,
+                    ba.booking_id,
+                    ba.step_id,
+                    ba.is_approved,
+                    ba.comments,
+                    ba.approval_date,
+                    br.purpose,
+                    br.booking_date,
+                    br.start_time,
+                    br.end_time,
+                    br.status as booking_status,
+                    v.venue_name,
+                    v.image_url,
+                    v.seating_capacity,
+                    b.building_name,
+                    v.floor_number,
+                    u.email as requester_email
+                FROM BookingApproval ba
+                JOIN ApprovalStep astep ON ba.step_id = astep.step_id
+                JOIN BookingRequest br ON ba.booking_id = br.booking_id
+                JOIN Venue v ON br.venue_id = v.venue_id
+                LEFT JOIN Building b ON v.building_id = b.building_id
+                LEFT JOIN Users u ON br.requester_id = u.user_id
+                WHERE astep.step_name = %s
+                  AND (ba.is_approved IS NULL OR ba.is_approved = 'N')
+                  AND br.status = 'Pending'
+                ORDER BY br.created_at DESC
+            """, [step_name])
+            columns = [col[0] for col in cursor.description]
+            approvals = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        return Response({'approvals': approvals})
+    except Exception as e:
+        return Response({'error': f'Failed to fetch approvals: {str(e)}'}, status=500)
+
+@api_view(['POST'])
+@csrf_exempt
+def approveBooking(request):
+    """
+    Approve or reject a booking step.
+    Expects: approval_id, approve (Y/N), comments, approver_id
+    """
+    data = request.data
+    approval_id = data.get('approval_id')
+    approve = data.get('approve')  # 'Y' or 'N'
+    comments = data.get('comments', '')
+    approver_id = data.get('approver_id')
+    if not approval_id or approve not in ['Y', 'N'] or not approver_id:
+        return Response({'error': 'Missing required fields.'}, status=400)
+    try:
+        with connection.cursor() as cursor:
+            # Update BookingApproval
+            cursor.execute("""
+                UPDATE BookingApproval
+                SET is_approved = %s, comments = %s, approval_date = CURRENT_TIMESTAMP, approver_id = %s
+                WHERE approval_id = %s
+            """, [approve, comments, approver_id, approval_id])
+
+            # Get booking_id and step_id
+            cursor.execute("SELECT booking_id, step_id FROM BookingApproval WHERE approval_id = %s", [approval_id])
+            row = cursor.fetchone()
+            if not row:
+                return Response({'error': 'Approval not found.'}, status=404)
+            booking_id, step_id = row
+
+            # If rejected, update BookingRequest status to 'Rejected'
+            if approve == 'N':
+                cursor.execute("UPDATE BookingRequest SET status = 'Rejected' WHERE booking_id = %s", [booking_id])
+            else:
+                # If this is the last step, mark booking as Approved
+                cursor.execute("""
+                    SELECT MAX(order_number) FROM ApprovalStep
+                """)
+                max_order = cursor.fetchone()[0]
+                cursor.execute("""
+                    SELECT order_number FROM ApprovalStep WHERE step_id = %s
+                """, [step_id])
+                this_order = cursor.fetchone()[0]
+                if this_order == max_order:
+                    cursor.execute("UPDATE BookingRequest SET status = 'Approved' WHERE booking_id = %s", [booking_id])
+                else:
+                    # Otherwise, set next step's BookingApproval to pending (is_approved=NULL)
+                    cursor.execute("""
+                        SELECT step_id FROM ApprovalStep WHERE order_number = %s
+                    """, [this_order + 1])
+                    next_step = cursor.fetchone()
+                    if next_step:
+                        next_step_id = next_step[0]
+                        cursor.execute("""
+                            UPDATE BookingApproval
+                            SET is_approved = NULL, comments = NULL, approval_date = NULL
+                            WHERE booking_id = %s AND step_id = %s
+                        """, [booking_id, next_step_id])
+        return Response({'message': 'Approval updated successfully.'})
+    except Exception as e:
+        return Response({'error': f'Failed to update approval: {str(e)}'}, status=500)
+
