@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     console.log("AUTH : ",email, password); // Debug: see the email and password being sent
     try {
-      const response = await fetch('http://localhost:8000/admin/users', {
+      const response = await fetch('http://localhost:8000/api/users/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -43,11 +43,11 @@ export const AuthProvider = ({ children }) => {
         setUser(dbUser);
         // Redirect based on user role
         const role = dbUser.user_type || dbUser.role;
-        console.log(role); 
+        console.log("User role:", role); 
         if (role === 'student' || role === 'student-council' || role === 'admin') {
-          navigate('/app/home');
+          navigate('/home');
         } else if (['faculty', 'swo', 'security'].includes(role)) {
-          navigate('/approval');
+          navigate('/approvals');
         } else {
           navigate('/home');
         }

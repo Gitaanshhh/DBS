@@ -89,14 +89,14 @@ def getUsers(request):
                     dict(zip(columns, row))
                     for row in cursor.fetchall()
                 ]
-                #print("LOGIN RESULT (USERS):", data, file=sys.stderr)
+                print("LOGIN RESULT (USERS):", data, file=sys.stderr)
             except Exception as e:
-                #print("LOGIN EXCEPTION (USERS):", str(e), file=sys.stderr)
+                print("LOGIN EXCEPTION (USERS):", str(e), file=sys.stderr)
                 data = []
 
             if not data:
                 try:
-                    #print('DEBUG: Trying SELECT * FROM "USERS" ...', file=sys.stderr)
+                    print('DEBUG: Trying SELECT * FROM "USERS" ...', file=sys.stderr)
                     sql = 'SELECT * FROM "USERS" WHERE email = %s AND password_hash = %s'
                     cursor.execute(sql, params)
                     columns = [col[0] for col in cursor.description]
@@ -104,18 +104,18 @@ def getUsers(request):
                         dict(zip(columns, row))
                         for row in cursor.fetchall()
                     ]
-                    #print('LOGIN RESULT ("USERS"):', data, file=sys.stderr)
+                    print('LOGIN RESULT ("USERS"):', data, file=sys.stderr)
                 except Exception as e:
-                    #print('LOGIN EXCEPTION ("USERS"):', str(e), file=sys.stderr)
+                    print('LOGIN EXCEPTION ("USERS"):', str(e), file=sys.stderr)
                     data = []
 
-            # # Print all emails and password_hashes for debug
-            # try:
-            #     cursor.execute("SELECT email, password_hash FROM USERS")
-            #     all_creds = cursor.fetchall()
-            #     print("DEBUG: All emails and password_hashes in USERS:", all_creds, file=sys.stderr)
-            # except Exception as e:
-            #     print("DEBUG: Could not fetch emails/password_hashes:", str(e), file=sys.stderr)
+            # Print all emails and password_hashes for debug
+            try:
+                cursor.execute("SELECT email, password_hash, user_type FROM USERS")
+                all_creds = cursor.fetchall()
+                print("DEBUG: All emails and password_hashes in USERS:", all_creds, file=sys.stderr)
+            except Exception as e:
+                print("DEBUG: Could not fetch emails/password_hashes:", str(e), file=sys.stderr)
 
     except Exception as e:
         print("LOGIN EXCEPTION:", str(e), file=sys.stderr)
@@ -125,7 +125,14 @@ def getUsers(request):
         print("LOGIN ERROR: No user found", file=sys.stderr)
         return Response({'error': 'Invalid email or password (Views.py)'}, status=401)
 
-    #print("LOGIN SUCCESS: User authenticated", file=sys.stderr)
+    # Ensure user_type is properly set
+    for user in data:
+        if 'user_type' not in user or not user['user_type']:
+            user['user_type'] = 'student'  # Default to student if not set
+        # Also set role for backward compatibility
+        user['role'] = user['user_type']
+    
+    print("LOGIN SUCCESS: User authenticated", file=sys.stderr)
     return Response({'User Details': data})
 
 """
