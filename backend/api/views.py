@@ -178,16 +178,77 @@ def getVenues(request):
 
 """
 Details of a particular venue
-Need to implement logic to get the venue id from the request and then get the details of that venue
 """
 @api_view(['GET'])
 def getVenueDetails(request):
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM Venue where venue_id = 1")  # Replace 1 with the actual venue_id you want to fetch
-        columns = [col[0] for col in cursor.description]
-        data = [
-            dict(zip(columns, row))
-            for row in cursor.fetchall()
-        ]
-    return Response({'Venue': data})
+    venue_id = request.GET.get('venue_id')
+    if not venue_id:
+        return Response({'error': 'Venue ID is required'}, status=400)
+        
+    try:
+        with connection.cursor() as cursor:
+            # Join with Building and VenueType to get all relevant information
+            cursor.execute("""
+                SELECT 
+                    v.venue_id, 
+                    v.venue_name, 
+                    v.seating_capacity,
+                    TO_CHAR(v.features) as features,
+                    v.image_url,
+                    v.floor_number,
+                    v.is_indoor,
+                    v.manager_contact,
+                    TO_CHAR(v.description) as description,
+                    b.building_name,
+                    b.location as building_location,
+                    vt.type_name as venue_type,
+                    TO_CHAR(vt.description) as type_description
+                FROM Venue v
+                LEFT JOIN Building b ON v.building_id = b.building_id
+                LEFT JOIN VenueType vt ON v.venue_type_id = vt.type_id
+                WHERE v.venue_id = %s
+            """, [venue_id])
+            
+            columns = [col[0] for col in cursor.description]
+            venue_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            
+            if not venue_data:
+                return Response({'error': 'Venue not found'}, status=404)
+                
+            venue = venue_data[0]
+            
+            # Get venue availability
+            cursor.execute("""
+                SELECT 
+                    availability_id,
+                    day_of_week,
+                    TO_CHAR(start_time, 'HH24:MI') as start_time,
+                    TO_CHAR(end_time, 'HH24:MI') as end_time,
+                    is_available
+                FROM VenueAvailability
+                WHERE venue_id = %s
+                ORDER BY 
+                    CASE day_of_week 
+                        WHEN 'Monday' THEN 1
+                        WHEN 'Tuesday' THEN 2
+                        WHEN 'Wednesday' THEN 3
+                        WHEN 'Thursday' THEN 4
+                        WHEN 'Friday' THEN 5
+                        WHEN 'Saturday' THEN 6
+                        WHEN 'Sunday' THEN 7
+                    END,
+                    start_time
+            """, [venue_id])
+            
+            columns = [col[0] for col in cursor.description]
+            availability_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            
+            # Add availability to venue data
+            venue['availability'] = availability_data
+            
+            return Response({'venue': venue})
+            
+    except Exception as e:
+        print(f"Error in getVenueDetails: {str(e)}", file=sys.stderr)
+        return Response({'error': f'Failed to fetch venue details: {str(e)}'}, status=500)
 
