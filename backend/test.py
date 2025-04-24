@@ -18,7 +18,7 @@ conn = oracledb.connect(
 )
 
 cur = conn.cursor()
-cur.execute("SELECT * FROM student")
+cur.execute("SELECT * FROM SYS.Student")
 rows = cur.fetchall()
 
 if not rows:
@@ -30,5 +30,11 @@ else:
 cur.execute("SELECT table_name FROM user_tables")
 print(cur.fetchall())
 """
+
+cur.execute("SELECT table_name FROM all_tables WHERE owner = 'SYS' AND table_name = 'STUDENT'")
+print(cur.fetchall())
+
+cur.execute("SELECT COUNT(*) FROM SYS.Student")
+print(cur.fetchone())
 
 conn.close()

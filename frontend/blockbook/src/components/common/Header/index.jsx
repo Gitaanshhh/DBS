@@ -73,15 +73,18 @@ const Header = () => {
       <div className={styles.userMenu}>
         {user ? (
           <div className={styles.userInfo}>
-            <span className={styles.userRole}>{user.role}</span>
+            <span className={styles.userRole}>{user.user_type || user.role}</span>
             <div className={styles.userIcon} onClick={logout} title="Logout">
-              {user.email.substring(0, 2).toUpperCase()}
+              {/* {user.email && user.email.substring(0, 2).toUpperCase()} */}
             </div>
           </div>
         ) : (
-          <Link to="/" className={styles.loginBtn}>
-            Login
-          </Link>
+          // Only show Login button if not already on the landing/login page
+          window.location.pathname !== "/" && (
+            <Link to="/" className={styles.loginBtn}>
+              Login
+            </Link>
+          )
         )}
       </div>
 

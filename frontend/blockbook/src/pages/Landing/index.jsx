@@ -1,5 +1,5 @@
 // src/pages/Landing/index.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Landing.module.css';
 
@@ -10,63 +10,69 @@ const Landing = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log('Loading Landing page...');
+    document.title = 'BlockBook - Login';
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user) {
+          const role = user.user_type || user.role;
+          if (role === 'student' || role === 'student-council') {
+            navigate('/home');
+          } else if (['faculty', 'swo', 'security'].includes(role)) {
+            navigate('/approvals');
+          } else {
+            navigate('/home');
+          }
+        }
+      } catch (e) {
+        localStorage.removeItem('user');
+      }
+    }
+  }, [navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-
     try {
-      // ACTUAL API CALL:
-      // Make a POST request to your Django backend login endpoint
-      // const response = await fetch('http://your-django-api.com/api/auth/login/', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({ email, password }),
-      //   credentials: 'include'  // If using session cookies
-      // });
-      
-      // For testing purposes, we'll simulate the API response
-      let mockResponse;
-      
-      // Check if email ends with @manipal.edu
-      if (!email.endsWith('@manipal.edu')) {
-        throw new Error('Only Manipal University emails are allowed');
+      console.log(email, password); // Debug: see the email and password being sent
+      const response = await fetch('http://localhost:8000/api/users/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError('Invalid email or password (Index.jsx)');
+        } else if (response.status === 404) {
+          setError('API endpoint not found. Please check server configuration.');
+        } else {
+          setError(`Server error: ${response.status}`);
+        }
+        setIsLoading(false);
+        return;
       }
-      
-      // Mock authentication logic - in real app, this would be handled by the backend
-      if (email === 'student@manipal.edu' && password === 'student-password') {
-        mockResponse = { success: true, user: { email, role: 'student' } };
-      } else if (email === 'sc@manipal.edu' && password === 'sc-password') {
-        mockResponse = { success: true, user: { email, role: 'student-council' } };
-      } else if (email === 'faculty@manipal.edu' && password === 'faculty-password') {
-        mockResponse = { success: true, user: { email, role: 'faculty' } };
-      } else if (email === 'swo@manipal.edu' && password === 'swo-password') {
-        mockResponse = { success: true, user: { email, role: 'swo' } };
+      const data = await response.json();
+      if (data['User Details'] && data['User Details'].length > 0) {
+        localStorage.setItem('user', JSON.stringify(data['User Details'][0]));
+        localStorage.setItem('token', 'mock-token');
+        const user = data['User Details'][0];
+        const role = user.user_type || user.role;
+        if (role === 'student' || role === 'student-council') {
+          navigate('/home');
+        } else if (['faculty', 'swo', 'security'].includes(role)) {
+          navigate('/approvals');
+        } else {
+          navigate('/home');
+        }
       } else {
-        // Simulate authentication failure
-        throw new Error('Invalid email or password');
-      }
-
-      // ACTUAL RESPONSE HANDLING:
-      // const data = await response.json();
-      // if (!response.ok) {
-      //   throw new Error(data.message || 'Login failed');
-      // }
-      
-      // Store user data and token in localStorage
-      localStorage.setItem('user', JSON.stringify(mockResponse.user));
-      localStorage.setItem('token', 'mock-token'); // In real app, this would be the JWT from backend
-      
-      // Redirect based on user role
-      if (mockResponse.user.role === 'student' || mockResponse.user.role === 'student-council') {
-        navigate('/app/home');
-      } else if (['faculty', 'swo', 'security'].includes(mockResponse.user.role)) {
-        navigate('/approval');
+        setError(data.error || 'Login failed. Please check credentials.');
       }
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError('Network error. Please check your connection and try again.');
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +84,6 @@ const Landing = () => {
       <div className={styles.centerBox}>
         <h1 className={styles.title}>Welcome to BlockBook</h1>
         <p className={styles.subtitle}>MIT Manipal's Venue Booking Platform</p>
-        
         <form className={styles.loginBox} onSubmit={handleSubmit}>
           <input
             type="email"
@@ -100,7 +105,6 @@ const Landing = () => {
           </button>
           {error && <div className={styles.error}>{error}</div>}
         </form>
-        
         {/* Login instructions for testing */}
         <div className={styles.testingInfo}>
           <p>Test Accounts:</p>
@@ -112,7 +116,6 @@ const Landing = () => {
           </ul>
         </div>
       </div>
-      
       {/* Decorative Elements */}
       <div className={styles.circles}>
         <div className={styles.circle1}></div>

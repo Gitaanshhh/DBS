@@ -305,3 +305,5 @@ INSERT INTO VenueEquipment VALUES (109, 201, 1);
 INSERT INTO VenueEquipment VALUES (109, 202, 3);
 INSERT INTO VenueEquipment VALUES (110, 201, 1);
 INSERT INTO VenueEquipment VALUES (110, 202, 2);
+
+commit;

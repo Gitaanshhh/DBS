@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useVenueBooking } from '../../hooks/useVenueBooking';
 import styles from './Home.module.css';
-import { getVenues } from '../../api/venues';
 
 const Home = () => {
   const { currentDate, handleBookVenue } = useVenueBooking();
@@ -10,20 +9,31 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch venues from backend
-    getVenues().then(data => {
-      // Always extract the array of venues from the backend response
-      if (Array.isArray(data)) {
-        setVenues(data);
-      } else if (data && (Array.isArray(data.Venues) || Array.isArray(data.venues))) {
-        setVenues(data.Venues || data.venues);
-      } else if (data && typeof data === "object" && Object.keys(data).length > 0) {
-        // If backend returns an object with venue_id keys (edge case)
-        setVenues(Object.values(data));
-      } else {
-        setVenues([]);
+    const fetchVenues = async () => {
+      console.log("Trying to fetch venues from backend...");
+      try {
+        const response = await fetch('http://localhost:8000/api/venues/');
+        console.log("Fetch response:", response);
+        const data = await response.json();
+        console.log("Fetched data:", data);
+        // Always extract the array of venues from the backend response
+        if (Array.isArray(data)) {
+          setVenues(data);
+        } else if (data && (Array.isArray(data.Venues) || Array.isArray(data.venues))) {
+          setVenues(data.Venues || data.venues);
+        } else if (data && typeof data === "object" && Object.keys(data).length > 0) {
+          // If backend returns an object with venue_id keys (edge case)
+          setVenues(Object.values(data));
+        } else {
+          setVenues([]);
+        }
+        console.log("Venues loaded in Home:", data); // Debug: see what is loaded
+      } catch (err) {
+        console.error("Fetch error:", err);
       }
-    });
+    };
+
+    fetchVenues();
   }, []);
 
   const handleVenueClick = (venue) => {
@@ -90,7 +100,7 @@ const Home = () => {
               onClick={() => handleVenueClick(venue)}
               style={{ cursor: 'pointer' }}
             >
-              <img src={venue.image_url} alt={venue.venue_name} />
+              <img src={venue.image_url || "/assets/venues/default.jpg"} alt={venue.venue_name} />
               <div className={styles.venueContent}>
                 <div>
                   <h3 className={styles.venueTitle}>{venue.venue_name}</h3>

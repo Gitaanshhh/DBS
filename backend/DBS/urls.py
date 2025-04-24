@@ -14,13 +14,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
 from django.shortcuts import render
+from django.http import HttpResponse
 import os
 
 # Enhanced view to handle SPA requests
 def spa_view(request):
+    print(f"SPA_VIEW TRACE: {request.path}")  # Trace for catch-all
     try:
         # Explicitly looking for the index.html file
         template_name = "index.html"
@@ -32,8 +35,15 @@ def spa_view(request):
         # If there's an error, return it for debugging
         return render(request, "error.html", {"error": str(e)})
 
+# Add a trace for every request
+def trace_view(request, *args, **kwargs):
+    print(f"TRACE: {request.path}")
+    return None  # Let Django continue to resolve
+
 urlpatterns = [
-    path('api/', include('api.urls')),
+    path('', trace_view),  # This will not override other patterns, just for demonstration
+    path('admin/', admin.site.urls),
+    path('api/', include('api.urls')),  # This line must exist
 ]
 
 # Add the catch-all route for the React app

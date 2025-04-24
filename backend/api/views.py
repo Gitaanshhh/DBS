@@ -66,25 +66,66 @@ Can add verification of user login details here
 @api_view(['POST'])
 @csrf_exempt
 def getUsers(request):
+    import sys
+    print("LOGIN API CALLED", file=sys.stderr)
     # Get email and password from POST data
     email = request.data.get('email')
     password = request.data.get('password')
+    print("LOGIN DEBUG: email =", email, "password =", password, file=sys.stderr)
 
     if not email or not password:
+        print("LOGIN ERROR: Missing email or password", file=sys.stderr)
         return Response({'error': 'Email and password are required'}, status=400)
 
-    with connection.cursor() as cursor:
-        # Use parameterized queries to prevent SQL injection
-        cursor.execute("SELECT * FROM Users WHERE email = %s AND password = %s", [email, password])
-        columns = [col[0] for col in cursor.description]
-        data = [
-            dict(zip(columns, row))
-            for row in cursor.fetchall()
-        ]
+    try:
+        with connection.cursor() as cursor:
+
+            try:
+                sql = "SELECT * FROM USERS WHERE email = %s AND password_hash = %s"
+                params = [email, password]
+                cursor.execute(sql, params)
+                columns = [col[0] for col in cursor.description]
+                data = [
+                    dict(zip(columns, row))
+                    for row in cursor.fetchall()
+                ]
+                print("LOGIN RESULT (USERS):", data, file=sys.stderr)
+            except Exception as e:
+                print("LOGIN EXCEPTION (USERS):", str(e), file=sys.stderr)
+                data = []
+
+            if not data:
+                try:
+                    print('DEBUG: Trying SELECT * FROM "USERS" ...', file=sys.stderr)
+                    sql = 'SELECT * FROM "USERS" WHERE email = %s AND password_hash = %s'
+                    cursor.execute(sql, params)
+                    columns = [col[0] for col in cursor.description]
+                    data = [
+                        dict(zip(columns, row))
+                        for row in cursor.fetchall()
+                    ]
+                    print('LOGIN RESULT ("USERS"):', data, file=sys.stderr)
+                except Exception as e:
+                    print('LOGIN EXCEPTION ("USERS"):', str(e), file=sys.stderr)
+                    data = []
+
+            # # Print all emails and password_hashes for debug
+            # try:
+            #     cursor.execute("SELECT email, password_hash FROM USERS")
+            #     all_creds = cursor.fetchall()
+            #     print("DEBUG: All emails and password_hashes in USERS:", all_creds, file=sys.stderr)
+            # except Exception as e:
+            #     print("DEBUG: Could not fetch emails/password_hashes:", str(e), file=sys.stderr)
+
+    except Exception as e:
+        print("LOGIN EXCEPTION:", str(e), file=sys.stderr)
+        return Response({'error': f'Internal server error: {str(e)}'}, status=500)
 
     if not data:
-        return Response({'error': 'Invalid email or password'}, status=401)
+        print("LOGIN ERROR: No user found", file=sys.stderr)
+        return Response({'error': 'Invalid email or password (Views.py)'}, status=401)
 
+    print("LOGIN SUCCESS: User authenticated", file=sys.stderr)
     return Response({'User Details': data})
 
 """

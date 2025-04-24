@@ -16,6 +16,7 @@ const Login = () => {
 
   useEffect(() => {
     // Provide visual feedback that the page is loading
+    console.log('Loading Login page...');
     document.title = 'BlockBook - Login';
     
     // Check if already logged in
@@ -41,11 +42,11 @@ const Login = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      
+      console.log('Login response:', response); // Debug: see the response from the server
       if (!response.ok) {
         // Handle different HTTP error codes
         if (response.status === 401) {
-          setError('Invalid email or password');
+          setError('Invalid email or password (Index.jsx)');
         } else if (response.status === 404) {
           setError('API endpoint not found. Please check server configuration.');
         } else {

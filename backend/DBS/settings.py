@@ -84,12 +84,12 @@ WSGI_APPLICATION = 'DBS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'localhost/FREE',  # Use service_name FREE
+        'NAME': 'FREE',  # Use service_name FREE
         'USER': 'sys',
         'PASSWORD': 'sys',
         'HOST': 'localhost',
         'PORT': '1521',
-        # 'OPTIONS': {'mode': 'SYSDBA'},  # Uncomment if you want to use SYSDBA mode (not recommended for production)
+        'OPTIONS': {'mode': 'SYSDBA'},  # Uncomment if you want to use SYSDBA mode (not recommended for production)
     }
 }
 
@@ -133,3 +133,17 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
