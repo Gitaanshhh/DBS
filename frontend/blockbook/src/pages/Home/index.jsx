@@ -1,41 +1,59 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useVenueBooking } from '../../hooks/useVenueBooking';
+import VenueCard from '../../components/VenueCard';
 import styles from './Home.module.css';
 
 const Home = () => {
   console.log("Home component loaded"); // Debug: see if Home component is loaded
   const { currentDate, handleBookVenue } = useVenueBooking();
   const [venues, setVenues] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchVenues = async () => {
       console.log("Trying to fetch venues from backend...");
+      setLoading(true);
+      setError(null);
+      
       try {
         const response = await fetch('http://localhost:8000/api/venues/');
         console.log("Fetch response:", response);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch venues: ${response.status}`);
+        }
+        
         const data = await response.json();
         console.log("Fetched data:", data);
-        // Always extract the array of venues from the backend response
-        if (Array.isArray(data)) {
-          setVenues(data);
-        } else if (data && (Array.isArray(data.Venues) || Array.isArray(data.venues))) {
-          setVenues(data.Venues || data.venues);
+        
+        // Extract venues from the response
+        let venuesData = [];
+        if (data.Venues && Array.isArray(data.Venues)) {
+          venuesData = data.Venues;
+        } else if (Array.isArray(data)) {
+          venuesData = data;
         } else if (data && typeof data === "object" && Object.keys(data).length > 0) {
-          // If backend returns an object with venue_id keys (edge case)
-          setVenues(Object.values(data));
-        } else {
-          setVenues([]);
+          venuesData = Object.values(data);
         }
-        console.log("Venues loaded in Home:", data); // Debug: see what is loaded
+        
+        setVenues(venuesData);
+        console.log("Venues loaded in Home:", venuesData); // Debug: see what is loaded
       } catch (err) {
         console.error("Fetch error:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchVenues();
   }, []);
+
+  // Get the first 3 venues for the home page
+  const featuredVenues = venues.slice(0, 3);
 
   const handleVenueClick = (venue) => {
     // Prepare venue data for booking page
@@ -88,48 +106,45 @@ const Home = () => {
 
       <section className={styles.browseVenues}>
         <h2 className={styles.sectionTitle}>Browse Venues</h2>
-        <div className={styles.venues}>
-          {venues.length === 0 && (
-            <div style={{ padding: "2rem", textAlign: "center", color: "#888" }}>
-              No venues found.
-            </div>
-          )}
-          {venues.map((venue) => (
-            <div
-              key={venue.venue_id}
-              className={styles.venue}
-              onClick={() => handleVenueClick(venue)}
-              style={{ cursor: 'pointer' }}
-            >
-              <img src={venue.image_url || "/assets/venues/default.jpg"} alt={venue.venue_name} />
-              <div className={styles.venueContent}>
-                <div>
-                  <h3 className={styles.venueTitle}>{venue.venue_name}</h3>
-                  <p className={styles.venueLocation}>
-                    <i className="fas fa-map-marker-alt"></i> {venue.building_name || '—'}{venue.floor_number ? `, Floor ${venue.floor_number}` : ''}
-                  </p>
-                  <p className={styles.venueCapacity}>
-                    <i className="fas fa-users"></i> Capacity: {venue.seating_capacity} people
-                  </p>
-                  <div className={styles.venueFeatures}>
-                    {venue.features && venue.features.split(',').map((feature, idx) => (
-                      <span className={styles.feature} key={idx}>{feature.trim()}</span>
-                    ))}
-                  </div>
+        
+        {loading ? (
+          <div className={styles.loadingContainer}>
+            <div className={styles.loadingSpinner}></div>
+            <p>Loading venues...</p>
+          </div>
+        ) : error ? (
+          <div className={styles.errorContainer}>
+            <p>Error loading venues: {error}</p>
+            <button onClick={() => window.location.reload()}>Retry</button>
+          </div>
+        ) : (
+          <>
+            <div className={styles.venuesGrid}>
+              {featuredVenues.length === 0 ? (
+                <div className={styles.noVenues}>
+                  <p>No venues found.</p>
                 </div>
-                <button
-                  className={styles.bookBtn}
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleVenueClick(venue);
-                  }}
-                >
-                  Book Now
-                </button>
-              </div>
+              ) : (
+                featuredVenues.map((venue) => (
+                  <VenueCard 
+                    key={venue.venue_id} 
+                    venue={venue} 
+                    onBook={handleBookVenue}
+                    showDetails={false}
+                  />
+                ))
+              )}
             </div>
-          ))}
-        </div>
+            
+            {venues.length > 3 && (
+              <div className={styles.viewMoreContainer}>
+                <Link to="/explore" className={styles.viewMoreButton}>
+                  View More Venues
+                </Link>
+              </div>
+            )}
+          </>
+        )}
       </section>
       
       <section className={styles.bookingRequests}>

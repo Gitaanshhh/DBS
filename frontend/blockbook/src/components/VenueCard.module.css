@@ -1,0 +1,104 @@
+.venueCard {
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: white;
+  height: 100%;
+}
+
+.venueCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.venueImage {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.venueImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholderImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  color: #888;
+  font-size: 1.2rem;
+}
+
+.venueInfo {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.venueName {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.venueDetails {
+  margin-bottom: 1rem;
+  flex-grow: 1;
+}
+
+.venueLocation, .venueCapacity {
+  margin: 0.25rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.venueFeatures {
+  margin-top: 0.5rem;
+}
+
+.venueFeatures h4 {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  color: #444;
+}
+
+.venueFeatures ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.venueFeatures li {
+  margin: 0.25rem 0;
+}
+
+.bookButton {
+  background-color: #4a6cf7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: auto;
+}
+
+.bookButton:hover {
+  background-color: #3a5ce5;
+}
+
+.bookButton:active {
+  background-color: #2a4cd3;
+} 
