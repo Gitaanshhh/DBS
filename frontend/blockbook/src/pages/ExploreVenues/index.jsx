@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useModal } from "../../hooks/useModal";
+import { useVenueBooking } from "../../hooks/useVenueBooking";
 import VenueCard from "../../components/VenueCard";
 import styles from "./ExploreVenues.module.css";
 
@@ -15,7 +16,7 @@ const ExploreVenues = () => {
     closeGalleryModal,
   } = useModal();
 
-  const navigate = useNavigate();
+  const { handleBookVenue, error: bookingError } = useVenueBooking();
   const [venues, setVenues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,24 +44,20 @@ const ExploreVenues = () => {
     fetchVenues();
   }, []);
 
-  const bookVenue = (venueData) => {
-    localStorage.setItem('selectedVenue', JSON.stringify(venueData));
-    navigate(`/booking/${venueData.venue_id}`);
-  };
-
   return (
     <main className={styles.main}>
       <h1 className={styles.sectionTitle}>Explore Venues</h1>
 
       {loading && <div>Loading venues...</div>}
       {error && <div className={styles.error}>{error}</div>}
+      {bookingError && <div className={styles.error}>{bookingError}</div>}
       
       <div className={styles.venuesGrid}>
         {venues.map((venue) => (
           <VenueCard
             key={venue.venue_id}
             venue={venue}
-            onBook={() => bookVenue(venue)}
+            onBook={() => handleBookVenue(venue.venue_id, venue)}
             onMapClick={() => openMapModal(venue)}
             onGalleryClick={() => openGalleryModal(venue)}
           />

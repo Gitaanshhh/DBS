@@ -6,8 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-import sys
+from rest_framework import status
 
 @api_view(['GET'])
 def test_api(request):
@@ -329,4 +328,71 @@ def getVenueDetails(request):
     except Exception as e:
         print(f"Error in getVenueDetails: {str(e)}", file=sys.stderr)
         return Response({'error': f'Failed to fetch venue details: {str(e)}'}, status=500)
+
+@api_view(['POST'])
+@csrf_exempt
+def createBooking(request):
+    """
+    Create a new booking request from frontend form.
+    """
+    try:
+        data = request.data
+        # Required fields from frontend
+        venue_id = data.get('venue_id')
+        booking_date = data.get('booking_date')
+        start_time = data.get('start_time')
+        end_time = data.get('end_time')
+        organizer_name = data.get('organizer_name')
+        organizer_email = data.get('organizer_email')
+        department = data.get('department')
+        attendees = data.get('attendees')
+        purpose = data.get('purpose')
+        setup_requirements = data.get('setup_requirements')
+        additional_notes = data.get('additional_notes')
+
+        # Validate required fields
+        if not (venue_id and booking_date and start_time and end_time and organizer_name and organizer_email and purpose):
+            return Response({'error': 'Missing required fields.'}, status=400)
+
+        with connection.cursor() as cursor:
+            # Find or create the user (requester) by email
+            cursor.execute("SELECT user_id FROM Users WHERE email = %s", [organizer_email])
+            user_row = cursor.fetchone()
+            if user_row:
+                requester_id = user_row[0]
+            else:
+                # Insert new user as student by default (no RETURNING INTO)
+                cursor.execute(
+                    "INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (users_seq.NEXTVAL, %s, %s, %s)",
+                    [organizer_email, 'default', 'student']
+                )
+                cursor.execute("SELECT MAX(user_id) FROM Users")
+                requester_id = cursor.fetchone()[0]
+
+            # Find a student_body_id for the user (for demo, use 1 if not found)
+            cursor.execute("SELECT student_body_id FROM StudentBodyMembership WHERE student_id = (SELECT student_id FROM Student WHERE user_id = %s)", [requester_id])
+            sb_row = cursor.fetchone()
+            student_body_id = sb_row[0] if sb_row else 1
+
+            # Insert booking request
+            cursor.execute(
+                """
+                INSERT INTO BookingRequest (
+                    booking_id, venue_id, student_body_id, requester_id, booking_date, start_time, end_time,
+                    purpose, attendees_count, setup_requirements, status, created_at
+                ) VALUES (
+                    bookingrequest_seq.NEXTVAL, %s, %s, %s, TO_DATE(%s, 'YYYY-MM-DD'), TO_TIMESTAMP(%s, 'HH24:MI:SS'), TO_TIMESTAMP(%s, 'HH24:MI:SS'),
+                    %s, %s, %s, %s, CURRENT_TIMESTAMP
+                )
+                """,
+                [
+                    venue_id, student_body_id, requester_id, booking_date, start_time, end_time,
+                    purpose, attendees, setup_requirements, 'Pending'
+                ]
+            )
+
+        return Response({'message': 'Booking request submitted successfully.'}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        print("BOOKING SUBMIT ERROR:", str(e))
+        return Response({'error': f'Failed to submit booking: {str(e)}'}, status=500)
 

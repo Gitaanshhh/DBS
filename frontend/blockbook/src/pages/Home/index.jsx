@@ -65,7 +65,7 @@ const Home = () => {
       features: venue.features ? venue.features.split(',').map(f => f.trim()) : [],
       id: venue.venue_id
     };
-    handleBookVenue(venueData);
+    handleBookVenue(venue.venue_id, venueData);
     // Always navigate to the booking page for this venue
     navigate(`/booking/${venue.venue_id}`);
   };

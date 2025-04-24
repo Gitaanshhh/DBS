@@ -9,4 +9,5 @@ urlpatterns = [
     path('venues/', views.getVenues),
     path('venue-details/', views.getVenueDetails),
     path('filter-options/', views.getFilterOptions),  # add this line for filter options
+    path('bookings/', views.createBooking),  # new booking endpoint
 ]

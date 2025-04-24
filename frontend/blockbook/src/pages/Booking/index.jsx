@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import styles from "./Booking.module.css";
 
 const Booking = () => {
   const navigate = useNavigate();
+  const { venueId } = useParams();
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [venueData, setVenueData] = useState(null);
   const [formData, setFormData] = useState({
@@ -15,8 +16,10 @@ const Booking = () => {
     setupRequirements: "",
     additionalNotes: "",
   });
-
   const [bookingDate, setBookingDate] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
     // Set minimum date to today
@@ -50,18 +53,68 @@ const Booking = () => {
     setSelectedTimeSlot(slot);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError("");
+    setSubmitSuccess(false);
 
     if (!selectedTimeSlot) {
-      alert("Please select a time slot");
+      setSubmitError("Please select a time slot");
       return;
     }
 
-    // In a real app, this would submit the booking request to the server
-    alert("Your booking request has been submitted successfully!");
-    // Redirect to home page
-    navigate("/");
+    setSubmitting(true);
+
+    try {
+      // Prepare start and end time based on slot
+      let start_time = "", end_time = "";
+      if (selectedTimeSlot === "8:00 AM - 12:00 PM") {
+        start_time = "08:00:00";
+        end_time = "12:00:00";
+      } else if (selectedTimeSlot === "12:00 PM - 4:00 PM") {
+        start_time = "12:00:00";
+        end_time = "16:00:00";
+      } else if (selectedTimeSlot === "4:00 PM - 8:00 PM") {
+        start_time = "16:00:00";
+        end_time = "20:00:00";
+      }
+
+      // Compose booking payload
+      const payload = {
+        venue_id: venueId || (venueData && (venueData.venue_id || venueData.id)),
+        booking_date: bookingDate,
+        start_time,
+        end_time,
+        organizer_name: formData.organizerName,
+        organizer_email: formData.organizerEmail,
+        department: formData.department,
+        attendees: formData.attendees,
+        purpose: formData.purpose,
+        setup_requirements: formData.setupRequirements,
+        additional_notes: formData.additionalNotes,
+      };
+
+      // POST to backend
+      const response = await fetch("http://localhost:8000/api/bookings/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || "Failed to submit booking request");
+      }
+
+      setSubmitSuccess(true);
+      setTimeout(() => {
+        navigate("/home");
+      }, 1500);
+    } catch (err) {
+      setSubmitError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (!venueData) {
@@ -85,13 +138,11 @@ const Booking = () => {
             <h1 className={styles.venueTitle}>{venueData.title}</h1>
             <p className={styles.venueLocation}>{venueData.location}</p>
             <p className={styles.venueCapacity}>{venueData.capacity}</p>
-
             <div className={styles.venueFeatures}>
               <span className={styles.feature} id="feature1"></span>
               <span className={styles.feature} id="feature2"></span>
               <span className={styles.feature} id="feature3"></span>
             </div>
-
             <p className={styles.venueDescription}>
               This venue offers state-of-the-art facilities in a convenient
               location. Perfect for academic events, presentations, workshops,
@@ -135,7 +186,14 @@ const Booking = () => {
               >
                 8:00 AM - 12:00 PM
               </div>
-              <div className={`${styles.timeSlot} ${styles.unavailable}`}>
+              <div
+                className={`${styles.timeSlot} ${
+                  selectedTimeSlot === "12:00 PM - 4:00 PM"
+                    ? styles.selected
+                    : ""
+                }`}
+                onClick={() => handleTimeSlotClick("12:00 PM - 4:00 PM")}
+              >
                 12:00 PM - 4:00 PM
               </div>
               <div
@@ -190,7 +248,7 @@ const Booking = () => {
                   value={formData.department}
                   onChange={handleInputChange}
                 >
-                  <option value="" disabled selected>
+                  <option value="" disabled>
                     Select Department
                   </option>
                   <option value="computer-science">Computer Science</option>
@@ -256,6 +314,15 @@ const Booking = () => {
               ></textarea>
             </div>
 
+            {submitError && (
+              <div className={styles.error}>{submitError}</div>
+            )}
+            {submitSuccess && (
+              <div className={styles.success}>
+                Booking request submitted successfully!
+              </div>
+            )}
+
             <div className={styles.formActions}>
               <Link
                 to="/"
@@ -266,8 +333,9 @@ const Booking = () => {
               <button
                 type="submit"
                 className={`${styles.btn} ${styles.submitBtn}`}
+                disabled={submitting}
               >
-                Submit Booking Request
+                {submitting ? "Submitting..." : "Submit Booking Request"}
               </button>
             </div>
           </form>

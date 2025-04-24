@@ -17,10 +17,13 @@ export const useVenueBooking = () => {
         throw new Error('No venue selected for booking');
       }
 
+      // Ensure venueData is an object
+      const venueInfo = typeof venueData === 'object' ? venueData : {};
+
       // Store venue data in localStorage
       localStorage.setItem('selectedVenue', JSON.stringify({
-        id: venueId,
-        ...venueData,
+        venue_id: venueId,
+        ...venueInfo,
         selectedDate: new Date().toISOString()
       }));
 

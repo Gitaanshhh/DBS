@@ -36,13 +36,19 @@ const VenueCard = ({ venue, onBook, showDetails = false }) => {
   
   // Handle booking the venue
   const handleBook = () => {
-    if (onBook) {
-      onBook(venue);
-    } else {
-      // Default behavior if no onBook function is provided
-      localStorage.setItem('selectedVenue', JSON.stringify(venue));
-      navigate(`/booking/${venue.VENUE_ID || venue.venue_id}`, { replace: true });
-    }
+    // Normalize venue data for booking page
+    const venueId = venue.venue_id || venue.VENUE_ID || venue.id;
+    const venueData = {
+      title: venue.venue_name || venue.VENUE_NAME || venue.title,
+      location: (venue.building_name || venue.BUILDING_NAME || venue.location || "") +
+        ((venue.floor_number || venue.FLOOR_NUMBER) ? `, Floor ${venue.floor_number || venue.FLOOR_NUMBER}` : ""),
+      capacity: `Capacity: ${venue.seating_capacity || venue.SEATING_CAPACITY || venue.capacity || 0} people`,
+      image: venue.image_url || venue.image || "",
+      features: (venue.features || venue.FEATURES || []).toString().split(',').map(f => f.trim()),
+      id: venueId
+    };
+    localStorage.setItem('selectedVenue', JSON.stringify(venueData));
+    navigate(`/booking/${venueId}`, { replace: true });
   };
 
   // Fetch venue details
@@ -226,4 +232,4 @@ const VenueCard = ({ venue, onBook, showDetails = false }) => {
   );
 };
 
-export default VenueCard; 
+export default VenueCard;

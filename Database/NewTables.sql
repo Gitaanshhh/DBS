@@ -1,3 +1,25 @@
+-- Delete all data from tables (in correct order for FK constraints)
+DELETE FROM Message;
+DELETE FROM ConversationParticipant;
+DELETE FROM Conversation;
+DELETE FROM Notification;
+DELETE FROM ExchangeRequest;
+DELETE FROM BookingHistory;
+DELETE FROM BookingApproval;
+DELETE FROM ApprovalStep;
+DELETE FROM BookingRequest;
+DELETE FROM VenueAvailability;
+DELETE FROM Venue;
+DELETE FROM VenueType;
+DELETE FROM Building;
+DELETE FROM StudentBodyMembership;
+DELETE FROM StudentBody;
+DELETE FROM Student;
+DELETE FROM FacultyRoles;
+DELETE FROM Faculty;
+DELETE FROM Users;
+
+
 DROP TABLE IF EXISTS Message;
 DROP TABLE IF EXISTS ConversationParticipant;
 DROP TABLE IF EXISTS Conversation;
@@ -197,17 +219,8 @@ ALTER TABLE ExchangeRequest ADD CONSTRAINT fk_exchangerequest_requester FOREIGN 
 ALTER TABLE ExchangeRequest ADD CONSTRAINT fk_exchangerequest_requested FOREIGN KEY (requested_booking_id) REFERENCES BookingRequest(booking_id);
 ALTER TABLE Notification ADD CONSTRAINT fk_notification_user FOREIGN KEY (user_id) REFERENCES Users(user_id);
 
-/*
-CAN add the following trigger
--- Create sequence
-CREATE SEQUENCE users_seq START WITH 1 INCREMENT BY 1 NOCACHE;
+-- Create sequence for Users table
+CREATE SEQUENCE users_seq START WITH 1000 INCREMENT BY 1 NOCACHE;
 
--- Trigger to auto-assign user_id
-CREATE OR REPLACE TRIGGER users_bi_trigger
-BEFORE INSERT ON Users
-FOR EACH ROW
-BEGIN
-  :NEW.user_id := users_seq.NEXTVAL;
-END;
-/
-*/
+-- Create sequence for BookingRequest table
+CREATE SEQUENCE bookingrequest_seq START WITH 1000 INCREMENT BY 1 NOCACHE;
