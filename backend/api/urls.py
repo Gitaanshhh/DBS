@@ -10,4 +10,5 @@ urlpatterns = [
     path('venue-details/', views.getVenueDetails),
     path('filter-options/', views.getFilterOptions),  # add this line for filter options
     path('bookings/', views.createBooking),  # new booking endpoint
+    path('my-bookings/', views.getMyBookings),  # endpoint for user's bookings
 ]

@@ -1,234 +1,88 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { useBookingManagement } from "../../hooks/useBookingManagement";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import styles from "./MyBookings.module.css";
 
 const MyBookings = () => {
-  // Initialize with sample data
-  const initialBookings = {
-    upcoming: [
-      {
-        id: 1,
-        venueName: "Computer Lab B204",
-        venueLocation: "Academic Block 2, Second Floor",
-        bookingTime: "8:00 AM - 12:00 PM",
-        bookingDate: "April 25, 2025",
-        bookingPurpose: "Programming Workshop for Freshmen",
-        status: "approved",
-        statusText: "Approved",
-      },
-      // More upcoming bookings
-    ],
-    pending: [
-      {
-        id: 2,
-        venueName: "Seminar Hall 1",
-        venueLocation: "Central Building, First Floor",
-        bookingTime: "12:00 PM - 4:00 PM",
-        bookingDate: "April 20, 2025",
-        bookingPurpose: "Guest Lecture on Artificial Intelligence",
-        status: "pending",
-        statusText: "Pending",
-      },
-      // More pending bookings
-    ],
-    rejected: [
-      {
-        id: 3,
-        venueName: "Main Auditorium",
-        venueLocation: "Central Campus",
-        bookingTime: "8:00 AM - 12:00 PM",
-        bookingDate: "April 18, 2025",
-        bookingPurpose: "Club Orientation",
-        status: "rejected",
-        statusText: "Rejected",
-        rejectionReason: "Venue already booked for a university event",
-      },
-      // More rejected bookings
-    ],
-    history: [
-      {
-        id: 4,
-        venueName: "Lecture Hall A101",
-        venueLocation: "Academic Block 1, Ground Floor",
-        bookingTime: "8:00 AM - 12:00 PM",
-        bookingDate: "March 15, 2025",
-        bookingPurpose: "Workshop on Public Speaking",
-        status: "completed",
-        statusText: "Completed",
-      },
-      // More history bookings
-    ],
-  };
+  const { user } = useAuth();
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const {
-    bookings,
-    activeTab,
-    switchTab,
-    cancelBooking,
-    checkStatus,
-    bookAgain,
-    modifyBooking,
-    bookAlternative,
-  } = useBookingManagement(initialBookings);
+  useEffect(() => {
+    const fetchBookings = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/my-bookings/?user_id=${user.user_id}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch bookings");
+        }
+        const data = await response.json();
+        setBookings(data.bookings || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (user?.user_id) {
+      fetchBookings();
+    }
+  }, [user]);
 
   return (
     <main className={styles.main}>
       <h1 className={styles.sectionTitle}>My Bookings</h1>
-
-      <div className={styles.bookingTabs}>
-        <button
-          className={`${styles.tabBtn} ${
-            activeTab === "upcoming" ? styles.active : ""
-          }`}
-          onClick={() => switchTab("upcoming")}
-        >
-          Upcoming Bookings
-        </button>
-        <button
-          className={`${styles.tabBtn} ${
-            activeTab === "pending" ? styles.active : ""
-          }`}
-          onClick={() => switchTab("pending")}
-        >
-          Pending Requests
-        </button>
-        <button
-          className={`${styles.tabBtn} ${
-            activeTab === "rejected" ? styles.active : ""
-          }`}
-          onClick={() => switchTab("rejected")}
-        >
-          Rejected/Cancelled
-        </button>
-        <button
-          className={`${styles.tabBtn} ${
-            activeTab === "history" ? styles.active : ""
-          }`}
-          onClick={() => switchTab("history")}
-        >
-          History
-        </button>
-      </div>
-
-      <div
-        className={`${styles.tabContent} ${
-          activeTab === "upcoming" ? styles.active : ""
-        }`}
-        id="upcoming"
-      >
-        <div className={styles.bookingList}>
-          {bookings.upcoming.map((booking) => (
-            <div key={booking.id} className={styles.bookingItem}>
-              {/* Booking item content */}
-              {/* ... */}
-              <div className={styles.bookingActions}>
-                <button
-                  className={`${styles.btn} ${styles.btnSecondary}`}
-                  onClick={() => cancelBooking(booking, "upcoming")}
-                >
-                  Cancel Booking
-                </button>
-                <button
-                  className={styles.btn}
-                  onClick={() => modifyBooking(booking)}
-                >
-                  Modify Booking
-                </button>
+      {loading && <div>Loading your bookings...</div>}
+      {error && <div className={styles.error}>{error}</div>}
+      {!loading && bookings.length === 0 && (
+        <div className={styles.noBookings}>No bookings found.</div>
+      )}
+      <div className={styles.bookingsGrid}>
+        {bookings.map((booking) => (
+          <div key={booking.booking_id} className={styles.bookingCard}>
+            <div className={styles.venueImageWrapper}>
+              <img
+                src={booking.image_url || "/assets/venues/default.jpg"}
+                alt={booking.venue_name}
+                className={styles.venueImage}
+              />
+            </div>
+            <div className={styles.bookingInfo}>
+              <h2 className={styles.venueName}>{booking.venue_name}</h2>
+              <div className={styles.venueLocation}>
+                {booking.building_name}
+                {booking.floor_number
+                  ? `, Floor ${booking.floor_number}`
+                  : ""}
+              </div>
+              <div className={styles.venueCapacity}>
+                Capacity: {booking.seating_capacity}
+              </div>
+              <div className={styles.bookingDateTime}>
+                <span>
+                  <i className="far fa-calendar-alt"></i>{" "}
+                  {booking.booking_date}
+                </span>
+                <span>
+                  <i className="far fa-clock"></i>{" "}
+                  {booking.start_time} - {booking.end_time}
+                </span>
+              </div>
+              <div className={styles.bookingPurpose}>
+                <strong>Purpose:</strong> {booking.purpose}
+              </div>
+              <div className={styles.bookingStatus}>
+                Status:{" "}
+                <span className={styles[`status${booking.status}`] || ""}>
+                  {booking.status}
+                </span>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
-
-      <div
-        className={`${styles.tabContent} ${
-          activeTab === "pending" ? styles.active : ""
-        }`}
-        id="pending"
-      >
-        <div className={styles.bookingList}>
-          {bookings.pending.map((booking) => (
-            <div key={booking.id} className={styles.bookingItem}>
-              {/* Booking item content */}
-              {/* ... */}
-              <div className={styles.bookingActions}>
-                <button
-                  className={`${styles.btn} ${styles.btnSecondary}`}
-                  onClick={() => cancelBooking(booking, "pending")}
-                >
-                  Cancel Booking
-                </button>
-                <button
-                  className={styles.btn}
-                  onClick={() => modifyBooking(booking)}
-                >
-                  Modify Booking
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div
-        className={`${styles.tabContent} ${
-          activeTab === "rejected" ? styles.active : ""
-        }`}
-        id="rejected"
-      >
-        <div className={styles.bookingList}>
-          {bookings.rejected.map((booking) => (
-            <div key={booking.id} className={styles.bookingItem}>
-              {/* Booking item content */}
-              {/* ... */}
-              <div className={styles.bookingActions}>
-                <button
-                  className={`${styles.btn} ${styles.btnSecondary}`}
-                  onClick={() => cancelBooking(booking, "rejected")}
-                >
-                  Cancel Booking
-                </button>
-                <button
-                  className={styles.btn}
-                  onClick={() => modifyBooking(booking)}
-                >
-                  Modify Booking
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div
-        className={`${styles.tabContent} ${
-          activeTab === "history" ? styles.active : ""
-        }`}
-        id="history"
-      >
-        <div className={styles.bookingList}>
-          {bookings.history.map((booking) => (
-            <div key={booking.id} className={styles.bookingItem}>
-              {/* Booking item content */}
-              {/* ... */}
-              <div className={styles.bookingActions}>
-                <button
-                  className={`${styles.btn} ${styles.btnSecondary}`}
-                  onClick={() => cancelBooking(booking, "history")}
-                >
-                  Cancel Booking
-                </button>
-                <button
-                  className={styles.btn}
-                  onClick={() => modifyBooking(booking)}
-                >
-                  Modify Booking
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </main>
   );

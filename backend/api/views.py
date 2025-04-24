@@ -396,3 +396,44 @@ def createBooking(request):
         print("BOOKING SUBMIT ERROR:", str(e))
         return Response({'error': f'Failed to submit booking: {str(e)}'}, status=500)
 
+@api_view(['GET'])
+def getMyBookings(request):
+    """
+    Get all bookings made by a user (requester_id).
+    Expects ?user_id=... as a query param.
+    """
+    user_id = request.GET.get('user_id')
+    if not user_id:
+        return Response({'error': 'user_id is required'}, status=400)
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    br.booking_id,
+                    br.venue_id,
+                    v.venue_name,
+                    v.image_url,
+                    v.seating_capacity,
+                    b.building_name,
+                    v.floor_number,
+                    br.booking_date,
+                    TO_CHAR(br.start_time, 'HH24:MI') as start_time,
+                    TO_CHAR(br.end_time, 'HH24:MI') as end_time,
+                    br.purpose,
+                    br.attendees_count,
+                    br.setup_requirements,
+                    br.status,
+                    br.created_at
+                FROM BookingRequest br
+                JOIN Venue v ON br.venue_id = v.venue_id
+                LEFT JOIN Building b ON v.building_id = b.building_id
+                WHERE br.requester_id = %s
+                ORDER BY br.created_at DESC
+            """, [user_id])
+            columns = [col[0] for col in cursor.description]
+            bookings = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        return Response({'bookings': bookings})
+    except Exception as e:
+        print("MY BOOKINGS ERROR:", str(e))
+        return Response({'error': f'Failed to fetch bookings: {str(e)}'}, status=500)
+
