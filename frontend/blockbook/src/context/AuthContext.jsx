@@ -25,9 +25,10 @@ export const AuthProvider = ({ children }) => {
       }
     };
     checkLoggedIn();
-  }, []);
+  }, [navigate]);
 
   const login = async (email, password) => {
+    console.log("AUTH : ",email, password); // Debug: see the email and password being sent
     try {
       const response = await fetch('http://localhost:8000/admin/users', {
         method: 'POST',
@@ -42,6 +43,7 @@ export const AuthProvider = ({ children }) => {
         setUser(dbUser);
         // Redirect based on user role
         const role = dbUser.user_type || dbUser.role;
+        console.log(role); 
         if (role === 'student' || role === 'student-council' || role === 'admin') {
           navigate('/app/home');
         } else if (['faculty', 'swo', 'security'].includes(role)) {

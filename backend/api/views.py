@@ -89,14 +89,14 @@ def getUsers(request):
                     dict(zip(columns, row))
                     for row in cursor.fetchall()
                 ]
-                print("LOGIN RESULT (USERS):", data, file=sys.stderr)
+                #print("LOGIN RESULT (USERS):", data, file=sys.stderr)
             except Exception as e:
-                print("LOGIN EXCEPTION (USERS):", str(e), file=sys.stderr)
+                #print("LOGIN EXCEPTION (USERS):", str(e), file=sys.stderr)
                 data = []
 
             if not data:
                 try:
-                    print('DEBUG: Trying SELECT * FROM "USERS" ...', file=sys.stderr)
+                    #print('DEBUG: Trying SELECT * FROM "USERS" ...', file=sys.stderr)
                     sql = 'SELECT * FROM "USERS" WHERE email = %s AND password_hash = %s'
                     cursor.execute(sql, params)
                     columns = [col[0] for col in cursor.description]
@@ -104,9 +104,9 @@ def getUsers(request):
                         dict(zip(columns, row))
                         for row in cursor.fetchall()
                     ]
-                    print('LOGIN RESULT ("USERS"):', data, file=sys.stderr)
+                    #print('LOGIN RESULT ("USERS"):', data, file=sys.stderr)
                 except Exception as e:
-                    print('LOGIN EXCEPTION ("USERS"):', str(e), file=sys.stderr)
+                    #print('LOGIN EXCEPTION ("USERS"):', str(e), file=sys.stderr)
                     data = []
 
             # # Print all emails and password_hashes for debug
@@ -125,7 +125,7 @@ def getUsers(request):
         print("LOGIN ERROR: No user found", file=sys.stderr)
         return Response({'error': 'Invalid email or password (Views.py)'}, status=401)
 
-    print("LOGIN SUCCESS: User authenticated", file=sys.stderr)
+    #print("LOGIN SUCCESS: User authenticated", file=sys.stderr)
     return Response({'User Details': data})
 
 """

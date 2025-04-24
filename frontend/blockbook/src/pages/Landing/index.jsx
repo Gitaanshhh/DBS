@@ -14,11 +14,14 @@ const Landing = () => {
     console.log('Loading Landing page...');
     document.title = 'BlockBook - Login';
     const userStr = localStorage.getItem('user');
+    console.log('DEBUG : Landing : userStr : ', userStr);
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
+        console.log('DEBUG : Landing : user ', user)
         if (user) {
           const role = user.user_type || user.role;
+          console.log('DEBUG : Landing : role ', role);
           if (role === 'student' || role === 'student-council') {
             navigate('/home');
           } else if (['faculty', 'swo', 'security'].includes(role)) {
@@ -61,6 +64,9 @@ const Landing = () => {
         localStorage.setItem('token', 'mock-token');
         const user = data['User Details'][0];
         const role = user.user_type || user.role;
+        console.log('API DEBUG : Landing : ROLE : ', role)
+        console.log('API DEBUG : Landing : DATA : ', data)
+        console.log('API DEBUG : Landing : ROLES : ', user.user_type, user.role)
         if (role === 'student' || role === 'student-council' || role === 'admin') {
           navigate('/home');
         } else if (['faculty', 'swo', 'security'].includes(role)) {
