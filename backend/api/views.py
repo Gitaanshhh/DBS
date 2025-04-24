@@ -8,6 +8,8 @@ from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 
+import sys
+
 @api_view(['GET'])
 def test_api(request):
     return Response({'message': 'Hello from Django API!'})
@@ -403,37 +405,84 @@ def getMyBookings(request):
     Expects ?user_id=... as a query param.
     """
     user_id = request.GET.get('user_id')
-    if not user_id:
-        return Response({'error': 'user_id is required'}, status=400)
+    user_email = request.GET.get('email')
+    print("MY BOOKINGS DEBUG: user_id =", user_id, "email =", user_email)
+    
+    if not user_id and not user_email:
+        return JsonResponse({'error': 'user_id or email is required'}, status=400)
+    
     try:
         with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT 
-                    br.booking_id,
-                    br.venue_id,
-                    v.venue_name,
-                    v.image_url,
-                    v.seating_capacity,
-                    b.building_name,
-                    v.floor_number,
-                    br.booking_date,
-                    TO_CHAR(br.start_time, 'HH24:MI') as start_time,
-                    TO_CHAR(br.end_time, 'HH24:MI') as end_time,
-                    br.purpose,
-                    br.attendees_count,
-                    br.setup_requirements,
-                    br.status,
-                    br.created_at
-                FROM BookingRequest br
-                JOIN Venue v ON br.venue_id = v.venue_id
-                LEFT JOIN Building b ON v.building_id = b.building_id
-                WHERE br.requester_id = %s
-                ORDER BY br.created_at DESC
-            """, [user_id])
+            if user_id:
+                cursor.execute("""
+                    SELECT 
+                        br.booking_id,
+                        br.venue_id,
+                        v.venue_name,
+                        v.image_url,
+                        v.seating_capacity,
+                        b.building_name,
+                        v.floor_number,
+                        br.booking_date,
+                        TO_CHAR(br.start_time, 'HH24:MI') as start_time,
+                        TO_CHAR(br.end_time, 'HH24:MI') as end_time,
+                        br.purpose,
+                        br.attendees_count,
+                        br.setup_requirements,
+                        br.status,
+                        br.created_at
+                    FROM BookingRequest br
+                    JOIN Venue v ON br.venue_id = v.venue_id
+                    LEFT JOIN Building b ON v.building_id = b.building_id
+                    WHERE br.requester_id = %s
+                    ORDER BY br.created_at DESC
+                """, [user_id])
+            else:
+                # fallback: get user_id by email
+                cursor.execute("SELECT user_id FROM Users WHERE email = %s", [user_email])
+                row = cursor.fetchone()
+                if not row:
+                    return JsonResponse({'bookings': []})
+                user_id = row[0]
+                cursor.execute("""
+                    SELECT 
+                        br.booking_id,
+                        br.venue_id,
+                        v.venue_name,
+                        v.image_url,
+                        v.seating_capacity,
+                        b.building_name,
+                        v.floor_number,
+                        br.booking_date,
+                        TO_CHAR(br.start_time, 'HH24:MI') as start_time,
+                        TO_CHAR(br.end_time, 'HH24:MI') as end_time,
+                        br.purpose,
+                        br.attendees_count,
+                        br.setup_requirements,
+                        br.status,
+                        br.created_at
+                    FROM BookingRequest br
+                    JOIN Venue v ON br.venue_id = v.venue_id
+                    LEFT JOIN Building b ON v.building_id = b.building_id
+                    WHERE br.requester_id = %s
+                    ORDER BY br.created_at DESC
+                """, [user_id])
+            
             columns = [col[0] for col in cursor.description]
-            bookings = [dict(zip(columns, row)) for row in cursor.fetchall()]
-        return Response({'bookings': bookings})
+            bookings = []
+            for row in cursor.fetchall():
+                booking = dict(zip(columns, row))
+                # Convert any LOB/CLOB fields to string
+                for k, v in booking.items():
+                    # Oracle CLOBs are returned as cx_Oracle.LOB or oracledb.LOB objects
+                    if hasattr(v, 'read'):
+                        booking[k] = v.read()
+                bookings.append(booking)
+            print("MY BOOKINGS DEBUG: bookings found =", len(bookings))
+            
+            return JsonResponse({'bookings': bookings})
+            
     except Exception as e:
         print("MY BOOKINGS ERROR:", str(e))
-        return Response({'error': f'Failed to fetch bookings: {str(e)}'}, status=500)
+        return JsonResponse({'error': f'Failed to fetch bookings: {str(e)}'}, status=500)
 

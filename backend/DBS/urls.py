@@ -45,7 +45,7 @@ def trace_view(request, *args, **kwargs):
 urlpatterns = [
     path('', trace_view),  # This will not override other patterns, just for demonstration
     path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),  # This line must exist
+    path('api/', include('api.urls')),  # This line must exist and be before the catch-all
 ]
 
 # Add the catch-all route for the React app

@@ -13,16 +13,29 @@ const MyBookings = () => {
       setLoading(true);
       setError("");
       try {
-        const response = await fetch(
-          `http://localhost:8000/api/my-bookings/?user_id=${user.user_id}`
-        );
+        const url = `http://localhost:8000/api/my-bookings/?user_id=${user.user_id}`;
+        const response = await fetch(url);
+        
+        // First check if response is ok
         if (!response.ok) {
-          throw new Error("Failed to fetch bookings");
+          const errorText = await response.text();
+          setError(`Server error: ${errorText.substring(0, 200)}`);
+          setBookings([]);
+          setLoading(false);
+          return;
         }
-        const data = await response.json();
-        setBookings(data.bookings || []);
+
+        // If response is ok, try to parse as JSON
+        try {
+          const data = await response.json();
+          setBookings(data.bookings || []);
+        } catch (jsonErr) {
+          setError("Invalid response format from server");
+          setBookings([]);
+        }
       } catch (err) {
         setError(err.message);
+        setBookings([]);
       } finally {
         setLoading(false);
       }
