@@ -18,12 +18,16 @@ const Records = () => {
         const response = await fetch("http://localhost:8000/api/booking-logs/");
         if (!response.ok) throw new Error("Failed to fetch booking logs");
         const data = await response.json();
-        // Defensive: convert all fields to string for display
-        const logsArr = (data.logs || []).map(log =>
-          Object.fromEntries(
-            Object.entries(log).map(([k, v]) => [k, v == null ? "" : v.toString()])
-          )
-        );
+        // Defensive: convert all fields to string for display and log for debugging
+        const logsArr = (data.logs || []).map(log => {
+          const flat = {};
+          for (const [k, v] of Object.entries(log)) {
+            flat[k] = v == null ? "" : v.toString();
+          }
+          return flat;
+        });
+        // Debug: log the processed logs
+        console.log("Booking logs received:", logsArr);
         setLogs(logsArr);
       } catch (err) {
         setError(err.message);
@@ -43,14 +47,16 @@ const Records = () => {
         <div className={styles.noLogs}>No booking logs found.</div>
       )}
       <div className={styles.logsGrid}>
-        {logs.map((log) => {
-          // Defensive: try all casings for each field
+        {logs.map((log, idx) => {
+          // Try all casings for each field and log for debugging
           const bookingId = log.booking_id || log.BOOKING_ID;
           const action = log.action_taken || log.ACTION_TAKEN;
           const user = log.user_email || log.USER_EMAIL || log.action_by || log.ACTION_BY;
           const date = log.action_date || log.ACTION_DATE;
+          // Debug: log each card's data
+          console.log("Log card:", { bookingId, action, user, date, log });
           return (
-            <div key={log.history_id || log.HISTORY_ID} className={styles.logCard}>
+            <div key={log.history_id || log.HISTORY_ID || idx} className={styles.logCard}>
               <div className={styles.logHeader}>
                 <span className={styles.logBookingId}>Booking #{bookingId}</span>
                 <span className={styles.logDate}>{date}</span>

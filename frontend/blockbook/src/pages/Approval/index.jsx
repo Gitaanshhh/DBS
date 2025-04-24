@@ -67,67 +67,84 @@ const Approval = () => {
         {approvals.length === 0 && !loading && (
           <div className={styles.noApprovals}>No pending approvals.</div>
         )}
-        {approvals.map((approval) => (
-          <div key={approval.approval_id} className={styles.approvalCard}>
-            <div className={styles.venueImageWrapper}>
-              <img
-                src={approval.image_url || "/assets/venues/default.jpg"}
-                alt={approval.venue_name}
-                className={styles.venueImage}
-              />
+        {approvals.map((approval) => {
+          // Normalize field casing for display
+          const approvalId = approval.approval_id || approval.APPROVAL_ID;
+          const venueName = approval.venue_name || approval.VENUE_NAME;
+          const buildingName = approval.building_name || approval.BUILDING_NAME;
+          const floorNumber = approval.floor_number || approval.FLOOR_NUMBER;
+          const seatingCapacity = approval.seating_capacity || approval.SEATING_CAPACITY;
+          const imageUrl = approval.image_url || approval.IMAGE_URL || "/assets/venues/default.jpg";
+          const bookingDate = approval.booking_date || approval.BOOKING_DATE;
+          const startTime = approval.start_time || approval.START_TIME;
+          const endTime = approval.end_time || approval.END_TIME;
+          const purpose = approval.purpose || approval.PURPOSE;
+          const requesterEmail = approval.requester_email || approval.REQUESTER_EMAIL;
+          const status = (approval.status || approval.STATUS || "").toLowerCase();
+
+          return (
+            <div 
+              key={`approval-${approvalId}`} 
+              className={styles.approvalCard}
+            >
+              <div className={styles.venueImageWrapper}>
+                <img
+                  src={imageUrl}
+                  alt={venueName}
+                  className={styles.venueImage}
+                />
+              </div>
+              <div className={styles.approvalInfo}>
+                <h2 className={styles.venueName}>{venueName}</h2>
+                <div className={styles.venueLocation}>
+                  {buildingName}
+                  {floorNumber ? `, Floor ${floorNumber}` : ""}
+                </div>
+                <div className={styles.venueCapacity}>
+                  Capacity: {seatingCapacity}
+                </div>
+                <div className={styles.bookingDateTime}>
+                  <span>
+                    <i className="far fa-calendar-alt"></i>{" "}
+                    {bookingDate}
+                  </span>
+                  <span>
+                    <i className="far fa-clock"></i>{" "}
+                    {startTime} - {endTime}
+                  </span>
+                </div>
+                <div className={styles.bookingPurpose}>
+                  <strong>Purpose:</strong> {purpose}
+                </div>
+                <div className={styles.requesterEmail}>
+                  <strong>Requester:</strong> {requesterEmail}
+                </div>
+                <div className={styles.bookingStatus}>
+                  Status:{" "}
+                  <span className={styles[`status${status.charAt(0).toUpperCase() + status.slice(1)}`] || ""}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </span>
+                </div>
+                <div className={styles.actionButtons}>
+                  <button
+                    className={styles.approveBtn}
+                    onClick={() => handleAction(approvalId, "Y")}
+                    disabled={actionLoading}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className={styles.rejectBtn}
+                    onClick={() => handleAction(approvalId, "N")}
+                    disabled={actionLoading}
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className={styles.approvalInfo}>
-              <h2 className={styles.venueName}>{approval.venue_name}</h2>
-              <div className={styles.venueLocation}>
-                {approval.building_name}
-                {approval.floor_number
-                  ? `, Floor ${approval.floor_number}`
-                  : ""}
-              </div>
-              <div className={styles.venueCapacity}>
-                Capacity: {approval.seating_capacity}
-              </div>
-              <div className={styles.bookingDateTime}>
-                <span>
-                  <i className="far fa-calendar-alt"></i>{" "}
-                  {approval.booking_date}
-                </span>
-                <span>
-                  <i className="far fa-clock"></i>{" "}
-                  {approval.start_time} - {approval.end_time}
-                </span>
-              </div>
-              <div className={styles.bookingPurpose}>
-                <strong>Purpose:</strong> {approval.purpose}
-              </div>
-              <div className={styles.requesterEmail}>
-                <strong>Requester:</strong> {approval.requester_email}
-              </div>
-              <div className={styles.bookingStatus}>
-                Status:{" "}
-                <span className={styles[`status${approval.booking_status}`] || ""}>
-                  {approval.booking_status}
-                </span>
-              </div>
-              <div className={styles.actionButtons}>
-                <button
-                  className={styles.approveBtn}
-                  onClick={() => handleAction(approval.approval_id, "Y")}
-                  disabled={actionLoading}
-                >
-                  Approve
-                </button>
-                <button
-                  className={styles.rejectBtn}
-                  onClick={() => handleAction(approval.approval_id, "N")}
-                  disabled={actionLoading}
-                >
-                  Reject
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </main>
   );
