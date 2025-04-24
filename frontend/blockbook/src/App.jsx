@@ -63,7 +63,7 @@ function App() {
               <Notifications />
             </ProtectedRoute>
           } />
-          <Route path="/booking/:id" element={
+          <Route path="/booking/:venueId" element={
             <ProtectedRoute allowedRoles={['admin', 'student', 'student-council']}>
               <Booking />
             </ProtectedRoute>

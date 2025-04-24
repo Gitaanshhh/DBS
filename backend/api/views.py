@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+import sys
 
 @api_view(['GET'])
 def test_api(request):
@@ -66,7 +67,6 @@ Can add verification of user login details here
 @api_view(['POST'])
 @csrf_exempt
 def getUsers(request):
-    import sys
     print("LOGIN API CALLED", file=sys.stderr)
     # Get email and password from POST data
     email = request.data.get('email')
@@ -154,21 +154,27 @@ Vanues
 """
 @api_view(['GET'])
 def getVenues(request):
-    with connection.cursor() as cursor:
-        # Join Venue with Building to get building_name and floor_number, and select all required fields
-        cursor.execute("""
-            SELECT 
-                v.venue_id, v.venue_name, v.seating_capacity, v.features, v.image_url,
-                v.floor_number, b.building_name
-            FROM Venue v
-            LEFT JOIN Building b ON v.building_id = b.building_id
-        """)
-        columns = [col[0] for col in cursor.description]
-        data = [
-            dict(zip(columns, row))
-            for row in cursor.fetchall()
-        ]
-    return Response({'Venues': data})
+    try:
+        with connection.cursor() as cursor:
+            # Join Venue with Building to get building_name and floor_number, and select all required fields
+            cursor.execute("""
+                SELECT 
+                    v.venue_id, v.venue_name, v.seating_capacity, 
+                    TO_CHAR(v.features) as features, 
+                    v.image_url,
+                    v.floor_number, b.building_name
+                FROM Venue v
+                LEFT JOIN Building b ON v.building_id = b.building_id
+            """)
+            columns = [col[0] for col in cursor.description]
+            data = [
+                dict(zip(columns, row))
+                for row in cursor.fetchall()
+            ]
+        return Response({'Venues': data})
+    except Exception as e:
+        print(f"Error in getVenues: {str(e)}", file=sys.stderr)
+        return Response({'error': f'Failed to fetch venues: {str(e)}'}, status=500)
 
 """
 Details of a particular venue

@@ -19,6 +19,8 @@ from django.urls import path, include, re_path
 from django.views.generic import TemplateView
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.conf import settings
+from django.conf.urls.static import static
 import os
 
 # Enhanced view to handle SPA requests
@@ -51,3 +53,7 @@ urlpatterns += [
     # First handle specific API paths to avoid conflicts
     re_path(r'^(?!api/|admin/).*$', spa_view),
 ]
+
+# Serve static files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

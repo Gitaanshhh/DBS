@@ -12,6 +12,19 @@ import styles from './VenueCard.module.css';
 const VenueCard = ({ venue, onBook, showDetails = false }) => {
   const navigate = useNavigate();
   
+  // Get hardcoded image based on venue name
+  const getVenueImage = (venueName) => {
+    const imageMap = {
+      'Main Hall A101': 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'Seminar Room B204': 'https://images.unsplash.com/photo-1588075592446-265bad1d6d8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'Computer Lab C103': 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'Main Auditorium': 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'Conference Room D105': 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'Student Plaza': 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    };
+    return imageMap[venueName] || 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+  };
+  
   // Handle booking the venue
   const handleBook = () => {
     if (onBook) {
@@ -19,7 +32,7 @@ const VenueCard = ({ venue, onBook, showDetails = false }) => {
     } else {
       // Default behavior if no onBook function is provided
       localStorage.setItem('selectedVenue', JSON.stringify(venue));
-      navigate('/booking');
+      navigate(`/booking/${venue.venue_id}`, { replace: true });
     }
   };
   
@@ -33,11 +46,7 @@ const VenueCard = ({ venue, onBook, showDetails = false }) => {
   return (
     <div className={styles.venueCard}>
       <div className={styles.venueImage}>
-        {venue.image_url ? (
-          <img src={venue.image_url} alt={venue.venue_name} />
-        ) : (
-          <div className={styles.placeholderImage}>No Image</div>
-        )}
+        <img src={getVenueImage(venue.venue_name)} alt={venue.venue_name} />
       </div>
       
       <div className={styles.venueInfo}>
