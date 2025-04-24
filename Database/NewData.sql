@@ -21,9 +21,9 @@ DELETE FROM Users;
 
 -- Insert sample users
 INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (1, 'admin@manipal.edu', 'admin', 'admin');
-INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (2, 'rao@manipal.edu', 'hashed_password_here', 'faculty');
+INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (2, 'faculty@manipal.edu', 'faculty', 'faculty');
 INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (3, 'sharma@manipal.edu', 'hashed_password_here', 'faculty');
-INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (4, 'john.doe@manipal.edu', 'hashed_password_here', 'student');
+INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (4, 'student@manipal.edu', 'student', 'student');
 INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (5, 'alice.smith@manipal.edu', 'hashed_password_here', 'student');
 INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (6, 'bob.johnson@manipal.edu', 'hashed_password_here', 'student');
 INSERT INTO Users (user_id, email, password_hash, user_type) VALUES (7, 'emma.wilson@manipal.edu', 'hashed_password_here', 'student');
@@ -175,3 +175,5 @@ INSERT INTO Notification (notification_id, user_id, title, message, created_at, 
 INSERT INTO Notification (notification_id, user_id, title, message, created_at, is_read) VALUES (4, 4, 'Exchange Request', 'Tech Society has requested to exchange their booking of Seminar Hall 1 with your booking of Computer Lab B204.', TO_TIMESTAMP('2025-04-16 09:35:00', 'YYYY-MM-DD HH24:MI:SS'), 'N');
 INSERT INTO Notification (notification_id, user_id, title, message, created_at, is_read) VALUES (5, 6, 'Important Announcement', 'All bookings for May 1, 2025 have been cancelled due to scheduled maintenance.', TO_TIMESTAMP('2025-04-18 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'Y');
 INSERT INTO Notification (notification_id, user_id, title, message, created_at, is_read) VALUES (6, 4, 'Upcoming Booking Reminder', 'Your booking for Computer Lab B204 is scheduled for tomorrow at 10:00 AM.', TO_TIMESTAMP('2025-04-24 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'N');
+
+commit;

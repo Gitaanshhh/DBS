@@ -61,7 +61,7 @@ const Landing = () => {
         localStorage.setItem('token', 'mock-token');
         const user = data['User Details'][0];
         const role = user.user_type || user.role;
-        if (role === 'student' || role === 'student-council') {
+        if (role === 'student' || role === 'student-council' || role === 'admin') {
           navigate('/home');
         } else if (['faculty', 'swo', 'security'].includes(role)) {
           navigate('/approvals');

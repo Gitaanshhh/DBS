@@ -30,39 +30,39 @@ function App() {
         }>
           {/* Student and Student Council routes */}
           <Route path="/home" element={
-            <ProtectedRoute allowedRoles={['student', 'student-council']}>
+            <ProtectedRoute allowedRoles={['admin','student', 'student-council']}>
               <Home />
             </ProtectedRoute>
           } />
           <Route path="/explore" element={
-            <ProtectedRoute allowedRoles={['student', 'student-council']}>
+            <ProtectedRoute allowedRoles={['admin','student', 'student-council']}>
               <ExploreVenues />
             </ProtectedRoute>
           } />
           <Route path="/community" element={
-            <ProtectedRoute allowedRoles={['student', 'student-council']}>
+            <ProtectedRoute allowedRoles={['admin','student', 'student-council']}>
               <Community />
             </ProtectedRoute>
           } />
           <Route path="/bookings" element={
-            <ProtectedRoute allowedRoles={['student', 'student-council']}>
+            <ProtectedRoute allowedRoles={['admin','student', 'student-council']}>
               <MyBookings />
             </ProtectedRoute>
           } />
           <Route path="/notifications" element={
-            <ProtectedRoute allowedRoles={['student', 'student-council']}>
+            <ProtectedRoute allowedRoles={['admin','student', 'student-council']}>
               <Notifications />
             </ProtectedRoute>
           } />
           <Route path="/booking/:id" element={
-            <ProtectedRoute allowedRoles={['student', 'student-council']}>
+            <ProtectedRoute allowedRoles={['admin','student', 'student-council']}>
               <Booking />
             </ProtectedRoute>
           } />
           
           {/*SC, Faculty, SWO, Security approval page */}
           <Route path="/approvals" element={
-            <ProtectedRoute allowedRoles={['student-council','faculty', 'swo', 'security']}>
+            <ProtectedRoute allowedRoles={['admin','student-council','faculty', 'swo', 'security']}>
               <Approval />
             </ProtectedRoute>
           } />

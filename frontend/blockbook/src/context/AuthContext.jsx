@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
         setUser(dbUser);
         // Redirect based on user role
         const role = dbUser.user_type || dbUser.role;
-        if (role === 'student' || role === 'student-council') {
+        if (role === 'student' || role === 'student-council' || role === 'admin') {
           navigate('/app/home');
         } else if (['faculty', 'swo', 'security'].includes(role)) {
           navigate('/approval');

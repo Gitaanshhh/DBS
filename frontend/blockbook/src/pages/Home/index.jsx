@@ -4,6 +4,7 @@ import { useVenueBooking } from '../../hooks/useVenueBooking';
 import styles from './Home.module.css';
 
 const Home = () => {
+  console.log("Home component loaded"); // Debug: see if Home component is loaded
   const { currentDate, handleBookVenue } = useVenueBooking();
   const [venues, setVenues] = useState([]);
   const navigate = useNavigate();
