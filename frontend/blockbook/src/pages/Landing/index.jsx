@@ -96,17 +96,6 @@ const Landing = () => {
           </button>
           {error && <div className={styles.error}>{error}</div>}
         </form>
-        
-        {/* Test accounts information */}
-        <div className={styles.testingInfo}>
-          <p>Test Accounts:</p>
-          <ul>
-            <li>student@manipal.edu / student-password</li>
-            <li>sc@manipal.edu / sc-password</li>
-            <li>faculty@manipal.edu / faculty-password</li>
-            <li>swo@manipal.edu / swo-password</li>
-          </ul>
-        </div>
       </div>
       
       {/* Decorative background elements */}

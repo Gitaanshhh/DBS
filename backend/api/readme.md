@@ -1,98 +1,226 @@
-# How to Add a New Feature: Extract Data from Backend API and Display in Frontend
+# BlockBook Backend API Documentation
 
-This guide explains the process of exposing data from your Django backend via an API endpoint and displaying it in your frontend (HTML/JS or React).
+This document provides detailed information about the BlockBook backend API endpoints and their usage.
 
----
+## API Overview
 
-## 1. Add a View in Django
+The BlockBook API is built using Django REST Framework and provides endpoints for:
+- User authentication and authorization
+- Venue management
+- Booking requests and approvals
+- User management
+- System notifications
 
-- In `api/views.py`, define a new function using the `@api_view` decorator.
-- Use Django's database connection to fetch data.
-- Return the data as a JSON response using `Response`.
+## Base URL
 
-**Example:**
-```python
-@api_view(['GET'])
-def get_new_table(request):
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT name FROM student")
-        columns = [col[0] for col in cursor.description]
-        data = [dict(zip(columns, row)) for row in cursor.fetchall()]
-    return Response({'data': data})
+```
+http://localhost:8000/api/
 ```
 
----
+## Authentication
 
-## 2. Register the Endpoint in URLs
+All endpoints except `/authenticate/` require authentication using JWT tokens.
 
-- In `api/urls.py`, import your view and add a path for it.
+### Login
+```http
+POST /authenticate/
+Content-Type: application/json
 
-**Example:**
-```python
-from . import views
-
-urlpatterns = [
-    # ...existing urls...
-    path('new-table/', views.get_new_table),
-]
+{
+    "email": "user@manipal.edu",
+    "password": "password123"
+}
 ```
 
----
-
-## 3. Fetch Data from the Frontend
-
-- Use JavaScript's `fetch` API to call your endpoint.
-- Process and display the data in the DOM.
-
-**Example:**
-```js
-fetch("http://localhost:8000/api/new-table/")
-  .then(response => response.json())
-  .then(data => {
-    // Display the raw JSON
-    document.getElementById("backend-message").textContent = JSON.stringify(data);
-
-    // Display only the student names if data exists
-    const tableDiv = document.getElementById("new-table-data");
-    tableDiv.innerHTML = "";
-    if (data.data && data.data.length > 0) {
-      let html = "<ul>";
-      data.data.forEach(row => {
-        html += `<li>${row.name}</li>`;
-      });
-      html += "</ul>";
-      tableDiv.innerHTML = html;
-    } else {
-      tableDiv.textContent = "No student names found.";
-    }
-  })
-  .catch(error => {
-    document.getElementById("backend-message").textContent = "Error fetching data from backend.";
-  });
+Response:
+```json
+{
+    "User Details": [{
+        "user_id": 1,
+        "email": "user@manipal.edu",
+        "user_type": "student",
+        "role": "student"
+    }]
+}
 ```
 
----
+## Endpoints
 
-## 4. Add UI Elements
+### Venues
 
-- In your HTML, add elements to trigger the fetch and display the results.
-
-**Example:**
-```html
-<button id="fetch-backend-btn">Fetch Backend Message</button>
-<div id="backend-message"></div>
-<div id="new-table-data"></div>
+#### Get All Venues
+```http
+GET /venues/
+Authorization: Bearer <token>
 ```
 
----
+Response:
+```json
+{
+    "Venues": [{
+        "venue_id": 1,
+        "venue_name": "Main Hall A101",
+        "seating_capacity": 200,
+        "features": "Projector, Audio System, Air Conditioning",
+        "image_url": "/assets/venues/lecture-hall-a101.jpg",
+        "floor_number": 1,
+        "building_name": "Alpha Building"
+    }]
+}
+```
 
-## 5. Test
+#### Get Venue Details
+```http
+GET /venue-details/?venue_id=1
+Authorization: Bearer <token>
+```
 
-- Start your Django backend (`python manage.py runserver`).
-- Open your frontend in the browser.
-- Click the button to fetch and display data.
+### Bookings
 
----
+#### Create Booking Request
+```http
+POST /bookings/
+Authorization: Bearer <token>
+Content-Type: application/json
 
-**Tip:**  
-You can repeat this process for any table or query by changing the SQL and endpoint name.
+{
+    "venue_id": 1,
+    "student_body_id": 1,
+    "booking_date": "2024-04-25",
+    "start_time": "10:00:00",
+    "end_time": "13:00:00",
+    "purpose": "Technical Club Meeting",
+    "attendees_count": 150,
+    "setup_requirements": "Projector, Microphone"
+}
+```
+
+#### Get Booking Requests
+```http
+GET /bookings/
+Authorization: Bearer <token>
+```
+
+#### Approve/Reject Booking
+```http
+POST /bookings/{booking_id}/approve/
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+    "is_approved": true,
+    "comments": "Approved by faculty advisor"
+}
+```
+
+### Users
+
+#### Get User Profile
+```http
+GET /users/profile/
+Authorization: Bearer <token>
+```
+
+#### Update User Profile
+```http
+PUT /users/profile/
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+    "full_name": "John Doe",
+    "contact_number": "9876543210"
+}
+```
+
+## Error Handling
+
+The API uses standard HTTP status codes:
+
+- 200: Success
+- 400: Bad Request
+- 401: Unauthorized
+- 403: Forbidden
+- 404: Not Found
+- 500: Internal Server Error
+
+Error responses include a message:
+```json
+{
+    "error": "Invalid email or password"
+}
+```
+
+## Rate Limiting
+
+API requests are limited to:
+- 100 requests per minute for authenticated users
+- 20 requests per minute for unauthenticated users
+
+## Development
+
+### Setup
+
+1. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+2. Configure database settings in `settings.py`
+
+3. Run migrations:
+```bash
+python manage.py migrate
+```
+
+4. Start development server:
+```bash
+python manage.py runserver
+```
+
+### Testing
+
+Run tests:
+```bash
+python manage.py test api
+```
+
+### Adding New Endpoints
+
+1. Create view in `views.py`
+2. Add URL pattern in `urls.py`
+3. Add tests in `tests.py`
+4. Update documentation
+
+## Security
+
+- All endpoints use HTTPS in production
+- Passwords are hashed using bcrypt
+- JWT tokens expire after 24 hours
+- CORS is configured to allow specific origins
+- SQL injection prevention using parameterized queries
+- XSS protection enabled
+
+## Deployment
+
+1. Set environment variables:
+```bash
+export DJANGO_SETTINGS_MODULE=DBS.settings.production
+export SECRET_KEY=your-secret-key
+export DATABASE_URL=your-database-url
+```
+
+2. Collect static files:
+```bash
+python manage.py collectstatic
+```
+
+3. Run migrations:
+```bash
+python manage.py migrate
+```
+
+4. Start production server:
+```bash
+gunicorn DBS.wsgi:application
+```
