@@ -13,25 +13,79 @@ const MyBookings = () => {
       setLoading(true);
       setError("");
       try {
-        const url = `http://localhost:8000/api/my-bookings/?user_id=${user.user_id}`;
-        const response = await fetch(url);
-        
-        // First check if response is ok
-        if (!response.ok) {
-          const errorText = await response.text();
-          setError(`Server error: ${errorText.substring(0, 200)}`);
-          setBookings([]);
-          setLoading(false);
-          return;
+        let bookingsArr = [];
+        let seen = new Set();
+
+        // 1. Try user_id if available
+        if (user?.user_id) {
+          const url = `http://localhost:8000/api/my-bookings/?user_id=${user.user_id}`;
+          const response = await fetch(url);
+          if (response.ok) {
+            try {
+              const data = await response.json();
+              // Debug: log the raw data
+              console.log("Raw bookings data by user_id:", data);
+              if (data.bookings && Array.isArray(data.bookings)) {
+                data.bookings.forEach(b => {
+                  if (!seen.has(b.booking_id)) {
+                    // Debug: log each booking object
+                    console.log("Booking object:", b);
+                    bookingsArr.push(
+                      Object.fromEntries(
+                        Object.entries(b).map(([k, v]) => [k, v == null ? "" : v.toString()])
+                      )
+                    );
+                    seen.add(b.booking_id);
+                  }
+                });
+              }
+            } catch (e) {
+              console.error("Error parsing bookings by user_id:", e);
+            }
+          } else {
+            const text = await response.text();
+            console.error("Error response for user_id:", text);
+          }
         }
 
-        // If response is ok, try to parse as JSON
-        try {
-          const data = await response.json();
-          setBookings(data.bookings || []);
-        } catch (jsonErr) {
-          setError("Invalid response format from server");
-          setBookings([]);
+        // 2. Try email if available and not already tried
+        if (user?.email) {
+          const url = `http://localhost:8000/api/my-bookings/?email=${encodeURIComponent(user.email)}`;
+          const response = await fetch(url);
+          if (response.ok) {
+            try {
+              const data = await response.json();
+              // Debug: log the raw data
+              console.log("Raw bookings data by email:", data);
+              if (data.bookings && Array.isArray(data.bookings)) {
+                data.bookings.forEach(b => {
+                  if (!seen.has(b.booking_id)) {
+                    // Debug: log each booking object
+                    console.log("Booking object:", b);
+                    bookingsArr.push(
+                      Object.fromEntries(
+                        Object.entries(b).map(([k, v]) => [k, v == null ? "" : v.toString()])
+                      )
+                    );
+                    seen.add(b.booking_id);
+                  }
+                });
+              }
+            } catch (e) {
+              console.error("Error parsing bookings by email:", e);
+            }
+          } else {
+            const text = await response.text();
+            console.error("Error response for email:", text);
+          }
+        }
+
+        // Debug: log the bookingsArr after all fetches
+        console.log("Final bookingsArr:", bookingsArr);
+
+        setBookings(bookingsArr);
+        if (bookingsArr.length === 0) {
+          setError("No bookings found.");
         }
       } catch (err) {
         setError(err.message);
@@ -40,7 +94,7 @@ const MyBookings = () => {
         setLoading(false);
       }
     };
-    if (user?.user_id) {
+    if (user?.user_id || user?.email) {
       fetchBookings();
     }
   }, [user]);
@@ -55,42 +109,45 @@ const MyBookings = () => {
       )}
       <div className={styles.bookingsGrid}>
         {bookings.map((booking) => (
-          <div key={booking.booking_id} className={styles.bookingCard}>
+          <div 
+            key={`booking-${booking.BOOKING_ID || booking.booking_id}`} 
+            className={styles.bookingCard}
+          >
             <div className={styles.venueImageWrapper}>
               <img
-                src={booking.image_url || "/assets/venues/default.jpg"}
-                alt={booking.venue_name}
+                src={booking.IMAGE_URL || booking.image_url || "/assets/venues/default.jpg"}
+                alt={booking.VENUE_NAME || booking.venue_name}
                 className={styles.venueImage}
               />
             </div>
             <div className={styles.bookingInfo}>
-              <h2 className={styles.venueName}>{booking.venue_name}</h2>
+              <h2 className={styles.venueName}>{booking.VENUE_NAME || booking.venue_name}</h2>
               <div className={styles.venueLocation}>
-                {booking.building_name}
-                {booking.floor_number
-                  ? `, Floor ${booking.floor_number}`
+                {booking.BUILDING_NAME || booking.building_name}
+                {booking.FLOOR_NUMBER || booking.floor_number
+                  ? `, Floor ${booking.FLOOR_NUMBER || booking.floor_number}`
                   : ""}
               </div>
               <div className={styles.venueCapacity}>
-                Capacity: {booking.seating_capacity}
+                Capacity: {booking.SEATING_CAPACITY || booking.seating_capacity}
               </div>
               <div className={styles.bookingDateTime}>
                 <span>
                   <i className="far fa-calendar-alt"></i>{" "}
-                  {booking.booking_date}
+                  {booking.BOOKING_DATE || booking.booking_date}
                 </span>
                 <span>
                   <i className="far fa-clock"></i>{" "}
-                  {booking.start_time} - {booking.end_time}
+                  {booking.START_TIME || booking.start_time} - {booking.END_TIME || booking.end_time}
                 </span>
               </div>
               <div className={styles.bookingPurpose}>
-                <strong>Purpose:</strong> {booking.purpose}
+                <strong>Purpose:</strong> {booking.PURPOSE || booking.purpose}
               </div>
               <div className={styles.bookingStatus}>
                 Status:{" "}
-                <span className={styles[`status${booking.status}`] || ""}>
-                  {booking.status}
+                <span className={styles[`status${booking.STATUS || booking.status}`] || ""}>
+                  {booking.STATUS || booking.status}
                 </span>
               </div>
             </div>
