@@ -77,31 +77,6 @@ const Home = () => {
         <div className={styles.heroContent}>
           <h1>Book College Venues & Rooms</h1>
           <p>Easy booking system for academic spaces, seminar halls, and event venues</p>
-          <form className={styles.searchBar} onSubmit={(e) => e.preventDefault()}>
-            <select aria-label="Venue type" required>
-              <option value="" disabled selected>Select Venue Type</option>
-              <option value="classroom">Classroom</option>
-              <option value="seminar">Seminar Hall</option>
-              <option value="lab">Laboratory</option>
-              <option value="library">Library Space</option>
-              <option value="conference">Conference Room</option>
-              <option value="outdoor">Outdoor Space</option>
-            </select>
-            <input 
-              type="date" 
-              aria-label="Date" 
-              required 
-              min={currentDate}
-              defaultValue={currentDate}
-            />
-            <select aria-label="Time slot" required>
-              <option value="" disabled selected>Select Time Slot</option>
-              <option value="morning">8:00 AM - 12:00 PM</option>
-              <option value="afternoon">12:00 PM - 4:00 PM</option>
-              <option value="evening">4:00 PM - 8:00 PM</option>
-            </select>
-            <button type="submit">Find Available Venues</button>
-          </form>
         </div>
       </section>
 

@@ -27,52 +27,7 @@ const Community = () => {
         </button>
       </div>
 
-      <div
-        className={`${styles.tabContent} ${
-          activeTab === "booking-board" ? styles.active : ""
-        }`}
-        id="booking-board"
-      >
-        <div className={styles.filterBar}>
-          <div className={styles.searchBox}>
-            <input
-              type="text"
-              placeholder="Search by student body or venue..."
-            />
-            <button>
-              <i className="fas fa-search"></i>
-            </button>
-          </div>
-          <div className={styles.filterDropdown}>
-            <select>
-              <option value="">All Student Bodies</option>
-              <option value="student-council">Student Council</option>
-              <option value="cultural-club">Cultural Club</option>
-              <option value="tech-society">Tech Society</option>
-              <option value="sports-club">Sports Club</option>
-              <option value="debate-club">Debate Club</option>
-            </select>
-          </div>
-          <div className={styles.filterDropdown}>
-            <select>
-              <option value="">All Venues</option>
-              <option value="lecture-halls">Lecture Halls</option>
-              <option value="seminar-halls">Seminar Halls</option>
-              <option value="auditoriums">Auditoriums</option>
-              <option value="outdoor">Outdoor Venues</option>
-            </select>
-          </div>
-          <div className={styles.filterDropdown}>
-            <select>
-              <option value="">All Dates</option>
-              <option value="today">Today</option>
-              <option value="tomorrow">Tomorrow</option>
-              <option value="this-week">This Week</option>
-              <option value="next-week">Next Week</option>
-            </select>
-          </div>
-        </div>
-
+      <div className={`${styles.tabContent} ${activeTab === 'board' ? styles.active : ''}`}>
         <div className={styles.bookingList}>
           <div className={styles.bookingCard}>
             <div className={styles.bookingHeader}>
@@ -113,6 +68,12 @@ const Community = () => {
           </div>
 
           {/* More booking cards would go here */}
+        </div>
+      </div>
+
+      <div className={`${styles.tabContent} ${activeTab === 'exchange' ? styles.active : ''}`}>
+        <div className={styles.exchangeList}>
+          {/* ... existing exchange list content ... */}
         </div>
       </div>
     </main>

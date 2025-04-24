@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 export const useNotifications = (initialNotifications) => {
   const [notifications, setNotifications] = useState(initialNotifications || []);
-  const [filter, setFilter] = useState('all');
   const navigate = useNavigate();
   
   const markAsRead = (id) => {
@@ -46,21 +45,11 @@ export const useNotifications = (initialNotifications) => {
     } else if (title.includes('Booking Rejected')) {
       alert('Redirecting to rejected bookings...');
       navigate('/my-bookings');
-      // In a real app, you would set the active tab to 'rejected'
     }
   };
   
-  const filteredNotifications = notifications.filter(notification => {
-    if (filter === 'all') return true;
-    if (filter === 'unread') return notification.unread;
-    return notification.type === filter;
-  });
-  
   return {
     notifications,
-    filteredNotifications,
-    filter,
-    setFilter,
     markAsRead,
     deleteNotification,
     markAllAsRead,

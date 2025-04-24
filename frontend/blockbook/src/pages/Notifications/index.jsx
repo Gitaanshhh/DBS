@@ -19,9 +19,7 @@ const Notifications = () => {
   ];
 
   const {
-    filteredNotifications,
-    filter,
-    setFilter,
+    notifications,
     markAsRead,
     deleteNotification,
     markAllAsRead,
@@ -39,25 +37,11 @@ const Notifications = () => {
           >
             Mark All as Read
           </button>
-          <div className={styles.filterDropdown}>
-            <select
-              id="notification-filter"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            >
-              <option value="all">All Notifications</option>
-              <option value="unread">Unread Only</option>
-              <option value="booking-status">Booking Status</option>
-              <option value="admin-alert">Admin Alerts</option>
-              <option value="reminder">Reminders</option>
-              <option value="exchange-request">Exchange Requests</option>
-            </select>
-          </div>
         </div>
       </div>
 
       <div className={styles.notificationsContainer}>
-        {filteredNotifications.map((notification) => (
+        {notifications.map((notification) => (
           <div
             key={notification.id}
             className={`${styles.notification} ${
