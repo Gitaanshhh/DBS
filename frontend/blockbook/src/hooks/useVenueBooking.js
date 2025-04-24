@@ -1,26 +1,47 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export const useVenueBooking = () => {
   const navigate = useNavigate();
-  const [currentDate, setCurrentDate] = useState('');
-  
-  useEffect(() => {
-    // Set current date for date inputs
-    const today = new Date().toISOString().split('T')[0];
-    setCurrentDate(today);
-  }, []);
-  
-  const handleBookVenue = (venueData) => {
-    // Store venue information in localStorage to pass to the booking page
-    localStorage.setItem('selectedVenue', JSON.stringify(venueData));
-    
-    // Navigate to the booking page
-    navigate('/booking');
+  const { user } = useAuth();
+  const [error, setError] = useState(null);
+
+  const handleBookVenue = async (venueId, venueData) => {
+    try {
+      if (!user) {
+        throw new Error('You must be logged in to book a venue');
+      }
+
+      if (!venueId) {
+        throw new Error('No venue selected for booking');
+      }
+
+      // Store venue data in localStorage
+      localStorage.setItem('selectedVenue', JSON.stringify({
+        id: venueId,
+        ...venueData,
+        selectedDate: new Date().toISOString()
+      }));
+
+      // Navigate to booking page
+      navigate(`/booking/${venueId}`);
+    } catch (err) {
+      setError(err.message);
+      if (!user) {
+        // Redirect to landing page with return URL
+        navigate('/', { state: { from: `/explore` } });
+      }
+    }
   };
-  
+
+  const clearError = () => setError(null);
+
   return {
-    currentDate,
-    handleBookVenue
+    handleBookVenue,
+    error,
+    clearError
   };
 };
+
+export default useVenueBooking;

@@ -70,7 +70,7 @@ const Booking = () => {
 
   return (
     <main className={styles.main}>
-      <Link to="/" className={styles.backLink}>
+      <Link to="/explore" className={styles.backLink}>
         Back to venues
       </Link>
 

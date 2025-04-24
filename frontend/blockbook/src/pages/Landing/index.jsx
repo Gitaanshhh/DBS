@@ -1,6 +1,6 @@
 // src/pages/Landing/index.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './Landing.module.css';
 
 /**
@@ -13,6 +13,7 @@ const Landing = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   /**
    * Handles form submission and user authentication
@@ -49,14 +50,11 @@ const Landing = () => {
         const user = data['User Details'][0];
         const role = user.user_type || user.role;
         
-        // Redirect based on user role
-        if (role === 'student' || role === 'student-council' || role === 'admin') {
-          navigate('/home');
-        } else if (['faculty', 'swo', 'security'].includes(role)) {
-          navigate('/approvals');
-        } else {
-          navigate('/home');
-        }
+        // Get return URL from location state or use default based on role
+        const returnUrl = location.state?.from || 
+          (['faculty', 'swo', 'security'].includes(role) ? '/approvals' : '/home');
+        
+        navigate(returnUrl);
       } else {
         setError(data.error || 'Login failed. Please check credentials.');
       }

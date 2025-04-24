@@ -20,14 +20,14 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     </div>;
   }
 
-  // Redirect to landing page if not logged in
+  // Redirect to landing page if not logged in, preserving the return URL
   if (!user) {
-    return <Navigate to="/" state={{ from: location }} replace />;
+    return <Navigate to="/" state={{ from: location.pathname }} replace />;
   }
 
-  // Redirect to home if user doesn't have required role
+  // Check role access and redirect to home if unauthorized
   if (allowedRoles.length > 0 && !hasRole(allowedRoles)) {
-    return <Navigate to="/home" state={{ from: location }} replace />;
+    return <Navigate to="/home" replace />;
   }
 
   // Render protected content if all checks pass
