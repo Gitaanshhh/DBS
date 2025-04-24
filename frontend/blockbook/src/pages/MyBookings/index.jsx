@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./MyBookings.module.css";
 
+/**
+ * MyBookings page - shows all bookings made by the logged-in user.
+ */
 const MyBookings = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
@@ -9,6 +12,7 @@ const MyBookings = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Fetch bookings by user_id and email, deduplicate by booking_id
     const fetchBookings = async () => {
       setLoading(true);
       setError("");
@@ -16,77 +20,50 @@ const MyBookings = () => {
         let bookingsArr = [];
         let seen = new Set();
 
-        // 1. Try user_id if available
+        // Fetch by user_id
         if (user?.user_id) {
           const url = `http://localhost:8000/api/my-bookings/?user_id=${user.user_id}`;
           const response = await fetch(url);
           if (response.ok) {
-            try {
-              const data = await response.json();
-              // Debug: log the raw data
-              console.log("Raw bookings data by user_id:", data);
-              if (data.bookings && Array.isArray(data.bookings)) {
-                data.bookings.forEach(b => {
-                  if (!seen.has(b.booking_id)) {
-                    // Debug: log each booking object
-                    console.log("Booking object:", b);
-                    bookingsArr.push(
-                      Object.fromEntries(
-                        Object.entries(b).map(([k, v]) => [k, v == null ? "" : v.toString()])
-                      )
-                    );
-                    seen.add(b.booking_id);
-                  }
-                });
-              }
-            } catch (e) {
-              console.error("Error parsing bookings by user_id:", e);
+            const data = await response.json();
+            if (data.bookings && Array.isArray(data.bookings)) {
+              data.bookings.forEach(b => {
+                if (!seen.has(b.booking_id)) {
+                  bookingsArr.push(
+                    Object.fromEntries(
+                      Object.entries(b).map(([k, v]) => [k, v == null ? "" : v.toString()])
+                    )
+                  );
+                  seen.add(b.booking_id);
+                }
+              });
             }
-          } else {
-            const text = await response.text();
-            console.error("Error response for user_id:", text);
           }
         }
 
-        // 2. Try email if available and not already tried
+        // Fetch by email as fallback
         if (user?.email) {
           const url = `http://localhost:8000/api/my-bookings/?email=${encodeURIComponent(user.email)}`;
           const response = await fetch(url);
           if (response.ok) {
-            try {
-              const data = await response.json();
-              // Debug: log the raw data
-              console.log("Raw bookings data by email:", data);
-              if (data.bookings && Array.isArray(data.bookings)) {
-                data.bookings.forEach(b => {
-                  if (!seen.has(b.booking_id)) {
-                    // Debug: log each booking object
-                    console.log("Booking object:", b);
-                    bookingsArr.push(
-                      Object.fromEntries(
-                        Object.entries(b).map(([k, v]) => [k, v == null ? "" : v.toString()])
-                      )
-                    );
-                    seen.add(b.booking_id);
-                  }
-                });
-              }
-            } catch (e) {
-              console.error("Error parsing bookings by email:", e);
+            const data = await response.json();
+            if (data.bookings && Array.isArray(data.bookings)) {
+              data.bookings.forEach(b => {
+                if (!seen.has(b.booking_id)) {
+                  bookingsArr.push(
+                    Object.fromEntries(
+                      Object.entries(b).map(([k, v]) => [k, v == null ? "" : v.toString()])
+                    )
+                  );
+                  seen.add(b.booking_id);
+                }
+              });
             }
-          } else {
-            const text = await response.text();
-            console.error("Error response for email:", text);
           }
         }
 
-        // Debug: log the bookingsArr after all fetches
-        console.log("Final bookingsArr:", bookingsArr);
-
         setBookings(bookingsArr);
-        if (bookingsArr.length === 0) {
-          setError("No bookings found.");
-        }
+        if (bookingsArr.length === 0) setError("No bookings found.");
       } catch (err) {
         setError(err.message);
         setBookings([]);
@@ -94,9 +71,7 @@ const MyBookings = () => {
         setLoading(false);
       }
     };
-    if (user?.user_id || user?.email) {
-      fetchBookings();
-    }
+    if (user?.user_id || user?.email) fetchBookings();
   }, [user]);
 
   return (
@@ -109,7 +84,7 @@ const MyBookings = () => {
       )}
       <div className={styles.bookingsGrid}>
         {bookings.map((booking) => {
-          // Try all possible casings for each field
+          // Normalize field casing for display
           const bookingId = booking.booking_id || booking.BOOKING_ID;
           const venueName = booking.venue_name || booking.VENUE_NAME;
           const buildingName = booking.building_name || booking.BUILDING_NAME;
