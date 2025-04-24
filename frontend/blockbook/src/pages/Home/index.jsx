@@ -66,7 +66,8 @@ const Home = () => {
       id: venue.venue_id
     };
     handleBookVenue(venueData);
-    navigate('/booking');
+    // Always navigate to the booking page for this venue
+    navigate(`/booking/${venue.venue_id}`);
   };
 
   return (
@@ -129,7 +130,7 @@ const Home = () => {
                   <VenueCard 
                     key={venue.venue_id} 
                     venue={venue} 
-                    onBook={handleBookVenue}
+                    onBook={() => handleVenueClick(venue)}
                     showDetails={false}
                   />
                 ))

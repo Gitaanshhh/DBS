@@ -173,7 +173,20 @@ const ExploreVenues = () => {
               <VenueCard
                 key={venue.venue_id}
                 venue={venue}
-                onBook={bookVenue}
+                onBook={() => {
+                  // Prepare venue data for booking page
+                  const venueData = {
+                    title: venue.venue_name,
+                    location: `${venue.building_name || ''}${venue.floor_number ? ', Floor ' + venue.floor_number : ''}`,
+                    capacity: `Capacity: ${venue.seating_capacity} people`,
+                    image: venue.image_url,
+                    features: venue.features ? venue.features.split(',').map(f => f.trim()) : [],
+                    id: venue.venue_id
+                  };
+                  // Store venue info and navigate to booking page for this venue
+                  localStorage.setItem('selectedVenue', JSON.stringify(venueData));
+                  window.location.href = `/booking/${venue.venue_id}`;
+                }}
                 showDetails={true}
               />
             ))
