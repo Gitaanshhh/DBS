@@ -1,215 +1,59 @@
-.communityTabs {
-    display: flex;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .tabBtn {
-    padding: 1rem 2rem;
-    background: none;
-    border: none;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #666;
-    cursor: pointer;
-    position: relative;
-    transition: color 0.3s ease;
-  }
-  
-  .tabBtn:hover {
-    color: #4a90e2;
-  }
-  
-  .tabBtn.active {
-    color: #4a90e2;
-  }
-  
-  .tabBtn.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: #4a90e2;
-    border-radius: 2px 2px 0 0;
-  }
-  
-  .tabContent {
-    display: none;
-  }
-  
-  .tabContent.active {
-    display: block;
-  }
-  
-  .filterBar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    padding: 1rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  }
-  
-  .searchBox {
-    flex: 2 1 300px;
-    display: flex;
-  }
-  
-  .searchBox input {
-    flex: 1;
-    padding: 0.8rem;
-    border: 1px solid #eee;
-    border-radius: 8px 0 0 8px;
-    font-size: 0.95rem;
-  }
-  
-  .searchBox button {
-    padding: 0.8rem 1.2rem;
-    background-color: #4a90e2;
-    color: white;
-    border: none;
-    border-radius: 0 8px 8px 0;
-    cursor: pointer;
-  }
-  
-  .filterDropdown {
-    flex: 1 1 200px;
-  }
-  
-  .filterDropdown select {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    background-color: white;
-  }
-  
-  .bookingList {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
-  .bookingCard {
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .bookingCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-  }
-  
-  .bookingHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.2rem;
-    background-color: #f9f9f9;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .studentBody {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-  }
-  
-  .studentBody img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  .studentBody h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #333;
-  }
-  
-  .bookingDate {
-    font-size: 0.9rem;
-    color: #666;
-  }
-  
-  .bookingDetails {
-    display: flex;
-    padding: 1.2rem;
-    gap: 2rem;
-  }
-  
-  .venueInfo {
-    flex: 1;
-    min-width: 200px;
-  }
-  
-  .venueInfo h4 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #333;
-  }
-  
-  .venueInfo p {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 0.3rem;
-    display: flex;
-    align-items: center;
-  }
-  
-  .venueInfo p i {
-    margin-right: 0.5rem;
-    color: #888;
-    width: 16px;
-  }
-  
-  .eventInfo {
-    flex: 2;
-  }
-  
-  .eventInfo h4 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #333;
-  }
-  
-  .eventInfo p {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 0.8rem;
-    line-height: 1.5;
-  }
-  
-  .eventTags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  
-  .tag {
-    background-color: #f5f7fa;
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    color: #555;
-    font-weight: 500;
-  }
-  
-  .bookingActions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    padding: 1rem 1.2rem;
-    border-top: 1px solid #eee;
-  }
+.main {
+  padding: 2rem 0;
+}
+.sectionTitle {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.logsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+.logCard {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: box-shadow 0.2s;
+}
+.logCard:hover {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+}
+.logHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.7rem;
+}
+.logBookingId {
+  font-weight: 600;
+  color: #357abd;
+}
+.logDate {
+  font-size: 0.98rem;
+  color: #888;
+}
+.logBody {
+  width: 100%;
+}
+.logAction, .logUser {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+.noLogs {
+  text-align: center;
+  color: #888;
+  margin-top: 2rem;
+}
+.error {
+  color: #c0392b;
+  text-align: center;
+  margin: 1rem 0;
+}

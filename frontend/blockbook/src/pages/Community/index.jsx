@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./Community.module.css";
 
 /**
- * Records page - shows booking logs (BookingHistory)
+ * Records page - shows booking logs (BookingHistory) in card layout
  */
 const Records = () => {
   const [logs, setLogs] = useState([]);
@@ -39,10 +39,10 @@ const Records = () => {
       <h1 className={styles.sectionTitle}>Booking Logs</h1>
       {loading && <div>Loading logs...</div>}
       {error && <div className={styles.error}>{error}</div>}
+      {!loading && logs.length === 0 && (
+        <div className={styles.noLogs}>No booking logs found.</div>
+      )}
       <div className={styles.logsGrid}>
-        {logs.length === 0 && !loading && (
-          <div className={styles.noLogs}>No booking logs found.</div>
-        )}
         {logs.map((log) => {
           // Defensive: try all casings for each field
           const bookingId = log.booking_id || log.BOOKING_ID;
@@ -51,17 +51,13 @@ const Records = () => {
           const date = log.action_date || log.ACTION_DATE;
           return (
             <div key={log.history_id || log.HISTORY_ID} className={styles.logCard}>
-              <div>
-                <strong>Booking ID:</strong> {bookingId}
+              <div className={styles.logHeader}>
+                <span className={styles.logBookingId}>Booking #{bookingId}</span>
+                <span className={styles.logDate}>{date}</span>
               </div>
-              <div>
-                <strong>Action:</strong> {action}
-              </div>
-              <div>
-                <strong>User:</strong> {user}
-              </div>
-              <div>
-                <strong>Date:</strong> {date}
+              <div className={styles.logBody}>
+                <div className={styles.logAction}><strong>Action:</strong> {action}</div>
+                <div className={styles.logUser}><strong>User:</strong> {user}</div>
               </div>
             </div>
           );
