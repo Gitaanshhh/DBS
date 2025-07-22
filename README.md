@@ -1,164 +1,107 @@
 # BlockBook - College Venue Booking System
 
-A modern web application for managing venue bookings in educational institutions.
+A simple web application for booking college venues and rooms.
 
 ## Features
 
-- **User Authentication**
-  - Role-based access (Admin, Faculty, Student, Student Council)
-  - Secure login with email/password
-  - Session management
+- Browse and search venues
+- Book available time slots
+- View booking history
+- Basic user authentication
 
-- **Venue Management**
-  - Browse available venues
-  - View venue details and features
-  - Check venue availability
-  - Book venues for events
+## Future Scope / TODOs
 
-- **Booking System**
-  - Create and manage booking requests
-  - Multi-step approval workflow
-  - Booking history tracking
-  - Exchange requests between users
-
-- **Approval Workflow**
-  - Role-based approval steps
-  - Faculty advisor approval
-  - Student council approval
-  - Security clearance
-  - Status tracking
+- Add the option to register -> make sure
+- Add page to view profile and edit details, also modify prof pic to at least first letter of names
+- the key features
+- understand and fix login for president etc
+- clean and improve database (too many tables)
 
 ## Tech Stack
 
 ### Frontend
-- React.js
-- React Router v6
-- Context API for state management
-- CSS Modules for styling
-- Axios for API calls
+- HTML, CSS, JavaScript
+- Basic responsive design
 
 ### Backend
-- Django REST Framework
-- Oracle Database
-- JWT Authentication
-- CORS enabled
+- FastAPI (Python)
+- MySQL Database
 
-## Project Structure
+## Test Users
 
-```
-blockbook/
-├── frontend/              # React frontend
-│   ├── src/
-│   │   ├── components/    # Reusable UI components
-│   │   ├── pages/        # Page components
-│   │   ├── context/      # React context providers
-│   │   ├── hooks/        # Custom React hooks
-│   │   └── styles/       # Global styles
-│   └── public/           # Static assets
-│
-├── backend/              # Django backend
-│   ├── api/             # API endpoints
-│   ├── DBS/            # Django project settings
-│   └── Database/       # Database scripts
-│
-└── docs/               # Documentation
-```
+For testing purposes, you can use these sample users with simple credentials:
 
-## Getting Started
+### Faculty Account
+- Email: teacher@manipal.edu
+- Password: teacher
+- Role: Faculty Advisor
+- Registration ID: 100001
 
-### Prerequisites
-- Node.js (v14+)
-- Python (v3.8+)
-- Oracle Database
-- npm or yarn
+### Student Club Account
+- Email: club@manipal.edu
+- Password: club
+- Club Name: Test Club
+- Faculty Advisor: Teacher
 
-### Installation
+### Club President Account
+- Email: president@manipal.edu
+- Password: president
+- Registration ID: 200001
+- Student Body: Test Club
 
-1. Clone the repository:
+### Student Account
+- Email: student@manipal.edu
+- Password: student
+- Registration ID: 200002
+- Student Body: Test Club
+
+Note: All passwords are the same as the part before '@' in the email for simplicity.
+
+## Setup Instructions
+
+1. Install Python 3.8+ and MySQL
+
+2. Install Python dependencies:
 ```bash
-git clone https://github.com/yourusername/blockbook.git
-cd blockbook
+cd backend/app
+pip install fastapi uvicorn mysql-connector-python python-multipart
 ```
 
-2. Install frontend dependencies:
-```bash
-cd frontend/blockbook
-npm install
+3. Set up MySQL database:
+```sql
+-- Open MySQL command line and run:
+CREATE DATABASE blockbook;
+USE blockbook;
+
+-- Run the database setup script:
+source <absoulte path to Tables.sql and then Data.sql>
 ```
 
-3. Install backend dependencies:
-```bash
-cd ../../backend
-pip install -r requirements.txt
+4. Update database configuration in `backend/app/main.py`:
+```python
+DB_CONFIG = {
+    "host": "localhost",
+    "user": "root",
+    "password": "your_password",
+    "database": "blockbook"
+}
 ```
 
-4. Set up the database:
-```bash
-cd Database
-sqlplus sys/sys as sysdba @NewTables.sql
-sqlplus sys/sys as sysdba @NewData.sql
-```
-
-5. Configure environment variables:
-```bash
-cp .env.example .env
-# Edit .env with your database credentials
-```
-
-### Development
+## Running the Application
 
 1. Start the backend server:
 ```bash
-cd backend
-python manage.py runserver
+cd backend/app
+uvicorn main:app --reload
 ```
 
-2. Start the frontend development server:
-```bash
-cd frontend/blockbook
-npm start
-```
+2. Start the frontend:
+- Open `frontend/basicFrontend/login.html` in your web browser
+- Login with test credentials:
+  - Email: admin@example.com
+  - Password: admin123
 
-3. Access the application at `http://localhost:3000`
+## API Documentation
 
-## Testing
-
-Run frontend tests:
-```bash
-cd frontend/blockbook
-npm test
-```
-
-Run backend tests:
-```bash
-cd backend
-python manage.py test
-```
-
-## Deployment
-
-1. Build the frontend:
-```bash
-cd frontend/blockbook
-npm run build
-```
-
-2. Configure production settings:
-```bash
-cd backend
-python manage.py collectstatic
-```
-
-3. Deploy using your preferred method (e.g., Docker, Heroku, AWS)
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Once the backend is running, visit:
+- http://localhost:8000/docs for API documentation

@@ -1,24 +1,35 @@
+-- Drop all data first to avoid constraint issues (in correct order)
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE VenueEquipment;
+TRUNCATE TABLE Equipment;
+TRUNCATE TABLE BookingHistory;
+TRUNCATE TABLE ApprovalProcess;
+TRUNCATE TABLE BookingRequest;
+TRUNCATE TABLE SC_Assignment;
+TRUNCATE TABLE Student;
+TRUNCATE TABLE StudentBody;
+TRUNCATE TABLE Faculty;
+TRUNCATE TABLE Venue;
+TRUNCATE TABLE Location;
+TRUNCATE TABLE RoleAssignments;
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- Test Users for easy login
+-- Faculty test user
+INSERT INTO Faculty VALUES (999, 100001, 'Teacher', 'teacher@manipal.edu', 'Computer Science', 'Professor');
+INSERT INTO RoleAssignments VALUES (999, 'FA');
+
+-- Student Body test users
+INSERT INTO StudentBody VALUES (999, 'Test Club', 'club@manipal.edu', 999);
+INSERT INTO Student VALUES (999, 200001, 'President', 8765432100, 999);
+INSERT INTO Student VALUES (998, 200002, 'Student', 8765432101, 999);
+
+
 -- Location data
-INSERT INTO Location VALUES (1, 'Academic Block 1', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (2, 'Academic Block 2', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (3, 'Academic Block 3', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (4, 'Innovation Center', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (5, 'Library Building', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (6, 'Student Activity Center', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (7, 'Research Block', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (8, 'Administrative Block', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (9, 'Mechanical Workshop', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (10, 'Chemical Sciences Building', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (11, 'Electronics Lab Complex', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (12, 'Civil Engineering Block', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (13, 'Biotechnology Building', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (14, 'Computer Science Block', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (15, 'Electrical Sciences Building', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (16, 'Architecture Studio', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (17, 'Media Studies Center', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (18, 'Sports Complex', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (19, 'Auditorium Complex', 'MIT Campus, Manipal');
-INSERT INTO Location VALUES (20, 'Food Court Building', 'MIT Campus, Manipal');
+INSERT INTO Location VALUES (1, 'Academic Block 3', 'MIT Campus, Manipal');
+INSERT INTO Location VALUES (2, 'Academic Block 4', 'MIT Campus, Manipal');
+INSERT INTO Location VALUES (3, 'Academic Block 5', 'MIT Campus, Manipal');
+INSERT INTO Location VALUES (4, 'KEF', 'MIT Campus, Manipal');
 
 -- Venue data
 INSERT INTO Venue VALUES (101, 'Lecture Hall AB1-101', 'Classroom', 0, 120, 9876543201);
@@ -42,28 +53,6 @@ INSERT INTO Venue VALUES (118, 'Biotechnology Lab', 'Laboratory', 0, 30, 9876543
 INSERT INTO Venue VALUES (119, 'Conference Hall', 'Conference Room', 0, 80, 9876543219);
 INSERT INTO Venue VALUES (120, 'Student Council Room', 'Meeting Room', 0, 15, 9876543220);
 
--- IndoorVenue data
-INSERT INTO IndoorVenue VALUES (101, 1, 1, 'Academic Block 1');
-INSERT INTO IndoorVenue VALUES (102, 2, 1, 'Academic Block 1');
-INSERT INTO IndoorVenue VALUES (103, 3, 2, 'Academic Block 2');
-INSERT INTO IndoorVenue VALUES (104, 1, 19, 'Auditorium Complex');
-INSERT INTO IndoorVenue VALUES (105, 2, 14, 'Computer Science Block');
-INSERT INTO IndoorVenue VALUES (106, 1, 11, 'Electronics Lab Complex');
-INSERT INTO IndoorVenue VALUES (107, 1, 9, 'Mechanical Workshop');
-INSERT INTO IndoorVenue VALUES (108, 2, 5, 'Library Building');
-INSERT INTO IndoorVenue VALUES (109, 1, 6, 'Student Activity Center');
-INSERT INTO IndoorVenue VALUES (110, 2, 7, 'Research Block');
-INSERT INTO IndoorVenue VALUES (111, 1, 9, 'Mechanical Workshop');
-INSERT INTO IndoorVenue VALUES (112, 2, 10, 'Chemical Sciences Building');
-INSERT INTO IndoorVenue VALUES (113, 1, 12, 'Civil Engineering Block');
-INSERT INTO IndoorVenue VALUES (114, 2, 16, 'Architecture Studio');
-INSERT INTO IndoorVenue VALUES (115, 1, 17, 'Media Studies Center');
-INSERT INTO IndoorVenue VALUES (116, 1, 18, 'Sports Complex');
-INSERT INTO IndoorVenue VALUES (117, 1, 3, 'Academic Block 3');
-INSERT INTO IndoorVenue VALUES (118, 2, 13, 'Biotechnology Building');
-INSERT INTO IndoorVenue VALUES (119, 2, 4, 'Innovation Center');
-INSERT INTO IndoorVenue VALUES (120, 1, 8, 'Administrative Block');
-
 -- Faculty data
 INSERT INTO Faculty VALUES (1, 101001, 'Dr. Anil Kumar', 'anil.kumar@manipal.edu', 'Computer Science', 'Professor');
 INSERT INTO Faculty VALUES (2, 101002, 'Dr. Priya Sharma', 'priya.sharma@manipal.edu', 'Electronics', 'Associate Professor');
@@ -86,71 +75,73 @@ INSERT INTO Faculty VALUES (18, 101018, 'Dr. Kavita Patel', 'kavita.patel@manipa
 INSERT INTO Faculty VALUES (19, 101019, 'Dr. Mohan Kumar', 'mohan.kumar@manipal.edu', 'Mechanical', 'Associate Professor');
 INSERT INTO Faculty VALUES (20, 101020, 'Dr. Ritu Sharma', 'ritu.sharma@manipal.edu', 'Chemical', 'Assistant Professor');
 
--- Student data (first creating students)
-INSERT INTO Student VALUES (1001, 201001, 'Rahul Sharma', 8765432101, NULL);
-INSERT INTO Student VALUES (1002, 201002, 'Priya Patel', 8765432102, NULL);
-INSERT INTO Student VALUES (1003, 201003, 'Amit Kumar', 8765432103, NULL);
-INSERT INTO Student VALUES (1004, 201004, 'Sneha Gupta', 8765432104, NULL);
-INSERT INTO Student VALUES (1005, 201005, 'Vikram Singh', 8765432105, NULL);
-INSERT INTO Student VALUES (1006, 201006, 'Neha Reddy', 8765432106, NULL);
-INSERT INTO Student VALUES (1007, 201007, 'Karan Malhotra', 8765432107, NULL);
-INSERT INTO Student VALUES (1008, 201008, 'Anjali Desai', 8765432108, NULL);
-INSERT INTO Student VALUES (1009, 201009, 'Rajesh Verma', 8765432109, NULL);
-INSERT INTO Student VALUES (1010, 201010, 'Pooja Nair', 8765432110, NULL);
-INSERT INTO Student VALUES (1011, 201011, 'Sanjay Joshi', 8765432111, NULL);
-INSERT INTO Student VALUES (1012, 201012, 'Divya Menon', 8765432112, NULL);
-INSERT INTO Student VALUES (1013, 201013, 'Arjun Rao', 8765432113, NULL);
-INSERT INTO Student VALUES (1014, 201014, 'Meera Iyer', 8765432114, NULL);
-INSERT INTO Student VALUES (1015, 201015, 'Suresh Kumar', 8765432115, NULL);
-INSERT INTO Student VALUES (1016, 201016, 'Anita Sharma', 8765432116, NULL);
-INSERT INTO Student VALUES (1017, 201017, 'Deepak Patel', 8765432117, NULL);
-INSERT INTO Student VALUES (1018, 201018, 'Kavita Singh', 8765432118, NULL);
-INSERT INTO Student VALUES (1019, 201019, 'Rohit Nair', 8765432119, NULL);
-INSERT INTO Student VALUES (1020, 201020, 'Sunita Rao', 8765432120, NULL);
+-- StudentBody data first (since Students reference it)
+INSERT INTO StudentBody VALUES (1, 'IEEE Student Branch', 'ieee@manipal.edu', 1);
+INSERT INTO StudentBody VALUES (2, 'ACM Student Chapter', 'acm@manipal.edu', 9);
+INSERT INTO StudentBody VALUES (3, 'Mechanical Engineering Association', 'mea@manipal.edu', 3);
+INSERT INTO StudentBody VALUES (4, 'Chemical Society', 'chemsoc@manipal.edu', 4);
+INSERT INTO StudentBody VALUES (5, 'Civil Engineering Students Association', 'cesa@manipal.edu', 5);
+INSERT INTO StudentBody VALUES (6, 'Biotech Club', 'biotech@manipal.edu', 6);
+INSERT INTO StudentBody VALUES (7, 'Architecture Students Association', 'asa@manipal.edu', 7);
+INSERT INTO StudentBody VALUES (8, 'Media Club', 'media@manipal.edu', 8);
+INSERT INTO StudentBody VALUES (9, 'Electronics Club', 'electronics@manipal.edu', 2);
+INSERT INTO StudentBody VALUES (10, 'Coding Club', 'coding@manipal.edu', 17);
+INSERT INTO StudentBody VALUES (11, 'Robotics Club', 'robotics@manipal.edu', 10);
+INSERT INTO StudentBody VALUES (12, 'Environmental Club', 'environment@manipal.edu', 12);
+INSERT INTO StudentBody VALUES (13, 'Cultural Club', 'cultural@manipal.edu', 16);
+INSERT INTO StudentBody VALUES (14, 'Sports Club', 'sports@manipal.edu', 19);
+INSERT INTO StudentBody VALUES (15, 'Debate Society', 'debate@manipal.edu', 8);
+INSERT INTO StudentBody VALUES (16, 'Photography Club', 'photography@manipal.edu', 8);
+INSERT INTO StudentBody VALUES (17, 'Dance Club', 'dance@manipal.edu', 16);
+INSERT INTO StudentBody VALUES (18, 'Music Club', 'music@manipal.edu', 16);
+INSERT INTO StudentBody VALUES (19, 'Student Council', 'studentcouncil@manipal.edu', 1);
+INSERT INTO StudentBody VALUES (20, 'Innovation Club', 'innovation@manipal.edu', 9);
 
--- StudentBody data with primary and secondary reps
-INSERT INTO StudentBody VALUES (1, 'IEEE Student Branch', 'ieee@manipal.edu', 1, 1001, 1002);
-INSERT INTO StudentBody VALUES (2, 'ACM Student Chapter', 'acm@manipal.edu', 9, 1003, 1004);
-INSERT INTO StudentBody VALUES (3, 'Mechanical Engineering Association', 'mea@manipal.edu', 3, 1005, 1006);
-INSERT INTO StudentBody VALUES (4, 'Chemical Society', 'chemsoc@manipal.edu', 4, 1007, 1008);
-INSERT INTO StudentBody VALUES (5, 'Civil Engineering Students Association', 'cesa@manipal.edu', 5, 1009, 1010);
-INSERT INTO StudentBody VALUES (6, 'Biotech Club', 'biotech@manipal.edu', 6, 1011, 1012);
-INSERT INTO StudentBody VALUES (7, 'Architecture Students Association', 'asa@manipal.edu', 7, 1013, 1014);
-INSERT INTO StudentBody VALUES (8, 'Media Club', 'media@manipal.edu', 8, 1015, 1016);
-INSERT INTO StudentBody VALUES (9, 'Electronics Club', 'electronics@manipal.edu', 2, 1017, 1018);
-INSERT INTO StudentBody VALUES (10, 'Coding Club', 'coding@manipal.edu', 17, 1019, 1020);
-INSERT INTO StudentBody VALUES (11, 'Robotics Club', 'robotics@manipal.edu', 10, 1001, 1003);
-INSERT INTO StudentBody VALUES (12, 'Environmental Club', 'environment@manipal.edu', 12, 1005, 1007);
-INSERT INTO StudentBody VALUES (13, 'Cultural Club', 'cultural@manipal.edu', 16, 1009, 1011);
-INSERT INTO StudentBody VALUES (14, 'Sports Club', 'sports@manipal.edu', 19, 1013, 1015);
-INSERT INTO StudentBody VALUES (15, 'Debate Society', 'debate@manipal.edu', 8, 1017, 1019);
-INSERT INTO StudentBody VALUES (16, 'Photography Club', 'photography@manipal.edu', 8, 1002, 1004);
-INSERT INTO StudentBody VALUES (17, 'Dance Club', 'dance@manipal.edu', 16, 1006, 1008);
-INSERT INTO StudentBody VALUES (18, 'Music Club', 'music@manipal.edu', 16, 1010, 1012);
-INSERT INTO StudentBody VALUES (19, 'Student Council', 'studentcouncil@manipal.edu', 1, 1014, 1016);
-INSERT INTO StudentBody VALUES (20, 'Innovation Club', 'innovation@manipal.edu', 9, 1018, 1020);
+-- Student data with direct StudentBody assignments
+INSERT INTO Student VALUES (1001, 201001, 'Rahul Sharma', 8765432101, 1);
+INSERT INTO Student VALUES (1002, 201002, 'Priya Patel', 8765432102, 2);
+INSERT INTO Student VALUES (1003, 201003, 'Amit Kumar', 8765432103, 3);
+INSERT INTO Student VALUES (1004, 201004, 'Sneha Gupta', 8765432104, 4);
+INSERT INTO Student VALUES (1005, 201005, 'Vikram Singh', 8765432105, 5);
+INSERT INTO Student VALUES (1006, 201006, 'Neha Reddy', 8765432106, 6);
+INSERT INTO Student VALUES (1007, 201007, 'Karan Malhotra', 8765432107, 7);
+INSERT INTO Student VALUES (1008, 201008, 'Anjali Desai', 8765432108, 8);
+INSERT INTO Student VALUES (1009, 201009, 'Rajesh Verma', 8765432109, 9);
+INSERT INTO Student VALUES (1010, 201010, 'Pooja Nair', 8765432110, 10);
+INSERT INTO Student VALUES (1011, 201011, 'Sanjay Joshi', 8765432111, 11);
+INSERT INTO Student VALUES (1012, 201012, 'Divya Menon', 8765432112, 12);
+INSERT INTO Student VALUES (1013, 201013, 'Arjun Rao', 8765432113, 13);
+INSERT INTO Student VALUES (1014, 201014, 'Meera Iyer', 8765432114, 14);
+INSERT INTO Student VALUES (1015, 201015, 'Suresh Kumar', 8765432115, 15);
+INSERT INTO Student VALUES (1016, 201016, 'Anita Sharma', 8765432116, 16);
+INSERT INTO Student VALUES (1017, 201017, 'Deepak Patel', 8765432117, 17);
+INSERT INTO Student VALUES (1018, 201018, 'Kavita Singh', 8765432118, 18);
+INSERT INTO Student VALUES (1019, 201019, 'Rohit Nair', 8765432119, 19);
+INSERT INTO Student VALUES (1020, 201020, 'Sunita Rao', 8765432120, 20);
 
--- Now update the student records with student_body_id
-UPDATE Student SET student_body_id = 1 WHERE student_id = 1001;
-UPDATE Student SET student_body_id = 2 WHERE student_id = 1002;
-UPDATE Student SET student_body_id = 3 WHERE student_id = 1003;
-UPDATE Student SET student_body_id = 4 WHERE student_id = 1004;
-UPDATE Student SET student_body_id = 5 WHERE student_id = 1005;
-UPDATE Student SET student_body_id = 6 WHERE student_id = 1006;
-UPDATE Student SET student_body_id = 7 WHERE student_id = 1007;
-UPDATE Student SET student_body_id = 8 WHERE student_id = 1008;
-UPDATE Student SET student_body_id = 9 WHERE student_id = 1009;
-UPDATE Student SET student_body_id = 10 WHERE student_id = 1010;
-UPDATE Student SET student_body_id = 11 WHERE student_id = 1011;
-UPDATE Student SET student_body_id = 12 WHERE student_id = 1012;
-UPDATE Student SET student_body_id = 13 WHERE student_id = 1013;
-UPDATE Student SET student_body_id = 14 WHERE student_id = 1014;
-UPDATE Student SET student_body_id = 15 WHERE student_id = 1015;
-UPDATE Student SET student_body_id = 16 WHERE student_id = 1016;
-UPDATE Student SET student_body_id = 17 WHERE student_id = 1017;
-UPDATE Student SET student_body_id = 18 WHERE student_id = 1018;
-UPDATE Student SET student_body_id = 19 WHERE student_id = 1019;
-UPDATE Student SET student_body_id = 20 WHERE student_id = 1020;
+-- Now we can proceed with booking data
+
+-- SC_Assignment data (after Student data since it references students)
+INSERT INTO SC_Assignment VALUES (1019, TRUE);
+INSERT INTO SC_Assignment VALUES (1001, FALSE);
+INSERT INTO SC_Assignment VALUES (1002, TRUE);
+INSERT INTO SC_Assignment VALUES (1003, FALSE);
+INSERT INTO SC_Assignment VALUES (1004, FALSE);
+INSERT INTO SC_Assignment VALUES (1005, TRUE);
+INSERT INTO SC_Assignment VALUES (1006, FALSE);
+INSERT INTO SC_Assignment VALUES (1007, FALSE);
+INSERT INTO SC_Assignment VALUES (1008, TRUE);
+INSERT INTO SC_Assignment VALUES (1009, FALSE);
+INSERT INTO SC_Assignment VALUES (1010, FALSE);
+INSERT INTO SC_Assignment VALUES (1011, TRUE);
+INSERT INTO SC_Assignment VALUES (1012, FALSE);
+INSERT INTO SC_Assignment VALUES (1013, FALSE);
+INSERT INTO SC_Assignment VALUES (1014, TRUE);
+INSERT INTO SC_Assignment VALUES (1015, FALSE);
+INSERT INTO SC_Assignment VALUES (1016, FALSE);
+INSERT INTO SC_Assignment VALUES (1017, TRUE);
+INSERT INTO SC_Assignment VALUES (1018, FALSE);
+INSERT INTO SC_Assignment VALUES (1020, FALSE);
 
 -- BookingRequest data
 INSERT INTO BookingRequest VALUES (501, 101, 1, '2025-04-25', '10:00:00', '12:00:00', 'IEEE Technical Workshop', 'Approved');
@@ -240,27 +231,7 @@ INSERT INTO RoleAssignments VALUES (18, 'SWO');
 INSERT INTO RoleAssignments VALUES (19, 'Security');
 INSERT INTO RoleAssignments VALUES (20, 'FA');
 
--- SC_Assignment data
-INSERT INTO SC_Assignment VALUES (1019, TRUE);
-INSERT INTO SC_Assignment VALUES (1001, FALSE);
-INSERT INTO SC_Assignment VALUES (1002, TRUE);
-INSERT INTO SC_Assignment VALUES (1003, FALSE);
-INSERT INTO SC_Assignment VALUES (1004, FALSE);
-INSERT INTO SC_Assignment VALUES (1005, TRUE);
-INSERT INTO SC_Assignment VALUES (1006, FALSE);
-INSERT INTO SC_Assignment VALUES (1007, FALSE);
-INSERT INTO SC_Assignment VALUES (1008, TRUE);
-INSERT INTO SC_Assignment VALUES (1009, FALSE);
-INSERT INTO SC_Assignment VALUES (1010, FALSE);
-INSERT INTO SC_Assignment VALUES (1011, TRUE);
-INSERT INTO SC_Assignment VALUES (1012, FALSE);
-INSERT INTO SC_Assignment VALUES (1013, FALSE);
-INSERT INTO SC_Assignment VALUES (1014, TRUE);
-INSERT INTO SC_Assignment VALUES (1015, FALSE);
-INSERT INTO SC_Assignment VALUES (1016, FALSE);
-INSERT INTO SC_Assignment VALUES (1017, TRUE);
-INSERT INTO SC_Assignment VALUES (1018, FALSE);
-INSERT INTO SC_Assignment VALUES (1020, FALSE);
+-- End of data inserts
 
 -- Equipment data
 INSERT INTO Equipment VALUES (201, 'Projector', 30);
@@ -306,4 +277,4 @@ INSERT INTO VenueEquipment VALUES (109, 202, 3);
 INSERT INTO VenueEquipment VALUES (110, 201, 1);
 INSERT INTO VenueEquipment VALUES (110, 202, 2);
 
-commit;
+-- commit;

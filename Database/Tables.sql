@@ -1,17 +1,25 @@
+-- Drop all tables in reverse order of dependencies
+DROP TABLE IF EXISTS VenueEquipment;
+DROP TABLE IF EXISTS Equipment;
+DROP TABLE IF EXISTS SC_Assignment;
+DROP TABLE IF EXISTS RoleAssignments;
+DROP TABLE IF EXISTS BookingHistory;
+DROP TABLE IF EXISTS ApprovalProcess;
+DROP TABLE IF EXISTS BookingRequest;
+DROP TABLE IF EXISTS Student;
+DROP TABLE IF EXISTS StudentBody;
+DROP TABLE IF EXISTS Faculty;
+DROP TABLE IF EXISTS Venue;
+DROP TABLE IF EXISTS Location;
+
+-- Create tables in order of dependencies
 CREATE TABLE Venue (
     venue_id INT PRIMARY KEY,
     venue_name VARCHAR(100),
     venue_type VARCHAR(50),
+    floor_number INT,
     seating_capacity INT,
     manager_contact BIGINT
-);
-
-CREATE TABLE IndoorVenue (
-    venue_id INT PRIMARY KEY,
-    floor_number INT,
-    building_id INT,
-    FOREIGN KEY (venue_id) REFERENCES Venue(venue_id),
-    FOREIGN KEY (building_id) REFERENCES Location(building_id)
 );
 
 CREATE TABLE Faculty (

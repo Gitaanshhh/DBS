@@ -1,21 +1,30 @@
-.booking-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid #eee;
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
-.tab-btn {
-    padding: 1rem 1.5rem;
-    background: none;
-    border: none;
+.booking-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.bookings-title {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+    /* border: none;
     font-size: 1rem;
     font-weight: 600;
     color: #666;
     cursor: pointer;
     position: relative;
     transition: color 0.3s ease;
-}
+} */
 
 .tab-btn:hover {
     color: #4a90e2;

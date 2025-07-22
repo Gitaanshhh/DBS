@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - BlockBook</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/my-bookings.css">
+</head>
+<body>
+    <header class="fixed-header">
+        <a href="mainPage.html" class="logo">BlockBook</a>
+        <div class="nav-links" id="navLinks">
+            <a href="mainPage.html">Home</a>
+            <a href="explore-venues.html">Explore Venues</a>
+            <a href="my-bookings.html" class="active">My Bookings</a>
+        </div>
+        <div class="user-menu">
+            <div class="user-icon">JD</div>
+        </div>
+    </header>
+    <main>
+        <div class="bookings-container">
+            <h1 class="bookings-title">My Bookings</h1>
+            
+            <!-- Booking Tabs -->
+            <div class="booking-tabs">
+                <button class="tab-btn active" data-tab="upcoming">Upcoming</button>
+                <button class="tab-btn" data-tab="pending">Pending</button>
+                <button class="tab-btn" data-tab="rejected">Rejected</button>
+                <button class="tab-btn" data-tab="history">History</button>
+            </div>
+            
+            <!-- Upcoming Bookings -->
+            <div class="tab-content active" id="upcoming">
+                <div class="booking-list">
+                    <!-- Bookings will be inserted here by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Pending Bookings -->
+            <div class="tab-content" id="pending">
+                <div class="booking-list">
+                    <!-- Bookings will be inserted here by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Rejected Bookings -->
+            <div class="tab-content" id="rejected">
+                <div class="booking-list">
+                    <!-- Bookings will be inserted here by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Booking History -->
+            <div class="tab-content" id="history">
+                <div class="booking-list">
+                    <!-- Bookings will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-spinner" class="loading-spinner" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading your bookings...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error-message" class="error-message" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>Failed to load bookings. Please try again later.</p>
+            <button onclick="loadUserBookings()">Retry</button>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 BlockBook - College Room and Venue Booking System. All rights reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="./js/my-bookings.js"></script>
+</body>
+</html>
