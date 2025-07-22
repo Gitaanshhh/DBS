@@ -1,18 +1,33 @@
 """
-Functions -> Pascal case -> Eg - ThisIsAFunction
-Variables -> Camel case -> Eg - thisIsAVariable
-Classes - Pascal
-Objects - Camel case
+BlockBook - College Venue Booking System Backend
 
-My ref : 
-net start MySQL80
-source C:/Users/gitaa/OneDrive/Desktop/Coding/DBS/Database/Tables.sql;
-source C:/Users/gitaa/OneDrive\Desktop/Coding/DBS/Database/Data.sql;
+This module implements the FastAPI backend for the BlockBook system.
+It handles user authentication, venue management, and booking operations.
+
+Naming Conventions:
+- Functions: PascalCase (e.g., ThisIsAFunction)
+- Variables: camelCase (e.g., thisIsAVariable)
+- Classes: PascalCase
+- Objects: camelCase
+
+Database Setup:
+1. Start MySQL: net start MySQL80
+2. Run schema: source path/to/Tables.sql
+3. Load data: source path/to/Data.sql
 """
 
-"""
-Imports
-"""
+# Standard library imports
+from datetime import datetime, timedelta
+import json
+import logging
+
+# Third-party imports
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from pydantic import BaseModel
+import mysql.connector
+from typing import Optional, List
 
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -80,48 +95,86 @@ DB_CONFIG = {
     "raise_on_warnings": True
 }
 
-def get_db():
+def GetDatabaseConnection():
+    """
+    Creates and returns a new database connection using the DB_CONFIG.
+    
+    Returns:
+        mysql.connector.connection.MySQLConnection: A new database connection
+    
+    Raises:
+        HTTPException: If connection fails
+    """
     try:
         logger.info("Attempting database connection...")
-        conn = mysql.connector.connect(**DB_CONFIG)
+        dbConnection = mysql.connector.connect(**DB_CONFIG)
         logger.info("Database connection successful")
-        return conn
+        return dbConnection
     except Exception as e:
         logger.error(f"Database connection error: {e}")
         raise HTTPException(status_code=500, detail=f"Database connection failed: {str(e)}")
 
-# Models
+# Data Models
 class User(BaseModel):
+    """
+    User authentication model.
+    
+    Attributes:
+        email (str): User's email address
+        password (str): User's password (should be hashed in production)
+    """
     email: str
     password: str
 
 class Booking(BaseModel):
+    """
+    Booking request model.
+    
+    Attributes:
+        venue_id (int): ID of the venue to be booked
+        user_id (int): ID of the user making the booking
+        start_time (datetime): Booking start time
+        end_time (datetime): Booking end time
+        purpose (str): Purpose of the booking
+    """
     venue_id: int
     user_id: int
     start_time: datetime
     end_time: datetime
     purpose: str
 
-# Authentication endpoint
+# API Endpoints
 @app.post("/api/authenticate/")
-async def authenticate(user: User):
-    conn = get_db()
-    cursor = conn.cursor(dictionary=True)
+async def AuthenticateUser(user: User):
+    """
+    Authenticates a user by checking their credentials against Faculty, StudentBody, and Student tables.
+    
+    Args:
+        user (User): User credentials containing email and password
+    
+    Returns:
+        dict: User data including type (faculty/club/student), profile data, and roles
+    
+    Raises:
+        HTTPException: If credentials are invalid or database error occurs
+    """
+    dbConnection = GetDatabaseConnection()
+    cursor = dbConnection.cursor(dictionary=True)
     try:
-        # First check Faculty table
-        faculty_sql = "SELECT faculty_id, name, email, department, post FROM Faculty WHERE email = %s"
-        cursor.execute(faculty_sql, (user.email,))
-        faculty_data = cursor.fetchone()
+        # Check Faculty credentials
+        facultyQuery = "SELECT faculty_id, name, email, department, post FROM Faculty WHERE email = %s"
+        cursor.execute(facultyQuery, (user.email,))
+        facultyData = cursor.fetchone()
         
-        if faculty_data and user.password == user.email.split('@')[0]:  # Check password matches email prefix
+        if facultyData and user.password == user.email.split('@')[0]:
             # Get faculty roles
-            role_sql = "SELECT role FROM RoleAssignments WHERE faculty_id = %s"
-            cursor.execute(role_sql, (faculty_data['faculty_id'],))
+            roleQuery = "SELECT role FROM RoleAssignments WHERE faculty_id = %s"
+            cursor.execute(roleQuery, (facultyData['faculty_id'],))
             roles = [row['role'] for row in cursor.fetchall()]
             
             return {
                 "user_type": "faculty",
-                "user_data": faculty_data,
+                "user_data": facultyData,
                 "roles": roles
             }
 
@@ -165,17 +218,24 @@ async def authenticate(user: User):
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
-        conn.close()
 
-# Get all venues
 @app.get("/api/venues/")
-async def get_venues():
-    conn = get_db()
-    cursor = conn.cursor(dictionary=True)
+async def GetAllVenues():
+    """
+    Retrieves all venues from the database.
+    
+    Returns:
+        dict: List of all venues with their details
+        
+    Raises:
+        HTTPException: If database query fails
+    """
+    dbConnection = GetDatabaseConnection()
+    cursor = dbConnection.cursor(dictionary=True)
     try:
-        sql = "SELECT * FROM venue"
+        venueQuery = "SELECT * FROM venue"
         logger.info("Executing venue query")
-        cursor.execute(sql)
+        cursor.execute(venueQuery)
         venues = cursor.fetchall()
         logger.info(f"Found {len(venues)} venues")
         return {"venues": venues}
@@ -184,16 +244,27 @@ async def get_venues():
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
-        conn.close()
+        dbConnection.close()
 
-# Create booking
 @app.post("/api/bookings/")
-async def create_booking(booking: Booking):
-    conn = get_db()
-    cursor = conn.cursor()
+async def CreateBooking(booking: Booking):
+    """
+    Creates a new booking request for a venue.
+    
+    Args:
+        booking (Booking): Booking details including venue, time, and purpose
+        
+    Returns:
+        dict: Confirmation message and request ID
+        
+    Raises:
+        HTTPException: If booking conflicts exist or creation fails
+    """
+    dbConnection = GetDatabaseConnection()
+    cursor = dbConnection.cursor()
     try:
         # Check for booking conflicts
-        check_sql = """
+        conflictQuery = """
         SELECT * FROM BookingRequest 
         WHERE venue_id = %s 
         AND ((start_time BETWEEN %s AND %s) 
@@ -205,7 +276,7 @@ async def create_booking(booking: Booking):
         )
         """
         logger.info("Checking for booking conflicts")
-        cursor.execute(check_sql, (
+        cursor.execute(conflictQuery, (
             booking.venue_id,
             booking.start_time,
             booking.end_time,
@@ -240,32 +311,42 @@ async def create_booking(booking: Booking):
         logger.info("Initializing approval process")
         cursor.execute(approval_sql, (request_id,))
         
-        conn.commit()
+        cursor.commit()
         logger.info("Booking request created successfully")
         return {"message": "Booking request created successfully", "request_id": request_id}
     except Exception as e:
-        conn.rollback()
+        cursor.rollback()
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
-        conn.close()
 
-# Get user bookings
 @app.get("/api/bookings/{user_id}")
-async def get_user_bookings(user_id: int):
+async def GetUserBookings(user_id: int):
+    """
+    Retrieves all bookings for a specific user.
+    
+    Args:
+        user_id (int): ID of the user whose bookings to retrieve
+        
+    Returns:
+        dict: List of user's bookings with venue and approval details
+        
+    Raises:
+        HTTPException: If database query fails
+    """
     logger.info(f"Fetching bookings for user_id: {user_id}")
-    conn = get_db()
-    cursor = conn.cursor(dictionary=True)
+    dbConnection = GetDatabaseConnection()
+    cursor = dbConnection.cursor(dictionary=True)
     try:
-        sql = """
+        bookingQuery = """
         SELECT br.*, v.venue_name, ap.approval_status
         FROM BookingRequest br
         JOIN Venue v ON br.venue_id = v.venue_id
         LEFT JOIN ApprovalProcess ap ON br.booking_id = ap.booking_id
+        WHERE br.student_body_id = %s
         """
-        # WHERE br.user_id = %s
-        logger.info(f"Executing booking query")
-        cursor.execute(sql)  # (user_id,) - commented out user filter for now
+        logger.info("Executing booking query")
+        cursor.execute(bookingQuery, (user_id,))
         bookings = cursor.fetchall()
         logger.info(f"Found {len(bookings) if bookings else 0} booking requests")
         return {"bookings": bookings}
@@ -274,7 +355,7 @@ async def get_user_bookings(user_id: int):
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
-        conn.close()
+        dbConnection.close()
 
 if __name__ == "__main__":
     import uvicorn
