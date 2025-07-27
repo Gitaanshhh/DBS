@@ -1,16 +1,35 @@
-# Database Schema & Setup
+# BlockBook Database Schema & Setup
 
-This directory contains the SQL schema and ER diagrams for the DBS project.
+This directory contains the SQL schema, data, and ER diagrams for the BlockBook venue booking system.
 
----
+## Overview
 
-## Tables
+The database is designed to support:
+1. User authentication (Faculty, StudentBody, Students)
+2. Venue management
+3. Booking workflow
+4. Multi-level approval process
 
-We follow these steps:
-1. **Extract tables and attributes.**
-2. **Identify primary keys and foreign keys.**
-3. **Ensure each table is in BCNF**:
-   - A table is in **BCNF** if every determinant is a candidate key.
+## Setup Instructions
+
+1. Start MySQL server
+2. Create and use database:
+   ```sql
+   CREATE DATABASE blockbook;
+   USE blockbook;
+   ```
+3. Run schema and data:
+   ```sql
+   source path/to/Tables.sql;
+   source path/to/Data.sql;
+   ```
+
+## Database Design
+
+We follow these principles:
+1. **Normalization**: All tables are in BCNF
+2. **Referential Integrity**: Foreign keys ensure data consistency
+3. **Access Control**: Role-based permissions through RoleAssignments
 
 #### **1. Venue**
 | Attribute         | Type     | Constraints          |

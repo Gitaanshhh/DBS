@@ -14,12 +14,17 @@ Database Setup:
 1. Start MySQL: net start MySQL80
 2. Run schema: source path/to/Tables.sql
 3. Load data: source path/to/Data.sql
+
+Run backend: 
+uvicorn main:app --reload
+
 """
 
 # Standard library imports
 from datetime import datetime, timedelta
 import json
 import logging
+from datetime import date
 
 # Third-party imports
 from fastapi import FastAPI, HTTPException, Depends
@@ -28,16 +33,6 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 import mysql.connector
 from typing import Optional, List
-
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from typing import Optional, List
-import mysql.connector
-from pydantic import BaseModel
-from datetime import datetime, timedelta
-import json
-import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -142,6 +137,18 @@ class Booking(BaseModel):
     start_time: datetime
     end_time: datetime
     purpose: str
+
+class BookingRequest(BaseModel):
+    venue: str
+    date: date
+    timeSlot: str
+    organizerName: str
+    organizerEmail: str
+    department: str
+    attendees: int
+    purpose: str
+    setupRequirements: str
+    additionalNotes: Optional[str] = None
 
 # API Endpoints
 @app.post("/api/authenticate/")
@@ -311,11 +318,11 @@ async def CreateBooking(booking: Booking):
         logger.info("Initializing approval process")
         cursor.execute(approval_sql, (request_id,))
         
-        cursor.commit()
+        # cursor.commit()
         logger.info("Booking request created successfully")
         return {"message": "Booking request created successfully", "request_id": request_id}
     except Exception as e:
-        cursor.rollback()
+        # cursor.rollback()
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()

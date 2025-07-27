@@ -11,6 +11,57 @@ let loadingState = false;
 let bookingsData = [];
 
 // API functions
+
+function submitBookingRequest() {
+  const selectedTimeSlot = document.querySelector(".time-slot.selected");
+  if (!selectedTimeSlot) {
+    alert("Please select a time slot");
+    return;
+  }
+
+  const venueData = JSON.parse(localStorage.getItem("selectedVenue"));
+  const userId = parseInt(localStorage.getItem("userId")); // <-- Assumes login stores this
+
+  if (!venueData || !userId) {
+    alert("Booking failed: User or venue not found.");
+    return;
+  }
+
+  const date = document.getElementById("booking-date").value;
+  const [startTimeStr, endTimeStr] = selectedTimeSlot.dataset.time
+    .split(" - ")
+    .map(t => convertTo24Hour(date, t));
+
+  const payload = {
+    venue_id: venueData.id,         // From localStorage
+    user_id: userId,                // From localStorage
+    start_time: startTimeStr,       // ISO datetime
+    end_time: endTimeStr,           // ISO datetime
+    purpose: document.getElementById("booking-purpose").value
+  };
+
+  fetch("http://localhost:8000/api/bookings/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  })
+    .then(response => {
+      if (!response.ok) throw new Error("Failed to create booking");
+      return response.json();
+    })
+    .then(data => {
+      alert("Booking submitted successfully!");
+      window.location.href = "mainPage.html";
+    })
+    .catch(error => {
+      console.error("Booking error:", error);
+      alert("There was an error. Please try again.");
+    });
+}
+
+
 async function fetchUserBookings(userId) {
     showLoading(true);
     hideError();
@@ -314,3 +365,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         showError('Failed to load your bookings. Please try again later.');
     }
 });
+
+function convertTo24Hour(dateStr, timeRange) {
+  // "8:00 AM" -> "2025-07-24T08:00:00"
+  const date = new Date(dateStr + " " + timeRange);
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString();
+}

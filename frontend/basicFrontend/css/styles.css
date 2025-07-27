@@ -59,14 +59,23 @@ header {
     width: 40px;
     height: 40px;
     background-color: #4a90e2;
+    background-image: linear-gradient(45deg, #4a90e2, #357abd);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+    transition: all 0.3s ease;
+    border: 2px solid white;
+}
+
+.user-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
 }
 
 /* Hamburger Menu Styles */

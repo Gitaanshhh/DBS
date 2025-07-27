@@ -34,15 +34,35 @@ main {
     color: #4a90e2;
 }
 
-.tab-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 3px;
+.booking-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    background-color: #f0f7ff;
+    color: #4a90e2;
+}
+
+.tab-btn.active {
     background-color: #4a90e2;
-    border-radius: 2px 2px 0 0;
+    color: white;
 }
 
 .tab-content {
