@@ -20,7 +20,7 @@ INSERT INTO Faculty VALUES (999, 100001, 'Teacher', 'teacher@manipal.edu', 'Comp
 INSERT INTO RoleAssignments VALUES (999, 'FA');
 
 -- Student Body test users
-INSERT INTO StudentBody VALUES (999, 'Test Club', 'club@manipal.edu', 999);
+-- INSERT INTO StudentBody VALUES (999, 'club', 'club@manipal.edu', 999);
 INSERT INTO Student VALUES (999, 200001, 'President', 8765432100, 999);
 INSERT INTO Student VALUES (998, 200002, 'Student', 8765432101, 999);
 
@@ -76,7 +76,7 @@ INSERT INTO Faculty VALUES (19, 101019, 'Dr. Mohan Kumar', 'mohan.kumar@manipal.
 INSERT INTO Faculty VALUES (20, 101020, 'Dr. Ritu Sharma', 'ritu.sharma@manipal.edu', 'Chemical', 'Assistant Professor');
 
 -- StudentBody data first (since Students reference it)
-INSERT INTO StudentBody VALUES (1, 'IEEE Student Branch', 'ieee@manipal.edu', 1);
+INSERT INTO StudentBody VALUES (1, 'club', 'club@manipal.edu', 1);
 INSERT INTO StudentBody VALUES (2, 'ACM Student Chapter', 'acm@manipal.edu', 9);
 INSERT INTO StudentBody VALUES (3, 'Mechanical Engineering Association', 'mea@manipal.edu', 3);
 INSERT INTO StudentBody VALUES (4, 'Chemical Society', 'chemsoc@manipal.edu', 4);

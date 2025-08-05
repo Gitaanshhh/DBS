@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approvals - BlockBook</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/styles.css">
+    <style>
+        .approvals-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .approvals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .approvals-title {
+            font-size: 2rem;
+            color: #333;
+        }
+        
+        .role-badge {
+            background-color: #4a90e2;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .approval-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .approval-header {
+            background-color: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .booking-id {
+            font-weight: bold;
+            color: #4a90e2;
+        }
+        
+        .booking-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .approval-content {
+            padding: 1.5rem;
+        }
+        
+        .booking-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        
+        .detail-value {
+            color: #333;
+        }
+        
+        .approval-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .approve-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        .approve-btn:hover {
+            background-color: #218838;
+        }
+        
+        .reject-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        .reject-btn:hover {
+            background-color: #c82333;
+        }
+        
+        .no-approvals {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        
+        .no-approvals i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 1rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4a90e2;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="mainPage.html" class="logo">BlockBook</a>
+        <div class="nav-links" id="navLinks">
+            <a href="mainPage.html">Home</a>
+            <a href="explore-venues.html">Explore Venues</a>
+            <a href="my-bookings.html">My Bookings</a>
+            <a href="approvals.html" class="active">Approvals</a>
+        </div>
+        <div class="user-menu">
+            <div class="user-icon">JD</div>
+        </div>
+    </header>
+    
+    <main class="approvals-container">
+        <div class="approvals-header">
+            <h1 class="approvals-title">Pending Approvals</h1>
+            <div class="role-badge" id="userRole">Faculty Advisor</div>
+        </div>
+        
+        <div id="errorMessage" class="error-message"></div>
+        
+        <div id="loadingState" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading pending approvals...</p>
+        </div>
+        
+        <div id="noApprovals" class="no-approvals" style="display: none;">
+            <i class="fas fa-check-circle"></i>
+            <h3>No Pending Approvals</h3>
+            <p>All booking requests have been processed.</p>
+        </div>
+        
+        <div id="approvalsList">
+            <!-- Approval cards will be inserted here -->
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 BlockBook - College Room and Venue Booking System. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000/api';
+        let currentUser = null;
+        let userRole = 'FA';
+
+        // Load user data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            loadPendingApprovals();
+        });
+
+        function loadUserData() {
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                currentUser = JSON.parse(userData);
+                // Determine user role based on user data
+                if (currentUser.roles && currentUser.roles.includes('SWO')) {
+                    userRole = 'SWO';
+                } else if (currentUser.roles && currentUser.roles.includes('Security')) {
+                    userRole = 'Security';
+                } else if (currentUser.is_sc) {
+                    userRole = 'SC';
+                } else {
+                    userRole = 'FA';
+                }
+                
+                document.getElementById('userRole').textContent = getRoleDisplayName(userRole);
+            } else {
+                // Redirect to login if no user data
+                window.location.href = 'login.html';
+            }
+        }
+
+        function getRoleDisplayName(role) {
+            const roleNames = {
+                'FA': 'Faculty Advisor',
+                'SC': 'Student Council',
+                'SWO': 'Student Welfare Officer',
+                'Security': 'Security Chief'
+            };
+            return roleNames[role] || 'Faculty Advisor';
+        }
+
+        async function loadPendingApprovals() {
+            const loadingState = document.getElementById('loadingState');
+            const noApprovals = document.getElementById('noApprovals');
+            const approvalsList = document.getElementById('approvalsList');
+            const errorMessage = document.getElementById('errorMessage');
+
+            try {
+                loadingState.style.display = 'block';
+                noApprovals.style.display = 'none';
+                approvalsList.innerHTML = '';
+                errorMessage.style.display = 'none';
+
+                const response = await fetch(`${API_BASE_URL}/approvals/pending/?role=${userRole}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load approvals');
+                }
+
+                const data = await response.json();
+                
+                if (data.pending_requests && data.pending_requests.length > 0) {
+                    data.pending_requests.forEach(request => {
+                        const approvalCard = createApprovalCard(request);
+                        approvalsList.appendChild(approvalCard);
+                    });
+                } else {
+                    noApprovals.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading approvals:', error);
+                errorMessage.textContent = 'Failed to load pending approvals. Please try again.';
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingState.style.display = 'none';
+            }
+        }
+
+        function createApprovalCard(request) {
+            const card = document.createElement('div');
+            card.className = 'approval-card';
+            
+            const startTime = request.start_time ? request.start_time.substring(0, 5) : 'N/A';
+            const endTime = request.end_time ? request.end_time.substring(0, 5) : 'N/A';
+            
+            card.innerHTML = `
+                <div class="approval-header">
+                    <div>
+                        <span class="booking-id">Booking #${request.booking_id}</span>
+                        <span class="booking-date">${request.booking_date}</span>
+                    </div>
+                </div>
+                <div class="approval-content">
+                    <div class="booking-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Venue</span>
+                            <span class="detail-value">${request.venue_name}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Student Body</span>
+                            <span class="detail-value">${request.student_body_name}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Time</span>
+                            <span class="detail-value">${startTime} - ${endTime}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Purpose</span>
+                            <span class="detail-value">${request.purpose}</span>
+                        </div>
+                    </div>
+                    <div class="approval-actions">
+                        <button class="reject-btn" onclick="rejectBooking(${request.booking_id})">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                        <button class="approve-btn" onclick="approveBooking(${request.booking_id})">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        async function approveBooking(bookingId) {
+            if (!confirm('Are you sure you want to approve this booking request?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/approvals/${bookingId}/approve/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        role: userRole,
+                        approver_id: currentUser.faculty_id || currentUser.student_id || 1
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Booking approved successfully!');
+                    loadPendingApprovals(); // Reload the list
+                } else {
+                    const error = await response.json();
+                    alert('Failed to approve booking: ' + (error.detail || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error approving booking:', error);
+                alert('Failed to approve booking. Please try again.');
+            }
+        }
+
+        async function rejectBooking(bookingId) {
+            const reason = prompt('Please provide a reason for rejection (optional):');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/approvals/${bookingId}/reject/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        role: userRole,
+                        approver_id: currentUser.faculty_id || currentUser.student_id || 1,
+                        reason: reason || ''
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Booking rejected successfully!');
+                    loadPendingApprovals(); // Reload the list
+                } else {
+                    const error = await response.json();
+                    alert('Failed to reject booking: ' + (error.detail || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error rejecting booking:', error);
+                alert('Failed to reject booking. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html> 

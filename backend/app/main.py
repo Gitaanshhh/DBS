@@ -121,6 +121,27 @@ class User(BaseModel):
     email: str
     password: str
 
+class UserRegistration(BaseModel):
+    """
+    User registration model.
+    
+    Attributes:
+        email (str): User's email address
+        password (str): User's password
+        name (str): User's full name
+        user_type (str): Type of user (faculty/student/club)
+        department (str): Department (for faculty)
+        registration_id (int): Registration ID
+        contact_details (int): Contact number
+    """
+    email: str
+    password: str
+    name: str
+    user_type: str
+    department: Optional[str] = None
+    registration_id: Optional[int] = None
+    contact_details: Optional[int] = None
+
 class Booking(BaseModel):
     """
     Booking request model.
@@ -226,6 +247,100 @@ async def AuthenticateUser(user: User):
     finally:
         cursor.close()
 
+@app.post("/api/register/")
+async def RegisterUser(user: UserRegistration):
+    """
+    Registers a new user in the system.
+    
+    Args:
+        user (UserRegistration): User registration details
+        
+    Returns:
+        dict: Confirmation message and user ID
+        
+    Raises:
+        HTTPException: If registration fails or user already exists
+    """
+    dbConnection = GetDatabaseConnection()
+    cursor = dbConnection.cursor()
+    try:
+        # Check if user already exists
+        checkQuery = "SELECT email FROM Faculty WHERE email = %s UNION SELECT email FROM StudentBody WHERE email = %s"
+        cursor.execute(checkQuery, (user.email, user.email))
+        if cursor.fetchone():
+            raise HTTPException(status_code=400, detail="User already exists")
+
+        if user.user_type == "faculty":
+            # Insert into Faculty table
+            facultyQuery = """
+            INSERT INTO Faculty (registration_id, name, email, department, post) 
+            VALUES (%s, %s, %s, %s, 'Professor')
+            """
+            cursor.execute(facultyQuery, (
+                user.registration_id,
+                user.name,
+                user.email,
+                user.department
+            ))
+            facultyId = cursor.lastrowid
+            
+            # Add default FA role
+            roleQuery = "INSERT INTO RoleAssignments (faculty_id, role) VALUES (%s, 'FA')"
+            cursor.execute(roleQuery, (facultyId,))
+            
+        elif user.user_type == "club":
+            # For clubs, we need a faculty advisor
+            # For simplicity, we'll use the first available faculty
+            advisorQuery = "SELECT faculty_id FROM Faculty LIMIT 1"
+            cursor.execute(advisorQuery)
+            advisorResult = cursor.fetchone()
+            
+            if not advisorResult:
+                raise HTTPException(status_code=400, detail="No faculty advisor available")
+            
+            # Insert into StudentBody table
+            clubQuery = """
+            INSERT INTO StudentBody (name, email, faculty_advisor_id) 
+            VALUES (%s, %s, %s)
+            """
+            cursor.execute(clubQuery, (
+                user.name,
+                user.email,
+                advisorResult[0]
+            ))
+            
+        elif user.user_type == "student":
+            # For students, we need a student body
+            # For simplicity, we'll use the first available student body
+            bodyQuery = "SELECT student_body_id FROM StudentBody LIMIT 1"
+            cursor.execute(bodyQuery)
+            bodyResult = cursor.fetchone()
+            
+            if not bodyResult:
+                raise HTTPException(status_code=400, detail="No student body available")
+            
+            # Insert into Student table
+            studentQuery = """
+            INSERT INTO Student (registration_id, name, contact_details, student_body_id) 
+            VALUES (%s, %s, %s, %s)
+            """
+            cursor.execute(studentQuery, (
+                user.registration_id,
+                user.name,
+                user.contact_details,
+                bodyResult[0]
+            ))
+        
+        dbConnection.commit()
+        return {"message": "User registered successfully"}
+        
+    except Exception as e:
+        dbConnection.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        dbConnection.close()
+
 @app.get("/api/venues/")
 async def GetAllVenues():
     """
@@ -240,7 +355,7 @@ async def GetAllVenues():
     dbConnection = GetDatabaseConnection()
     cursor = dbConnection.cursor(dictionary=True)
     try:
-        venueQuery = "SELECT * FROM venue"
+        venueQuery = "SELECT * FROM Venue"
         logger.info("Executing venue query")
         cursor.execute(venueQuery)
         venues = cursor.fetchall()
@@ -248,6 +363,63 @@ async def GetAllVenues():
         return {"venues": venues}
     except Exception as e:
         logger.error(f"Error fetching venues: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        dbConnection.close()
+
+@app.get("/api/venues/availability/")
+async def CheckVenueAvailability(venue_id: int, date: str, start_time: str, end_time: str):
+    """
+    Checks if a venue is available for a specific time slot.
+    
+    Args:
+        venue_id (int): ID of the venue to check
+        date (str): Date in YYYY-MM-DD format
+        start_time (str): Start time in HH:MM format
+        end_time (str): End time in HH:MM format
+        
+    Returns:
+        dict: Availability status and conflicting bookings
+        
+    Raises:
+        HTTPException: If database query fails
+    """
+    dbConnection = GetDatabaseConnection()
+    cursor = dbConnection.cursor(dictionary=True)
+    try:
+        # Check for conflicting bookings
+        conflictQuery = """
+        SELECT br.*, v.venue_name 
+        FROM BookingRequest br
+        JOIN Venue v ON br.venue_id = v.venue_id
+        WHERE br.venue_id = %s 
+        AND br.booking_date = %s
+        AND (
+            (br.start_time < %s AND br.end_time > %s) OR
+            (br.start_time < %s AND br.end_time > %s) OR
+            (br.start_time >= %s AND br.end_time <= %s)
+        )
+        AND br.status != 'rejected'
+        """
+        
+        cursor.execute(conflictQuery, (
+            venue_id, date, end_time, start_time, end_time, start_time, start_time, end_time
+        ))
+        
+        conflicts = cursor.fetchall()
+        isAvailable = len(conflicts) == 0
+        
+        return {
+            "venue_id": venue_id,
+            "date": date,
+            "start_time": start_time,
+            "end_time": end_time,
+            "is_available": isAvailable,
+            "conflicting_bookings": conflicts
+        }
+        
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
@@ -296,15 +468,22 @@ async def CreateBooking(booking: Booking):
 
         # Create new booking request
         insert_sql = """
-        INSERT INTO BookingRequest (venue_id, student_body_id, start_time, end_time, purpose, status) 
-        VALUES (%s, %s, %s, %s, %s, 'pending')
+        INSERT INTO BookingRequest (venue_id, student_body_id, booking_date, start_time, end_time, purpose, status) 
+        VALUES (%s, %s, %s, %s, %s, %s, 'pending')
         """
         logger.info("Creating new booking request")
+        
+        # Extract date from start_time
+        booking_date = booking.start_time.split('T')[0] if 'T' in str(booking.start_time) else str(booking.start_time).split(' ')[0]
+        start_time = booking.start_time.split('T')[1] if 'T' in str(booking.start_time) else str(booking.start_time).split(' ')[1]
+        end_time = booking.end_time.split('T')[1] if 'T' in str(booking.end_time) else str(booking.end_time).split(' ')[1]
+        
         cursor.execute(insert_sql, (
             booking.venue_id,
             booking.user_id,
-            booking.start_time,
-            booking.end_time,
+            booking_date,
+            start_time,
+            end_time,
             booking.purpose
         ))
         
@@ -312,20 +491,21 @@ async def CreateBooking(booking: Booking):
         
         # Initialize approval process
         approval_sql = """
-        INSERT INTO approvalprocess (request_id, status) 
-        VALUES (%s, 'pending')
+        INSERT INTO ApprovalProcess (booking_id, approver_id, approval_status) 
+        VALUES (%s, %s, 'pending')
         """
         logger.info("Initializing approval process")
-        cursor.execute(approval_sql, (request_id,))
+        cursor.execute(approval_sql, (request_id, 1))  # Default approver_id to 1
         
-        # cursor.commit()
+        dbConnection.commit()
         logger.info("Booking request created successfully")
         return {"message": "Booking request created successfully", "request_id": request_id}
     except Exception as e:
-        # cursor.rollback()
+        dbConnection.rollback()
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
+        dbConnection.close()
 
 @app.get("/api/bookings/{user_id}")
 async def GetUserBookings(user_id: int):
@@ -359,6 +539,175 @@ async def GetUserBookings(user_id: int):
         return {"bookings": bookings}
     except Exception as e:
         logger.error(f"Error fetching bookings: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        dbConnection.close()
+
+@app.get("/api/approvals/pending/")
+async def GetPendingApprovals(role: str):
+    """
+    Gets pending approval requests for a specific role.
+    
+    Args:
+        role (str): Role of the approver (FA, SC, SWO, Security)
+        
+    Returns:
+        dict: List of pending approval requests
+        
+    Raises:
+        HTTPException: If database query fails
+    """
+    dbConnection = GetDatabaseConnection()
+    cursor = dbConnection.cursor(dictionary=True)
+    try:
+        if role == "FA":
+            # Get bookings pending faculty advisor approval
+            query = """
+            SELECT br.*, v.venue_name, sb.name as student_body_name, f.name as faculty_name
+            FROM BookingRequest br
+            JOIN Venue v ON br.venue_id = v.venue_id
+            JOIN StudentBody sb ON br.student_body_id = sb.student_body_id
+            JOIN Faculty f ON sb.faculty_advisor_id = f.faculty_id
+            WHERE br.status = 'pending'
+            AND NOT EXISTS (
+                SELECT 1 FROM ApprovalProcess ap 
+                WHERE ap.booking_id = br.booking_id
+            )
+            """
+        elif role == "SC":
+            # Get bookings pending student council approval
+            query = """
+            SELECT br.*, v.venue_name, sb.name as student_body_name
+            FROM BookingRequest br
+            JOIN Venue v ON br.venue_id = v.venue_id
+            JOIN StudentBody sb ON br.student_body_id = sb.student_body_id
+            WHERE br.status = 'pending'
+            AND EXISTS (
+                SELECT 1 FROM ApprovalProcess ap 
+                WHERE ap.booking_id = br.booking_id
+                AND ap.approval_status = 'FA_approved'
+            )
+            """
+        else:
+            # For SWO and Security, get bookings that have passed previous stages
+            query = """
+            SELECT br.*, v.venue_name, sb.name as student_body_name
+            FROM BookingRequest br
+            JOIN Venue v ON br.venue_id = v.venue_id
+            JOIN StudentBody sb ON br.student_body_id = sb.student_body_id
+            WHERE br.status = 'pending'
+            AND EXISTS (
+                SELECT 1 FROM ApprovalProcess ap 
+                WHERE ap.booking_id = br.booking_id
+                AND ap.approval_status = 'SC_approved'
+            )
+            """
+        
+        cursor.execute(query)
+        pendingRequests = cursor.fetchall()
+        
+        return {"pending_requests": pendingRequests}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        dbConnection.close()
+
+@app.post("/api/approvals/{booking_id}/approve/")
+async def ApproveBooking(booking_id: int, role: str, approver_id: int):
+    """
+    Approves a booking request at a specific stage.
+    
+    Args:
+        booking_id (int): ID of the booking to approve
+        role (str): Role of the approver
+        approver_id (int): ID of the approver
+        
+    Returns:
+        dict: Confirmation message
+        
+    Raises:
+        HTTPException: If approval fails
+    """
+    dbConnection = GetDatabaseConnection()
+    cursor = dbConnection.cursor()
+    try:
+        # Check if approval process exists
+        checkQuery = "SELECT * FROM ApprovalProcess WHERE booking_id = %s"
+        cursor.execute(checkQuery, (booking_id,))
+        approvalProcess = cursor.fetchone()
+        
+        if not approvalProcess:
+            # Create new approval process
+            insertQuery = """
+            INSERT INTO ApprovalProcess (booking_id, approver_id, approval_status) 
+            VALUES (%s, %s, 'FA_approved')
+            """
+            cursor.execute(insertQuery, (booking_id, approver_id))
+        else:
+            # Update existing approval process
+            if role == "SC":
+                updateQuery = "UPDATE ApprovalProcess SET approval_status = 'SC_approved' WHERE booking_id = %s"
+            elif role == "SWO":
+                updateQuery = "UPDATE ApprovalProcess SET approval_status = 'SWO_approved' WHERE booking_id = %s"
+            elif role == "Security":
+                updateQuery = "UPDATE ApprovalProcess SET approval_status = 'approved' WHERE booking_id = %s"
+                # Also update booking status to approved
+                bookingUpdateQuery = "UPDATE BookingRequest SET status = 'approved' WHERE booking_id = %s"
+                cursor.execute(bookingUpdateQuery, (booking_id,))
+            else:
+                raise HTTPException(status_code=400, detail="Invalid role")
+            
+            cursor.execute(updateQuery, (booking_id,))
+        
+        dbConnection.commit()
+        return {"message": f"Booking {booking_id} approved by {role}"}
+        
+    except Exception as e:
+        dbConnection.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        dbConnection.close()
+
+@app.post("/api/approvals/{booking_id}/reject/")
+async def RejectBooking(booking_id: int, role: str, approver_id: int, reason: str = ""):
+    """
+    Rejects a booking request.
+    
+    Args:
+        booking_id (int): ID of the booking to reject
+        role (str): Role of the rejector
+        approver_id (int): ID of the rejector
+        reason (str): Reason for rejection
+        
+    Returns:
+        dict: Confirmation message
+        
+    Raises:
+        HTTPException: If rejection fails
+    """
+    dbConnection = GetDatabaseConnection()
+    cursor = dbConnection.cursor()
+    try:
+        # Update booking status to rejected
+        updateQuery = "UPDATE BookingRequest SET status = 'rejected' WHERE booking_id = %s"
+        cursor.execute(updateQuery, (booking_id,))
+        
+        # Add to approval process
+        approvalQuery = """
+        INSERT INTO ApprovalProcess (booking_id, approver_id, approval_status) 
+        VALUES (%s, %s, 'rejected')
+        """
+        cursor.execute(approvalQuery, (booking_id, approver_id))
+        
+        dbConnection.commit()
+        return {"message": f"Booking {booking_id} rejected by {role}"}
+        
+    except Exception as e:
+        dbConnection.rollback()
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()

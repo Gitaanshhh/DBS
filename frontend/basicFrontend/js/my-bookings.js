@@ -20,11 +20,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function loadUserBookings() {
     try {
-        // For now hardcoding user_id as 1, in real app get from session/login
-        const response = await fetch('http://localhost:8000/api/bookings/1');
+        console.log('My bookings: Starting to load user bookings...');
+        
+        // Get user data from localStorage
+        const rawUserData = localStorage.getItem('user');
+        if (!rawUserData || rawUserData === "undefined") {
+            showError('User not logged in. Please log in again.');
+            return;
+        }
+
+        let userData;
+        try {
+            userData = JSON.parse(rawUserData);
+        } catch (e) {
+            showError('User data corrupted. Please log in again.');
+            return;
+        }
+
+        //console.log('My bookings: User data from localStorage:', userData);
+        
+        // Get user ID based on user type
+        let userId;
+        if (userData.user_type === 'faculty') {
+            userId = userData.user_data.faculty_id;
+        } else if (userData.user_type === 'club') {
+            userId = userData.user_data.student_body_id;
+        } else if (userData.user_type === 'student') {
+            userId = userData.user_data.student_body_id;
+        } else {
+            userId = 1; // fallback
+        }
+        
+        console.log('My bookings: Using user ID:', userId);
+        const response = await fetch(`http://localhost:8000/api/bookings/${userId}`);
+        console.log('My bookings: Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch bookings: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('My bookings: Data received:', data);
         
         if (data.bookings) {
+            console.log('My bookings: Number of bookings:', data.bookings.length);
             // Clear existing bookings
             clearAllBookings();
             
@@ -35,10 +74,13 @@ async function loadUserBookings() {
                 const bookingList = tabContent.querySelector('.booking-list');
                 bookingList.appendChild(bookingElement);
             });
+            console.log('My bookings: Bookings loaded successfully');
+        } else {
+            console.log('My bookings: No bookings found');
         }
     } catch (error) {
-        console.error('Error loading bookings:', error);
-        showError('Failed to load bookings. Please try again later.');
+        console.error('My bookings: Error loading bookings:', error);
+        showError(`Failed to load bookings: ${error.message}`);
     }
 }
 

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - BlockBook</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/login.css">
+    <style>
+        .register-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .user-type-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .user-type-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .user-type-option:hover {
+            border-color: #4a90e2;
+        }
+        
+        .user-type-option.selected {
+            border-color: #4a90e2;
+            background-color: #f0f7ff;
+        }
+        
+        .conditional-fields {
+            display: none;
+        }
+        
+        .conditional-fields.show {
+            display: block;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .login-link a {
+            color: #4a90e2;
+            text-decoration: none;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>BlockBook</h1>
+        <h2>Create Account</h2>
+        <form id="registerForm" onsubmit="handleRegister(event)">
+            <div class="user-type-selector">
+                <div class="user-type-option" data-type="student">
+                    <i class="fas fa-user-graduate"></i>
+                    <div>Student</div>
+                </div>
+                <div class="user-type-option" data-type="faculty">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <div>Faculty</div>
+                </div>
+                <div class="user-type-option" data-type="club">
+                    <i class="fas fa-users"></i>
+                    <div>Club</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" required placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="Enter your password">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" required placeholder="Confirm your password">
+            </div>
+            
+            <!-- Student-specific fields -->
+            <div class="conditional-fields" id="studentFields">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="registrationId">Registration ID</label>
+                        <input type="number" id="registrationId" placeholder="Enter registration ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactDetails">Contact Number</label>
+                        <input type="tel" id="contactDetails" placeholder="Enter contact number">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Faculty-specific fields -->
+            <div class="conditional-fields" id="facultyFields">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="facultyRegistrationId">Registration ID</label>
+                        <input type="number" id="facultyRegistrationId" placeholder="Enter registration ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select id="department" required>
+                            <option value="">Select Department</option>
+                            <option value="computer-science">Computer Science</option>
+                            <option value="engineering">Engineering</option>
+                            <option value="business">Business</option>
+                            <option value="arts">Arts & Humanities</option>
+                            <option value="science">Science</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="errorMessage" class="error-message"></div>
+            <button type="submit" id="registerButton">Create Account</button>
+        </form>
+        
+        <div class="login-link">
+            Already have an account? <a href="login.html">Log in</a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000/api';
+        let selectedUserType = 'student';
+
+        // User type selection
+        document.querySelectorAll('.user-type-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                document.querySelectorAll('.user-type-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Update selected user type
+                selectedUserType = this.dataset.type;
+                
+                // Show/hide conditional fields
+                updateConditionalFields();
+            });
+        });
+
+        function updateConditionalFields() {
+            // Hide all conditional fields
+            document.querySelectorAll('.conditional-fields').forEach(field => {
+                field.classList.remove('show');
+            });
+            
+            // Show relevant fields based on user type
+            if (selectedUserType === 'student') {
+                document.getElementById('studentFields').classList.add('show');
+            } else if (selectedUserType === 'faculty') {
+                document.getElementById('facultyFields').classList.add('show');
+            }
+        }
+
+        // Initialize with student selected
+        document.querySelector('.user-type-option[data-type="student"]').classList.add('selected');
+        updateConditionalFields();
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            const registerButton = document.getElementById('registerButton');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Basic validation
+            if (password !== confirmPassword) {
+                errorMessage.textContent = 'Passwords do not match';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            if (password.length < 6) {
+                errorMessage.textContent = 'Password must be at least 6 characters long';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            try {
+                registerButton.textContent = 'Creating Account...';
+                registerButton.classList.add('loading');
+                errorMessage.style.display = 'none';
+
+                const registrationData = {
+                    email: email,
+                    password: password,
+                    name: name,
+                    user_type: selectedUserType
+                };
+
+                // Add conditional fields based on user type
+                if (selectedUserType === 'student') {
+                    registrationData.registration_id = parseInt(document.getElementById('registrationId').value) || null;
+                    registrationData.contact_details = parseInt(document.getElementById('contactDetails').value) || null;
+                } else if (selectedUserType === 'faculty') {
+                    registrationData.registration_id = parseInt(document.getElementById('facultyRegistrationId').value) || null;
+                    registrationData.department = document.getElementById('department').value;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/register/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(registrationData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert('Account created successfully! Please log in.');
+                    window.location.href = 'login.html';
+                } else {
+                    const error = await response.json();
+                    errorMessage.textContent = error.detail || 'Registration failed';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                errorMessage.textContent = 'Registration failed. Please try again.';
+                errorMessage.style.display = 'block';
+            } finally {
+                registerButton.textContent = 'Create Account';
+                registerButton.classList.remove('loading');
+            }
+        }
+    </script>
+</body>
+</html> 

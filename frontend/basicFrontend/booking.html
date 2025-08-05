@@ -325,41 +325,7 @@
             id="venue-booking-form"
             onsubmit="event.preventDefault(); submitBookingRequest();"
           >
-            <div class="form-row">
-              <div class="form-group">
-                <label for="organizer-name" class="required"
-                  >Organizer Name</label
-                >
-                <input type="text" id="organizer-name" required />
-              </div>
-              <div class="form-group">
-                <label for="organizer-email" class="required">Email</label>
-                <input type="email" id="organizer-email" required />
-              </div>
-            </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label for="department" class="required">Department</label>
-                <select id="department" required>
-                  <option value="" disabled selected>Select Department</option>
-                  <option value="computer-science">Computer Science</option>
-                  <option value="engineering">Engineering</option>
-                  <option value="business">Business</option>
-                  <option value="arts">Arts & Humanities</option>
-                  <option value="science">Science</option>
-                  <option value="student-club">
-                    Student Club/Organization
-                  </option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="attendees" class="required"
-                  >Expected Number of Attendees</label
-                >
-                <input type="number" id="attendees" min="1" required />
-              </div>
-            </div>
 
             <div class="form-group">
               <label for="booking-purpose" class="required"
@@ -372,24 +338,7 @@
               ></textarea>
             </div>
 
-            <div class="form-group">
-              <label for="setup-requirements" class="required"
-                >Tools/Setup Requirements</label
-              >
-              <textarea
-                id="setup-requirements"
-                required
-                placeholder="Describe any specific setup or equipment you need (e.g., projector, microphones, special seating arrangement)"
-              ></textarea>
-            </div>
 
-            <div class="form-group">
-              <label for="additional-notes">Additional Notes (Optional)</label>
-              <textarea
-                id="additional-notes"
-                placeholder="Any additional information or special requests"
-              ></textarea>
-            </div>
 
             <div class="form-actions">
               <button
@@ -407,15 +356,7 @@
         </div>
       </div>
 
-      <!-- Example: Button to fetch data from backend -->
-      <button id="fetch-backend-btn" style="margin: 1rem 0">
-        Fetch Backend Message
-      </button>
-      <div
-        id="backend-message"
-        style="margin-bottom: 1.5rem; color: #357abd"
-      ></div>
-      <div id="new-table-data" style="margin-bottom: 1.5rem"></div>
+
     </main>
     <footer>
       <p>
@@ -465,36 +406,7 @@
         });
       });
 
-      // Example: Fetch data from Django backend when button is clicked
-      document
-        .getElementById("fetch-backend-btn")
-        .addEventListener("click", function () {
-          fetch("http://localhost:8000/api/new-table/")
-            .then((response) => response.json())
-            .then((data) => {
-              // Display the raw JSON in backend-message
-              document.getElementById("backend-message").textContent =
-                JSON.stringify(data);
 
-              // Display only the student names if data exists
-              const tableDiv = document.getElementById("new-table-data");
-              tableDiv.innerHTML = "";
-              if (data.data && data.data.length > 0) {
-                let html = "<ul>";
-                data.data.forEach((row) => {
-                  html += `<li>${row.name}</li>`;
-                });
-                html += "</ul>";
-                tableDiv.innerHTML = html;
-              } else {
-                tableDiv.textContent = "No student names found.";
-              }
-            })
-            .catch((error) => {
-              document.getElementById("backend-message").textContent =
-                "Error fetching data from backend.";
-            });
-        });
 
       // Set venue features based on venue title
       function setVenueFeatures(venueTitle) {
@@ -524,6 +436,11 @@
 
       // Handle form submission
       function submitBookingRequest() {
+        // Call the async function
+        submitBookingRequestAsync();
+      }
+
+      async function submitBookingRequestAsync() {
         // Get selected time slot
         const selectedTimeSlot = document.querySelector(".time-slot.selected");
         if (!selectedTimeSlot) {
@@ -531,27 +448,72 @@
           return;
         }
 
-        // Get form data
-        const formData = {
-          venue: document.getElementById("venue-title").textContent,
-          date: document.getElementById("booking-date").value,
-          timeSlot: selectedTimeSlot.dataset.time,
-          organizerName: document.getElementById("organizer-name").value,
-          organizerEmail: document.getElementById("organizer-email").value,
-          department: document.getElementById("department").value,
-          attendees: document.getElementById("attendees").value,
-          purpose: document.getElementById("booking-purpose").value,
-          setupRequirements:
-            document.getElementById("setup-requirements").value,
-          additionalNotes: document.getElementById("additional-notes").value,
+        // Get venue data
+        const venueData = JSON.parse(localStorage.getItem("selectedVenue"));
+        if (!venueData) {
+          alert("Venue data not found. Please try again.");
+          return;
+        }
+
+        // Get user data
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if (!userData) {
+          alert("User data not found. Please log in again.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        // Parse time slot
+        const [startTimeStr, endTimeStr] = selectedTimeSlot.dataset.time
+          .split(" - ")
+          .map(t => convertTo24Hour(document.getElementById("booking-date").value, t));
+
+        // Prepare booking data
+        const bookingData = {
+          venue_id: venueData.id || 1, // Default to 1 if no ID
+          user_id: userData.user_data?.student_body_id || userData.user_data?.faculty_id || 1,
+          start_time: startTimeStr,
+          end_time: endTimeStr,
+          purpose: document.getElementById("booking-purpose").value
         };
 
-        // In a real application, you would send this data to your server
-        console.log("Booking request data:", formData);
+        try {
+          const response = await fetch("http://localhost:8000/api/bookings/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(bookingData)
+          });
 
-        // Show confirmation and redirect
-        alert("Your booking request has been submitted successfully!");
-        window.location.href = "mainPage.html";
+          if (response.ok) {
+            const result = await response.json();
+            alert("Your booking request has been submitted successfully!");
+            window.location.href = "mainPage.html";
+          } else {
+            const error = await response.json();
+            alert("Booking failed: " + (error.detail || "Unknown error"));
+          }
+        } catch (error) {
+          console.error("Booking error:", error);
+          alert("There was an error submitting your booking. Please try again.");
+        }
+      }
+
+      // Helper function to convert 12-hour time to 24-hour format
+      function convertTo24Hour(date, time12h) {
+        const [time, modifier] = time12h.split(' ');
+        let [hours, minutes] = time.split(':');
+        
+        if (hours === '12') {
+          hours = '00';
+        }
+        
+        if (modifier === 'PM') {
+          hours = parseInt(hours, 10) + 12;
+        }
+        
+        return `${date}T${hours.padStart(2, '0')}:${minutes}:00`;
       }
     </script>
   </body>
