@@ -165,7 +165,7 @@ function createMainPageVenueCard(venue) {
   }
   
   article.innerHTML = `
-    <img src="https://via.placeholder.com/400x250/4a90e2/ffffff?text=${encodeURIComponent(venue.venue_name)}" alt="${venue.venue_name}">
+    <img src="https://placehold.co/400x250/4a90e2/ffffff?text=${encodeURIComponent(venue.venue_name)}" alt="${venue.venue_name}">
     <div class="venue-content">
       <div>
         <h3 class="venue-title">${venue.venue_name}</h3>

@@ -246,7 +246,7 @@ function createVenueCard(venue) {
     
     card.innerHTML = `
         <div class="venue-image">
-            <img src="https://via.placeholder.com/300x200/4a90e2/ffffff?text=${encodeURIComponent(venue.venue_name)}" alt="${venue.venue_name}">
+            <img src="https://placehold.co/400x250/4a90e2/ffffff?text=${encodeURIComponent(venue.venue_name)}" alt="${venue.venue_name}">
             <div class="venue-overlay">
                 <button class="venue-gallery-btn" title="View Gallery">
                     <i class="fas fa-images"></i>
